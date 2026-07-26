@@ -68,12 +68,18 @@ export default function ChartResultsPage() {
       {saved && (
         <main className="mx-auto max-w-6xl px-6 py-14">
           <div className="mb-10 text-center">
-            <h1 className="font-cinzel text-3xl font-semibold text-ink">
+            <p className="mb-2 font-cinzel text-[11px] uppercase tracking-[0.18em] text-bronze-dark">
+              A Reading of the Nativity
+            </p>
+            <h1 className="font-cormorant text-4xl font-medium text-ink">
               {saved.birthData.name ? `${saved.birthData.name}'s Chart` : "Your Chart"}
             </h1>
             <p className="mt-2 font-cormorant italic text-ink-2">
               {saved.birthData.date} · {saved.birthData.time} · {saved.birthData.place_name}
             </p>
+            <span className="mt-4 inline-block border border-bronze px-4 py-1.5 font-cinzel text-[11px] uppercase tracking-[0.14em] text-bronze-dark">
+              {saved.chart.sect === "diurnal" ? "Diurnal sect" : "Nocturnal sect"} · {saved.chart.ascendant.sign} rising
+            </span>
           </div>
 
           <ChartResults
