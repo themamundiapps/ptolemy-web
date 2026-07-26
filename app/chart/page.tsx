@@ -2,6 +2,9 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Nav from "@/components/Nav";
+import Footer from "@/components/Footer";
+import PaywallModal from "@/components/PaywallModal";
 import BirthDataForm from "@/components/BirthDataForm";
 import { ApiError, fetchChartPositions } from "@/lib/api";
 import { saveChart } from "@/lib/storage";
@@ -21,6 +24,7 @@ function ChartFormPage() {
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [paywallOpen, setPaywallOpen] = useState(false);
 
   const handleSubmit = async (birth: BirthData) => {
     setLoading(true);
@@ -50,22 +54,29 @@ function ChartFormPage() {
   }, [searchParams]);
 
   return (
-    <main className="mx-auto min-h-screen max-w-2xl px-6 py-20">
-      <h1 className="text-center font-serif text-4xl text-ink">Your Birth Chart</h1>
-      <p className="mt-3 text-center text-muted">
-        Enter your birth details for a chart cast in the classical, whole-sign tradition.
-      </p>
-      <div className="mt-12">
-        <BirthDataForm
-          onSubmit={handleSubmit}
-          loading={loading}
-          error={error}
-          initialDate={searchParams.get("date") ?? undefined}
-          initialTime={searchParams.get("time") ?? undefined}
-          initialPlace={searchParams.get("place") ?? undefined}
-        />
-      </div>
-    </main>
+    <div className="min-h-screen bg-parchment">
+      <Nav onSignInClick={() => setPaywallOpen(true)} />
+
+      <main className="mx-auto max-w-2xl px-6 py-20">
+        <h1 className="text-center font-cinzel text-4xl font-semibold text-ink">Cast your chart</h1>
+        <p className="mt-3 text-center font-cormorant text-lg italic text-ink-2">
+          Enter your birth details for a chart cast in the classical, whole-sign tradition.
+        </p>
+        <div className="mt-12 flex justify-center">
+          <BirthDataForm
+            onSubmit={handleSubmit}
+            loading={loading}
+            error={error}
+            initialDate={searchParams.get("date") ?? undefined}
+            initialTime={searchParams.get("time") ?? undefined}
+            initialPlace={searchParams.get("place") ?? undefined}
+          />
+        </div>
+      </main>
+
+      <Footer />
+      <PaywallModal open={paywallOpen} onClose={() => setPaywallOpen(false)} />
+    </div>
   );
 }
 

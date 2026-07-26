@@ -10,7 +10,6 @@ const cormorant = Cormorant_Garamond({
   display: "swap",
 });
 
-// Landing-page-only typefaces, matching ptolemy-landing-en.html.
 const cinzel = Cinzel({
   subsets: ["latin"],
   weight: ["500", "600"],
@@ -44,7 +43,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${cormorant.variable} ${cinzel.variable} ${crimson.variable} ${ebGaramond.variable}`}>
-      <body className="antialiased bg-background text-ink">{children}</body>
+      <body className="antialiased bg-parchment text-ink">{children}</body>
     </html>
   );
 }

@@ -1,9 +1,9 @@
 export default function Footer() {
   return (
-    <footer className="border-t border-white/10 py-10 text-center text-sm text-muted">
+    <footer className="border-t border-line py-10 text-center font-crimson text-sm text-ink-2">
       <p>
         Ptolemy — Traditional Astrology ·{" "}
-        <a href="mailto:themamundiapps@gmail.com" className="hover:text-gold transition-colors">
+        <a href="mailto:themamundiapps@gmail.com" className="transition-colors hover:text-bronze-dark">
           themamundiapps@gmail.com
         </a>
       </p>

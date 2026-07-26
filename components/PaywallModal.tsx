@@ -20,29 +20,31 @@ export default function PaywallModal({ open, onClose }: { open: boolean; onClose
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-ink/60 p-4"
       onClick={onClose}
     >
       <div
-        className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-lg border border-white/10 bg-background p-8"
+        className="max-h-[90vh] w-full max-w-3xl overflow-y-auto border border-ink bg-parchment p-8"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between">
-          <h2 className="font-serif text-3xl text-gold">Upgrade to Ptolemy Pro</h2>
-          <button onClick={onClose} className="text-2xl leading-none text-muted hover:text-ink">
+          <h2 className="font-cinzel text-2xl font-semibold text-ink">Upgrade to Ptolemy Pro</h2>
+          <button onClick={onClose} className="font-crimson text-2xl leading-none text-ink-2 hover:text-ink">
             &times;
           </button>
         </div>
-        <p className="mt-2 text-muted">Unlimited guidance from the astrologer, plus the full traditional toolkit.</p>
+        <p className="mt-2 font-crimson text-ink-2">
+          Unlimited guidance from the astrologer, plus the full traditional toolkit.
+        </p>
 
-        <div className="mt-6 flex items-center justify-center rounded border border-white/10 bg-surface/60 px-4 py-3">
+        <div className="mt-6 flex items-center justify-center border border-line bg-parchment-2 px-4 py-3">
           <GoogleSignInButton />
         </div>
 
         {comingSoon ? (
-          <div className="mt-8 rounded border border-gold/40 bg-surface p-6 text-center">
-            <p className="font-serif text-xl text-gold">Coming soon — launching shortly.</p>
-            <p className="mt-2 text-sm text-muted">
+          <div className="mt-8 border border-bronze bg-parchment-2 p-6 text-center">
+            <p className="font-cinzel text-xl text-ink">Coming soon — launching shortly.</p>
+            <p className="mt-2 font-crimson text-sm text-ink-2">
               We&apos;re finishing up billing. Check back soon to subscribe to Ptolemy Pro.
             </p>
           </div>

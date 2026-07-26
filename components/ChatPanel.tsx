@@ -48,10 +48,10 @@ export default function ChatPanel({
   };
 
   return (
-    <div className="flex h-full flex-col rounded-lg border border-white/10 bg-surface">
+    <div className="flex h-full flex-col border border-ink bg-parchment-2">
       <div className="flex-1 space-y-4 overflow-y-auto p-5" style={{ minHeight: 320, maxHeight: 520 }}>
         {messages.length === 0 && (
-          <p className="text-sm text-muted">
+          <p className="font-cormorant italic text-ink-2">
             Ask the astrologer anything about your chart — your sect, your ruling planet, an aspect
             you&apos;re curious about.
           </p>
@@ -59,25 +59,25 @@ export default function ChatPanel({
         {messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
             <div
-              className={`max-w-[85%] rounded-lg px-4 py-2 text-sm leading-relaxed ${
-                m.role === "user" ? "bg-gold text-background" : "bg-white/5 text-ink"
+              className={`max-w-[85%] px-4 py-2 font-crimson text-sm leading-relaxed ${
+                m.role === "user" ? "bg-ink text-parchment" : "border border-line bg-parchment text-ink"
               }`}
             >
               {m.content}
             </div>
           </div>
         ))}
-        {sending && <p className="text-sm italic text-muted">The astrologer is consulting your chart…</p>}
-        {error && <p className="text-sm text-red-400">{error}</p>}
+        {sending && <p className="font-cormorant text-sm italic text-ink-2">The astrologer is consulting your chart…</p>}
+        {error && <p className="font-crimson text-sm text-terracotta">{error}</p>}
       </div>
 
-      <div className="border-t border-white/10 p-4">
+      <div className="border-t border-line p-4">
         {limitReached ? (
-          <div className="rounded border border-gold/40 bg-background p-4 text-center">
-            <p className="text-sm text-ink">You&apos;ve used all {FREE_MESSAGE_LIMIT} free messages.</p>
+          <div className="border border-bronze bg-parchment p-4 text-center">
+            <p className="font-crimson text-sm text-ink">You&apos;ve used all {FREE_MESSAGE_LIMIT} free messages.</p>
             <button
               onClick={onUpgradeClick}
-              className="mt-3 rounded bg-gold px-5 py-2 text-sm font-medium text-background"
+              className="mt-3 bg-bronze-dark px-5 py-2 font-cinzel text-[13px] uppercase tracking-[0.1em] text-parchment transition-colors hover:bg-ink"
             >
               Upgrade to Pro for unlimited guidance
             </button>
@@ -89,18 +89,20 @@ export default function ChatPanel({
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask about your chart…"
-                className="flex-1 rounded border border-white/15 bg-background px-4 py-2 text-sm text-ink outline-none focus:border-gold"
+                className="flex-1 border border-line bg-parchment px-4 py-2 font-crimson text-sm text-ink outline-none focus:border-bronze-dark"
                 disabled={sending}
               />
               <button
                 type="submit"
                 disabled={sending || !input.trim()}
-                className="rounded bg-gold px-5 py-2 text-sm font-medium text-background disabled:cursor-not-allowed disabled:opacity-40"
+                className="bg-ink px-5 py-2 font-cinzel text-[13px] uppercase tracking-[0.1em] text-parchment transition-colors hover:bg-ink-2 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 Send
               </button>
             </form>
-            <p className="mt-2 text-right text-xs text-muted">{remaining} free messages remaining</p>
+            <p className="mt-2 text-right font-ebgaramond text-xs uppercase tracking-[0.06em] text-ink-2">
+              {remaining} free messages remaining
+            </p>
           </>
         )}
       </div>

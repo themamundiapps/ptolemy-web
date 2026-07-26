@@ -9,22 +9,15 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "#0D0D1A",
-        surface: "#15152A",
-        gold: "#C9A84C",
-        ink: "#E8E8E8",
-        muted: "#9C9CB0",
-        // Landing-page-only palette, matching ptolemy-landing-en.html exactly.
-        // Kept separate from the dark theme above, which the rest of the app
-        // (/chart, /chart/[id]) still uses.
+        // Traditional parchment/bronze palette, used across every page.
         parchment: "#EDE6D6",
-        parchment2: "#E4DAC5",
-        navy: "#1B2438",
-        navy2: "#2A3550",
+        "parchment-2": "#E4DAC5",
+        ink: "#1B2438",
+        "ink-2": "#2A3550",
         bronze: "#B08D57",
         "bronze-dark": "#8A6B3D",
         terracotta: "#8C3B2E",
-        hairline: "rgba(27,36,56,0.18)",
+        line: "rgba(27,36,56,0.18)",
       },
       fontFamily: {
         serif: ["var(--font-cormorant)", "Georgia", "serif"],

@@ -21,21 +21,21 @@ export default function PlanetList({ chart }: { chart: ChartResponse }) {
   ];
 
   return (
-    <div className="divide-y divide-white/10 rounded-lg border border-white/10 bg-surface">
+    <div className="divide-y divide-line border border-line bg-parchment-2">
       {rows.map((row) => (
-        <div key={row.name} className="flex items-center justify-between gap-3 px-4 py-3 text-sm">
+        <div key={row.name} className="flex items-center justify-between gap-3 px-4 py-3 font-crimson text-sm">
           <div className="flex items-center gap-3">
-            <span className="w-6 text-center text-gold">{row.symbol}</span>
+            <span className="w-6 text-center font-cinzel text-bronze-dark">{row.symbol}</span>
             <span className="text-ink">{row.name}</span>
-            {row.position.retrograde && <span className="text-xs text-red-400">℞</span>}
+            {row.position.retrograde && <span className="text-xs text-terracotta">℞</span>}
           </div>
-          <div className="flex items-center gap-3 text-muted">
+          <div className="flex items-center gap-3 font-ebgaramond text-xs uppercase tracking-[0.04em] text-ink-2">
             <span>
               {SIGN_SYMBOLS[row.position.sign]} {row.position.sign} {formatDegree(row.position.sign_longitude)}
             </span>
-            <span className="w-14 text-right">House {row.position.house}</span>
+            <span className="w-16 text-right">House {row.position.house}</span>
             {row.isPlanet && (
-              <span className="w-24 text-right text-xs">{dignityLabel(row.position.dignities)}</span>
+              <span className="w-24 text-right">{dignityLabel(row.position.dignities)}</span>
             )}
           </div>
         </div>
