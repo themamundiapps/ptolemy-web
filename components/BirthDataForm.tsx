@@ -8,15 +8,21 @@ export default function BirthDataForm({
   onSubmit,
   loading,
   error,
+  initialDate,
+  initialTime,
+  initialPlace,
 }: {
   onSubmit: (birth: BirthData) => void;
   loading: boolean;
   error?: string | null;
+  initialDate?: string;
+  initialTime?: string;
+  initialPlace?: string;
 }) {
   const [name, setName] = useState("");
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
-  const [placeQuery, setPlaceQuery] = useState("");
+  const [date, setDate] = useState(initialDate ?? "");
+  const [time, setTime] = useState(initialTime ?? "");
+  const [placeQuery, setPlaceQuery] = useState(initialPlace ?? "");
   const [selectedCity, setSelectedCity] = useState<CityResult | null>(null);
   const [suggestions, setSuggestions] = useState<CityResult[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);

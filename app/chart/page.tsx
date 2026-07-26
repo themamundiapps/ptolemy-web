@@ -56,7 +56,14 @@ function ChartFormPage() {
         Enter your birth details for a chart cast in the classical, whole-sign tradition.
       </p>
       <div className="mt-12">
-        <BirthDataForm onSubmit={handleSubmit} loading={loading} error={error} />
+        <BirthDataForm
+          onSubmit={handleSubmit}
+          loading={loading}
+          error={error}
+          initialDate={searchParams.get("date") ?? undefined}
+          initialTime={searchParams.get("time") ?? undefined}
+          initialPlace={searchParams.get("place") ?? undefined}
+        />
       </div>
     </main>
   );
