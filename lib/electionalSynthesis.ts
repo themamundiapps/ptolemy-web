@@ -497,12 +497,30 @@ function nextVariant(key: string, variants: string[], usageCounts: Map<string, n
   return variants[index];
 }
 
+/** A benefic (Venus/Jupiter) in a genuinely constructive aspect -- these are
+ * the only hits allowed to open the synthesis. Mars/Saturn frequently score
+ * higher than a benefic on raw tightness of orb alone, and a synthesis that
+ * leads with "Mars brings passion..." on a day the chart is actually calling
+ * Auspicious because of Venus reads as if the aggressive planet earned the
+ * good label, not the benefic. */
+function isLeadEligible(hit: ElectionalHit): boolean {
+  return (
+    (hit.planet === "Venus" || hit.planet === "Jupiter") &&
+    (hit.aspect === "trine" || hit.aspect === "sextile" || hit.aspect === "conjunction")
+  );
+}
+
 /** Builds a synthesis paragraph for one electional moment. `usageCounts` is
  * shared across every day in the same results list (create one empty Map
  * per scan, and pass the same instance into every call) so that sentence
  * and closing-line variants rotate rather than repeat across the list. */
 export function buildSynthesis(hits: ElectionalHit[], qualityLabel: string, usageCounts: Map<string, number>): string {
-  const top = [...hits].sort((a, b) => b.score - a.score).slice(0, 3);
+  // Benefic-eligible hits lead, ranked among themselves by score; Mars/Saturn
+  // and anything else fill the remaining slots by score. A day with no
+  // qualifying benefic at all falls back to plain score order, unchanged.
+  const beneficLeads = hits.filter(isLeadEligible).sort((a, b) => b.score - a.score);
+  const rest = hits.filter((h) => !isLeadEligible(h)).sort((a, b) => b.score - a.score);
+  const top = [...beneficLeads, ...rest].slice(0, 3);
 
   const sentences: string[] = [];
   top.forEach((hit, i) => {
