@@ -16,7 +16,7 @@ export const SIDEBAR_ITEMS: { key: TabKey; label: string; icon: string }[] = [
   { key: "transits", label: "Transits", icon: "☉" },
   { key: "synastry", label: "Synastry", icon: "⚭" },
   { key: "analysis", label: "Analysis", icon: "✦" },
-  { key: "ask", label: "Ask", icon: "✉" },
+  { key: "ask", label: "Chat", icon: "✉" },
 ];
 
 export const DEFAULT_TAB: TabKey = "chart";

@@ -53,9 +53,10 @@ export default function ChartWheel({ chart }: { chart: ChartResponse }) {
 
   return (
     <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="w-full max-w-md mx-auto" role="img" aria-label="Natal chart wheel">
-      <circle cx={CENTER} cy={CENTER} r={OUTER_R} fill="none" stroke="#B08D57" strokeOpacity={0.5} />
-      <circle cx={CENTER} cy={CENTER} r={SIGN_RING_R} fill="none" stroke="#B08D57" strokeOpacity={0.35} />
-      <circle cx={CENTER} cy={CENTER} r={ASPECT_R} fill="none" stroke="#B08D57" strokeOpacity={0.2} />
+      <rect x={0} y={0} width={SIZE} height={SIZE} rx={8} fill="#1B2438" />
+      <circle cx={CENTER} cy={CENTER} r={OUTER_R} fill="none" stroke="#B08D57" strokeOpacity={0.65} />
+      <circle cx={CENTER} cy={CENTER} r={SIGN_RING_R} fill="none" stroke="#B08D57" strokeOpacity={0.5} />
+      <circle cx={CENTER} cy={CENTER} r={ASPECT_R} fill="none" stroke="#B08D57" strokeOpacity={0.35} />
 
       {/* Zodiac sign divisions */}
       {SIGN_ORDER.map((sign, i) => {
@@ -65,8 +66,8 @@ export default function ChartWheel({ chart }: { chart: ChartResponse }) {
         const mid = pointOnWheel(cuspLon + 15, ascLon, (OUTER_R + SIGN_RING_R) / 2);
         return (
           <g key={sign}>
-            <line x1={inner.x} y1={inner.y} x2={outer.x} y2={outer.y} stroke="#B08D57" strokeOpacity={0.4} />
-            <text x={mid.x} y={mid.y} fill="#8A6B3D" fontSize={14} textAnchor="middle" dominantBaseline="middle">
+            <line x1={inner.x} y1={inner.y} x2={outer.x} y2={outer.y} stroke="#B08D57" strokeOpacity={0.5} />
+            <text x={mid.x} y={mid.y} fill="#D9C08F" fontSize={14} textAnchor="middle" dominantBaseline="middle">
               {SIGN_SYMBOLS[sign]}
             </text>
           </g>
@@ -85,8 +86,8 @@ export default function ChartWheel({ chart }: { chart: ChartResponse }) {
             y1={a.y}
             x2={b.x}
             y2={b.y}
-            stroke="#1B2438"
-            strokeOpacity={0.3}
+            stroke="#E4DAC5"
+            strokeOpacity={0.45}
             strokeDasharray={label === "MC" ? "4 3" : undefined}
           />
         );
@@ -94,7 +95,7 @@ export default function ChartWheel({ chart }: { chart: ChartResponse }) {
       {(Object.keys(anglePoints) as (keyof typeof anglePoints)[]).map((label) => {
         const p = pointOnWheel(anglePoints[label], ascLon, OUTER_R + 12);
         return (
-          <text key={label} x={p.x} y={p.y} fill="#2A3550" fontSize={11} textAnchor="middle" dominantBaseline="middle">
+          <text key={label} x={p.x} y={p.y} fill="#E4DAC5" fontSize={11} textAnchor="middle" dominantBaseline="middle">
             {label}
           </text>
         );
@@ -115,8 +116,8 @@ export default function ChartWheel({ chart }: { chart: ChartResponse }) {
             y1={p1.y}
             x2={p2.x}
             y2={p2.y}
-            stroke={harmonious ? "#B08D57" : "#8C3B2E"}
-            strokeOpacity={0.5}
+            stroke={harmonious ? "#B08D57" : "#C2705A"}
+            strokeOpacity={0.65}
             strokeWidth={aspect.aspect === "conjunction" ? 1.5 : 1}
           >
             <title>
@@ -137,7 +138,7 @@ export default function ChartWheel({ chart }: { chart: ChartResponse }) {
               {PLANET_SYMBOLS[planet.name] ?? planet.name.slice(0, 2)}
             </text>
             {planet.retrograde && (
-              <text x={p.x + 11} y={p.y - 9} fill="#8C3B2E" fontSize={9}>
+              <text x={p.x + 11} y={p.y - 9} fill="#D9836B" fontSize={9}>
                 ℞
               </text>
             )}

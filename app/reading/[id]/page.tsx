@@ -26,7 +26,7 @@ const TAB_META: Record<TabKey, { title: string; subtitle: string }> = {
   transits: { title: "Transits", subtitle: "Today's active transits to your natal chart" },
   synastry: { title: "Synastry", subtitle: "Compare your chart with another" },
   analysis: { title: "Analysis", subtitle: "A full reading of the nativity" },
-  ask: { title: "Ask the Astrologer", subtitle: "Chat about your chart" },
+  ask: { title: "Chat with the Astrologer", subtitle: "Chat about your chart" },
 };
 
 function ReadingPageInner() {
