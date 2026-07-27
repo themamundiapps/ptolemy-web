@@ -13,16 +13,19 @@ import type { BirthData } from "@/lib/types";
 
 const PILLARS = [
   {
+    degree: "1°",
     num: "Doctrine",
     title: "True to the sources",
     body: "Interpretations drawn from Ptolemy's Tetrabiblos and Valens' Anthologies — no blending with modern psychological astrology.",
   },
   {
+    degree: "2°",
     num: "Method",
     title: "Rules, not intuition",
     body: "Whole sign houses, Ptolemaic orbs, seven classical planets. One consistent technical system throughout, no shortcuts.",
   },
   {
+    degree: "3°",
     num: "Application",
     title: "Elections and temperament",
     body: "From the natal chart to traditional electional astrology — choose the right moment by the same criteria the ancients used.",
@@ -132,33 +135,48 @@ export default function LandingPage() {
         </section>
 
       <section id="pillars" className="border-y border-line">
-        <div className="mx-auto grid max-w-5xl gap-y-10 px-6 py-14 sm:grid-cols-3 sm:px-10">
-          {PILLARS.map((p, i) => (
-            <div key={p.num} className={`px-0 sm:px-8 ${i > 0 ? "sm:border-l sm:border-line" : ""}`}>
-              <div className="mb-3.5 font-cinzel text-xs tracking-[0.15em] text-bronze-dark">{p.num}</div>
-              <h3 className="mb-3 font-cinzel text-[19px] font-semibold">{p.title}</h3>
-              <p className="font-crimson text-[15.5px] leading-relaxed text-ink-2">{p.body}</p>
-            </div>
-          ))}
+        <div className="mx-auto max-w-5xl px-6 py-16 sm:px-10">
+          <div className="border-t border-line">
+            {PILLARS.map((p) => (
+              <div
+                key={p.num}
+                className="grid gap-2 border-b border-line py-8 sm:grid-cols-[56px_1fr_1.3fr] sm:items-baseline sm:gap-10 sm:py-10"
+              >
+                <span className="font-cinzel text-2xl text-bronze-dark">{p.degree}</span>
+                <div>
+                  <div className="mb-1.5 font-cinzel text-xs tracking-[0.15em] text-terracotta">{p.num}</div>
+                  <h3 className="font-cinzel text-[19px] font-semibold">{p.title}</h3>
+                </div>
+                <p className="font-crimson text-[15.5px] leading-relaxed text-ink-2">{p.body}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
-      <section id="process" className="mx-auto max-w-5xl px-6 py-20 text-center sm:px-10">
-        <h2 className="font-cinzel text-3xl font-semibold">How it works</h2>
-        <p className="mt-2 font-cormorant text-lg italic text-ink-2">
-          Three steps to a source-grounded reading
-        </p>
-        <div className="mt-14 grid gap-11 text-left sm:grid-cols-3">
-          {STEPS.map((s) => (
-            <div key={s.roman}>
-              <span className="mb-4 block font-cinzel text-2xl tracking-[0.05em] text-terracotta">
-                {s.roman}
-              </span>
-              <div className="mb-4 h-px bg-line" />
-              <h4 className="mb-2.5 font-cinzel text-[17px] font-semibold">{s.title}</h4>
-              <p className="font-crimson text-[15px] text-ink-2">{s.body}</p>
-            </div>
-          ))}
+      <section id="process" className="mx-auto max-w-5xl px-6 py-20 sm:px-10">
+        <div className="text-center">
+          <h2 className="font-cinzel text-3xl font-semibold">How it works</h2>
+          <p className="mt-2 font-cormorant text-lg italic text-ink-2">
+            Three steps to a source-grounded reading
+          </p>
+        </div>
+
+        <div className="relative mt-16">
+          <div className="absolute left-6 top-0 bottom-0 w-px bg-line sm:left-0 sm:right-0 sm:top-6 sm:bottom-auto sm:h-px sm:w-auto" />
+          <div className="grid gap-10 sm:grid-cols-3 sm:gap-8">
+            {STEPS.map((s) => (
+              <div key={s.roman} className="relative flex gap-5 sm:block sm:text-center">
+                <span className="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-bronze-dark bg-parchment font-cinzel text-sm text-bronze-dark sm:mx-auto">
+                  {s.roman}
+                </span>
+                <div className="sm:mt-6">
+                  <h4 className="mb-2 font-cinzel text-[17px] font-semibold">{s.title}</h4>
+                  <p className="font-crimson text-[15px] text-ink-2">{s.body}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
