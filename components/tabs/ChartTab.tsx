@@ -10,7 +10,7 @@ import {
   fetchPlanetInHouse,
   fetchPlanetInSign,
 } from "@/lib/api";
-import { ASPECT_SYMBOLS, PLANET_ORDER, PLANET_SYMBOLS, dignityLabel, formatDegree } from "@/lib/astro";
+import { ASPECT_SYMBOLS, PLANET_ORDER, PLANET_SYMBOLS, dignityLabel, formatDegree, oppositePoint } from "@/lib/astro";
 import type { ChartResponse, Interpretation } from "@/lib/types";
 
 type ModalTarget =
@@ -65,6 +65,9 @@ export default function ChartTab({ chart }: { chart: ChartResponse }) {
     position: chart.planets[name],
   }));
 
+  const descendant = oppositePoint(chart.ascendant);
+  const ic = oppositePoint(chart.midheaven);
+
   return (
     <div>
       <div className="data-card">
@@ -80,9 +83,21 @@ export default function ChartTab({ chart }: { chart: ChartResponse }) {
           </div>
         </div>
         <div className="data-row">
+          <div className="d-label">DSC</div>
+          <div className="d-main">
+            {descendant.sign} {formatDegree(descendant.sign_longitude)} · House {descendant.house}
+          </div>
+        </div>
+        <div className="data-row">
           <div className="d-label">MC</div>
           <div className="d-main">
             {chart.midheaven.sign} {formatDegree(chart.midheaven.sign_longitude)} · House {chart.midheaven.house}
+          </div>
+        </div>
+        <div className="data-row">
+          <div className="d-label">IC</div>
+          <div className="d-main">
+            {ic.sign} {formatDegree(ic.sign_longitude)} · House {ic.house}
           </div>
         </div>
       </div>
@@ -92,16 +107,21 @@ export default function ChartTab({ chart }: { chart: ChartResponse }) {
         {planetRows.map((row) => (
           <button
             type="button"
-            className="data-row"
+            className="data-row planet-row"
             key={row.name}
             onClick={() => openModal({ kind: "planet", planet: row.name, sign: row.position.sign, house: row.position.house })}
           >
-            <div className="d-label">{row.symbol}</div>
-            <div className="d-main">
-              {row.name} — {row.position.sign} {formatDegree(row.position.sign_longitude)}
-              {row.position.retrograde ? " ℞" : ""} · House {row.position.house}
-            </div>
-            {row.position.dignities.length > 0 && <div className="d-tag">{dignityLabel(row.position.dignities)}</div>}
+            <span className="d-glyph">{row.symbol}</span>
+            <span className="d-col d-col-name">{row.name}</span>
+            <span className="d-col d-col-sign">
+              {row.position.sign} {formatDegree(row.position.sign_longitude)}
+              {row.position.retrograde ? " ℞" : ""}
+            </span>
+            <span className="d-col d-col-house">House {row.position.house}</span>
+            <span className="d-col d-col-dignity">
+              {row.position.dignities.length > 0 ? dignityLabel(row.position.dignities) : ""}
+            </span>
+            <span className="d-chevron">›</span>
           </button>
         ))}
       </div>

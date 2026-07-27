@@ -91,6 +91,19 @@ export function dignitySummary(planets: Record<string, ZodiacPosition>): {
   return { dignified, peregrine };
 }
 
+/** The point 180° opposite a given position (e.g. Descendant from the
+ * Ascendant, IC from the Midheaven) -- same distance-from-house-cusp logic,
+ * six whole-sign houses further round. */
+export function oppositePoint(pos: ZodiacPosition): { sign: string; sign_longitude: number; house: number } {
+  const oppositeLongitude = (pos.longitude + 180) % 360;
+  const signIndex = Math.floor(oppositeLongitude / 30) % 12;
+  return {
+    sign: SIGN_ORDER[signIndex],
+    sign_longitude: oppositeLongitude % 30,
+    house: ((pos.house + 5) % 12) + 1,
+  };
+}
+
 /** Whole-sign houses a planet rules, given the Ascendant's sign -- house N's
  * sign is the Nth sign counting from the Ascendant. */
 export function housesRuledBy(planet: string, ascendantSign: string): number[] {
