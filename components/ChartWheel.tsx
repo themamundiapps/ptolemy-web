@@ -1,13 +1,15 @@
 import type { ChartResponse } from "@/lib/types";
 import { ASPECT_SYMBOLS, HARMONIOUS_ASPECTS, PLANET_ORDER, PLANET_SYMBOLS, SIGN_ORDER, SIGN_SYMBOLS } from "@/lib/astro";
 
-const SIZE = 400;
+const SIZE = 560;
 const CENTER = SIZE / 2;
-const OUTER_R = 188;
-const SIGN_RING_R = 156;
-const PLANET_R = 128;
-const PLANET_R_INNER = 104;
-const ASPECT_R = 90;
+const OUTER_R = 232;
+const SIGN_RING_R = 198;
+const HOUSE_NUM_R = 178;
+const PLANET_R = 152;
+const PLANET_R_INNER = 124;
+const ASPECT_R = 96;
+const ANGLE_LABEL_R = OUTER_R + 18;
 
 function pointOnWheel(longitude: number, ascLongitude: number, radius: number) {
   const thetaDeg = 180 + (longitude - ascLongitude);
@@ -21,6 +23,9 @@ function pointOnWheel(longitude: number, ascLongitude: number, radius: number) {
 export default function ChartWheel({ chart }: { chart: ChartResponse }) {
   const ascLon = chart.ascendant.longitude;
   const mcLon = chart.midheaven.longitude;
+  // Whole-sign houses: house cusps fall on sign boundaries, starting at the
+  // Ascendant's own sign (house 1), so every sign wedge doubles as a house.
+  const ascSignStart = Math.floor(ascLon / 30) * 30;
 
   const anglePoints = {
     ASC: ascLon,
@@ -52,23 +57,36 @@ export default function ChartWheel({ chart }: { chart: ChartResponse }) {
   }
 
   return (
-    <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="w-full max-w-md mx-auto" role="img" aria-label="Natal chart wheel">
-      <rect x={0} y={0} width={SIZE} height={SIZE} rx={8} fill="#1B2438" />
+    <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="mx-auto block w-full" role="img" aria-label="Natal chart wheel">
+      <rect x={0} y={0} width={SIZE} height={SIZE} rx={10} fill="#1B2438" />
       <circle cx={CENTER} cy={CENTER} r={OUTER_R} fill="none" stroke="#B08D57" strokeOpacity={0.65} />
       <circle cx={CENTER} cy={CENTER} r={SIGN_RING_R} fill="none" stroke="#B08D57" strokeOpacity={0.5} />
       <circle cx={CENTER} cy={CENTER} r={ASPECT_R} fill="none" stroke="#B08D57" strokeOpacity={0.35} />
 
-      {/* Zodiac sign divisions */}
+      {/* House/sign cusp spokes, sign glyphs, and house numbers */}
       {SIGN_ORDER.map((sign, i) => {
         const cuspLon = i * 30;
+        const houseNum = (((cuspLon - ascSignStart) / 30) % 12 + 12) % 12 + 1;
         const outer = pointOnWheel(cuspLon, ascLon, OUTER_R);
-        const inner = pointOnWheel(cuspLon, ascLon, SIGN_RING_R);
-        const mid = pointOnWheel(cuspLon + 15, ascLon, (OUTER_R + SIGN_RING_R) / 2);
+        const inner = pointOnWheel(cuspLon, ascLon, ASPECT_R);
+        const signMid = pointOnWheel(cuspLon + 15, ascLon, (OUTER_R + SIGN_RING_R) / 2);
+        const housePos = pointOnWheel(cuspLon + 5, ascLon, HOUSE_NUM_R);
         return (
           <g key={sign}>
-            <line x1={inner.x} y1={inner.y} x2={outer.x} y2={outer.y} stroke="#B08D57" strokeOpacity={0.5} />
-            <text x={mid.x} y={mid.y} fill="#D9C08F" fontSize={14} textAnchor="middle" dominantBaseline="middle">
+            <line x1={inner.x} y1={inner.y} x2={outer.x} y2={outer.y} stroke="#B08D57" strokeOpacity={0.28} />
+            <text x={signMid.x} y={signMid.y} fill="#D9C08F" fontSize={19} textAnchor="middle" dominantBaseline="middle">
               {SIGN_SYMBOLS[sign]}
+            </text>
+            <text
+              x={housePos.x}
+              y={housePos.y}
+              fill="#E4DAC5"
+              fillOpacity={0.6}
+              fontSize={13}
+              textAnchor="middle"
+              dominantBaseline="middle"
+            >
+              {houseNum}
             </text>
           </g>
         );
@@ -93,9 +111,9 @@ export default function ChartWheel({ chart }: { chart: ChartResponse }) {
         );
       })}
       {(Object.keys(anglePoints) as (keyof typeof anglePoints)[]).map((label) => {
-        const p = pointOnWheel(anglePoints[label], ascLon, OUTER_R + 12);
+        const p = pointOnWheel(anglePoints[label], ascLon, ANGLE_LABEL_R);
         return (
-          <text key={label} x={p.x} y={p.y} fill="#E4DAC5" fontSize={11} textAnchor="middle" dominantBaseline="middle">
+          <text key={label} x={p.x} y={p.y} fill="#E4DAC5" fontSize={14} textAnchor="middle" dominantBaseline="middle">
             {label}
           </text>
         );
@@ -133,12 +151,12 @@ export default function ChartWheel({ chart }: { chart: ChartResponse }) {
         const p = pointOnWheel(planet.longitude, ascLon, radius);
         return (
           <g key={planet.name}>
-            <circle cx={p.x} cy={p.y} r={11} fill="#E4DAC5" stroke="#B08D57" strokeOpacity={0.8} />
-            <text x={p.x} y={p.y} fill="#1B2438" fontSize={13} textAnchor="middle" dominantBaseline="middle">
+            <circle cx={p.x} cy={p.y} r={15} fill="#E4DAC5" stroke="#B08D57" strokeOpacity={0.8} />
+            <text x={p.x} y={p.y} fill="#1B2438" fontSize={17} textAnchor="middle" dominantBaseline="middle">
               {PLANET_SYMBOLS[planet.name] ?? planet.name.slice(0, 2)}
             </text>
             {planet.retrograde && (
-              <text x={p.x + 11} y={p.y - 9} fill="#D9836B" fontSize={9}>
+              <text x={p.x + 14} y={p.y - 11} fill="#D9836B" fontSize={11}>
                 ℞
               </text>
             )}

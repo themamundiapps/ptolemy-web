@@ -64,18 +64,18 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 40px;
+  padding: 24px 40px;
   border-bottom: 1px solid var(--rule);
 }
 .pt-app nav.top .brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   text-decoration: none;
 }
 .pt-app nav.top .brand .glyph {
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
   border: 1px solid var(--bronze);
   border-radius: 50%;
   display: flex;
@@ -83,24 +83,24 @@ body {
   justify-content: center;
   color: var(--bronze-deep);
   font-family: var(--font-cinzel), serif;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
 }
 .pt-app nav.top .brand .name {
-  font-size: 1.05rem;
+  font-size: 1.2rem;
   color: var(--ink);
 }
 .pt-app nav.top .brand .sub {
   display: block;
   font-family: var(--font-cinzel), serif;
-  font-size: 0.55rem;
+  font-size: 0.6rem;
   letter-spacing: 0.16em;
   color: var(--ink-soft);
   margin-top: 1px;
 }
 .pt-app nav.top .links {
   display: flex;
-  gap: 34px;
-  font-size: 0.95rem;
+  gap: 38px;
+  font-size: 1.05rem;
   color: var(--ink-soft);
 }
 .pt-app nav.top .links a {
@@ -114,20 +114,20 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 0.9rem;
+  font-size: 1rem;
   color: var(--ink-soft);
   text-decoration: none;
 }
 .pt-app nav.top .account .av {
-  width: 26px;
-  height: 26px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: var(--ink);
   color: var(--parchment);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   font-family: var(--font-cinzel), serif;
 }
 

@@ -110,22 +110,21 @@ function ReadingPageInner() {
     <div className="pt-app min-h-screen">
       <AppNav />
 
-      <div className="read-header" style={{ paddingBottom: 0 }}>
-        <div className="eyebrow">A Reading of the Nativity</div>
-        <h1 style={{ fontSize: "1.7rem" }}>
-          {saved.birthData.name ? `The Chart of ${saved.birthData.name}` : "Your Chart"}
-        </h1>
-        <div className="meta">
-          {saved.birthData.date} · {saved.birthData.time} · {saved.birthData.place_name}
-        </div>
-        <span className="sect-badge">
-          {saved.chart.sect === "diurnal" ? "Diurnal" : "Nocturnal"} Sect · {saved.chart.ascendant.sign} Ascendant
-        </span>
-      </div>
-
       <div className="app-shell">
         <Sidebar active={tab} onSelect={handleSelectTab} />
         <main className="app-main">
+          <div className="read-header" style={{ maxWidth: 880, margin: "0 auto", padding: "0 0 20px" }}>
+            <div className="eyebrow">A Reading of the Nativity</div>
+            <h1 style={{ fontSize: "1.7rem" }}>
+              {saved.birthData.name ? `The Chart of ${saved.birthData.name}` : "Your Chart"}
+            </h1>
+            <div className="meta">
+              {saved.birthData.date} · {saved.birthData.time} · {saved.birthData.place_name}
+            </div>
+            <span className="sect-badge">
+              {saved.chart.sect === "diurnal" ? "Diurnal" : "Nocturnal"} Sect · {saved.chart.ascendant.sign} Ascendant
+            </span>
+          </div>
           <div className="tab-header">
             <h1>{meta.title}</h1>
             <p>{meta.subtitle}</p>
