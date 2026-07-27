@@ -18,15 +18,6 @@ export default function Nav({ onSignInClick }: { onSignInClick: () => void }) {
         <a href="/#pillars" className="border-b border-transparent pb-1 hover:border-bronze-dark">
           Features
         </a>
-        <Link href="/chart" className="border-b border-transparent pb-1 hover:border-bronze-dark">
-          Chart
-        </Link>
-        <a href="/#process" className="border-b border-transparent pb-1 hover:border-bronze-dark">
-          Guide
-        </a>
-        <a href="/#pricing" className="border-b border-transparent pb-1 hover:border-bronze-dark">
-          Pricing
-        </a>
       </div>
       <button
         onClick={onSignInClick}
