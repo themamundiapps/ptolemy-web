@@ -21,9 +21,6 @@ export default function Nav({ onSignInClick }: { onSignInClick: () => void }) {
         <a href="/#process" className="border-b border-transparent pb-1 hover:border-bronze-dark">
           Process
         </a>
-        <a href="/#pricing" className="border-b border-transparent pb-1 hover:border-bronze-dark">
-          Pricing
-        </a>
         <Link href="/chart" className="border-b border-transparent pb-1 hover:border-bronze-dark">
           Chart
         </Link>

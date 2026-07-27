@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import Nav from "@/components/Nav";
-import PricingCard from "@/components/PricingCard";
 import PaywallModal from "@/components/PaywallModal";
 import BirthDataForm from "@/components/BirthDataForm";
 import Footer from "@/components/Footer";
@@ -180,45 +180,19 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="pricing" className="bg-parchment-2 px-6 py-24">
-        <h2 className="text-center font-cinzel text-3xl font-semibold text-ink">Pricing</h2>
-        <div className="mx-auto mt-12 grid max-w-5xl gap-6 sm:grid-cols-3">
-          <PricingCard
-            title="Free"
-            price="$0"
-            features={["5 chart readings", "Basic natal chart", "Chat with 5 messages"]}
-          />
-          <PricingCard
-            title="Pro — Monthly"
-            price="$4.99"
-            period="month"
-            features={[
-              "Unlimited chat",
-              "Full natal chart",
-              "Electional astrology",
-              "Synastry",
-              "Temperament",
-              "Daily transits",
-            ]}
-            onSelect={() => setPaywallOpen(true)}
-          />
-          <PricingCard
-            title="Pro — Yearly"
-            price="$19.99"
-            period="year"
-            badge="Best value"
-            highlighted
-            features={[
-              "Everything in Monthly",
-              "Full natal chart",
-              "Electional astrology",
-              "Synastry",
-              "Temperament",
-              "Daily transits",
-            ]}
-            onSelect={() => setPaywallOpen(true)}
-          />
-        </div>
+      <section className="border-t border-line bg-parchment-2 px-6 py-24 text-center">
+        <p className="font-ebgaramond text-xs uppercase tracking-[0.35em] text-terracotta">
+          Cast in minutes
+        </p>
+        <h2 className="mx-auto mt-4 max-w-xl font-cinzel text-3xl font-semibold text-ink">
+          See what the sources say about your chart
+        </h2>
+        <Link
+          href="/chart"
+          className="mt-10 inline-block border border-ink bg-ink px-8 py-3 font-cinzel text-[13px] uppercase tracking-[0.12em] text-parchment transition-colors hover:bg-ink-2"
+        >
+          Discover Your Chart
+        </Link>
       </section>
 
       <Footer />
