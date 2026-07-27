@@ -11,14 +11,16 @@ export default function ChatDock({
   messages,
   onMessagesChange,
   remaining,
+  initialInput = "",
 }: {
   birth: BirthData;
   userId: string;
   messages: ChatMessage[];
   onMessagesChange: (messages: ChatMessage[]) => void;
   remaining: number;
+  initialInput?: string;
 }) {
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState(initialInput);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

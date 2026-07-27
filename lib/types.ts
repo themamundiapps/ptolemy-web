@@ -74,6 +74,11 @@ export interface TransitsResponse {
   moon_natal_aspect: Transit | null;
 }
 
+export interface Interpretation {
+  body: string;
+  citation: string;
+}
+
 export interface HouseLordEntry {
   house_number: number;
   sign: string;

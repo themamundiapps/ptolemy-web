@@ -1013,3 +1013,194 @@ body {
   cursor: pointer;
   padding: 0;
 }
+
+/* ---- clickable data rows (open a detail modal) ---- */
+.pt-app button.data-row {
+  border: none;
+  border-top: 1px solid var(--rule);
+  background: none;
+  width: 100%;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+.pt-app button.data-row:first-of-type {
+  border-top: none;
+}
+.pt-app button.data-row:hover {
+  background: var(--parchment-deep);
+}
+
+/* ---- detail modal ---- */
+.pt-app .modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(30, 42, 58, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+}
+.pt-app .modal-panel {
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  max-width: 520px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 26px 28px;
+}
+.pt-app .modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+  gap: 12px;
+}
+.pt-app .modal-header h3 {
+  margin: 0;
+  font-family: var(--font-cormorant), serif;
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+.pt-app .modal-close {
+  border: none;
+  background: none;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--ink-soft);
+  cursor: pointer;
+  padding: 0;
+  flex: none;
+}
+.pt-app .modal-close:hover {
+  color: var(--ink);
+}
+.pt-app .modal-body p {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--ink-soft);
+  margin: 0 0 14px;
+}
+.pt-app .modal-section {
+  margin-bottom: 18px;
+}
+.pt-app .modal-section:last-child {
+  margin-bottom: 0;
+}
+.pt-app .modal-section-label {
+  font-family: var(--font-cinzel), serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--bronze-deep);
+  margin-bottom: 6px;
+  display: block;
+}
+.pt-app .modal-citation {
+  font-style: italic;
+  font-size: 0.85rem;
+  color: var(--bronze-deep);
+  border-top: 1px dashed var(--rule);
+  padding-top: 12px;
+  margin-top: 4px;
+}
+
+/* ---- Consult the Astrologer banner (hub) ---- */
+.pt-app .consult-banner {
+  grid-column: 1 / -1;
+  background: #1b2438;
+  color: var(--parchment);
+  border-radius: 2px;
+  padding: 40px 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+.pt-app .consult-banner .cb-left {
+  flex: 1 1 320px;
+  min-width: 260px;
+}
+.pt-app .consult-banner .cb-left h2 {
+  font-family: var(--font-cormorant), serif;
+  font-size: 2.2rem;
+  font-weight: 500;
+  margin: 0 0 10px;
+  color: var(--parchment);
+}
+.pt-app .consult-banner .cb-left p {
+  font-family: var(--font-cormorant), serif;
+  font-style: italic;
+  font-size: 1.08rem;
+  line-height: 1.6;
+  color: #c7d0dc;
+  margin: 0;
+  max-width: 440px;
+}
+.pt-app .consult-banner .cb-right {
+  flex: 1 1 340px;
+  min-width: 280px;
+  max-width: 420px;
+}
+.pt-app .consult-banner .cb-input {
+  display: flex;
+  border: 1px solid var(--bronze);
+  border-radius: 2px;
+  overflow: hidden;
+  background: rgba(242, 233, 216, 0.05);
+}
+.pt-app .consult-banner .cb-input input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  padding: 14px 16px;
+  font-family: var(--font-crimson), serif;
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--parchment);
+  outline: none;
+}
+.pt-app .consult-banner .cb-input input::placeholder {
+  color: #8b96a8;
+}
+.pt-app .consult-banner .cb-input button {
+  border: none;
+  background: var(--bronze);
+  color: #1b2438;
+  font-family: var(--font-cinzel), serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0 26px;
+  cursor: pointer;
+  flex: none;
+}
+.pt-app .consult-banner .cb-input button:hover {
+  background: var(--bronze-deep);
+  color: var(--parchment);
+}
+.pt-app .consult-banner .cb-remaining {
+  margin-top: 10px;
+  font-size: 0.78rem;
+  color: #8b96a8;
+  text-align: right;
+}
+@media (max-width: 700px) {
+  .pt-app .consult-banner {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 28px 24px;
+  }
+  .pt-app .consult-banner .cb-right {
+    max-width: none;
+  }
+  .pt-app .consult-banner .cb-remaining {
+    text-align: left;
+  }
+}

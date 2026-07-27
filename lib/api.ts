@@ -5,6 +5,7 @@ import type {
   CityResult,
   ElectionalResult,
   HouseLordEntry,
+  Interpretation,
   SynastryPersonInput,
   SynastryResult,
   TemperamentResult,
@@ -111,6 +112,34 @@ export function fetchSynastry(
     method: "POST",
     body: JSON.stringify({ person_a: personA, person_b: personB, user_id: userId ?? null }),
   });
+}
+
+export function fetchPlanetInSign(planet: string, sign: string): Promise<Interpretation> {
+  return request(`/api/v1/interpretations/planet-sign?planet=${encodeURIComponent(planet)}&sign=${encodeURIComponent(sign)}`);
+}
+
+export function fetchPlanetInHouse(planet: string, house: number): Promise<Interpretation> {
+  return request(`/api/v1/interpretations/planet-house?planet=${encodeURIComponent(planet)}&house=${house}`);
+}
+
+export function fetchLotInterpretation(lot: string, sign: string, house: number): Promise<Interpretation> {
+  return request(
+    `/api/v1/interpretations/lot?lot=${encodeURIComponent(lot)}&sign=${encodeURIComponent(sign)}&house=${house}`,
+  );
+}
+
+export function fetchAspectInterpretation(
+  planetA: string,
+  planetB: string,
+  aspectType: string,
+): Promise<Interpretation> {
+  return request(
+    `/api/v1/interpretations/aspect?planet_a=${encodeURIComponent(planetA)}&planet_b=${encodeURIComponent(planetB)}&aspect_type=${encodeURIComponent(aspectType)}`,
+  );
+}
+
+export function fetchHouseLordInterpretation(fromHouse: number, toHouse: number): Promise<Interpretation> {
+  return request(`/api/v1/interpretations/house-lord?from_house=${fromHouse}&to_house=${toHouse}`);
 }
 
 export function fetchChartAnalysis(birth: BirthData, userId?: string): Promise<{ analysis: string }> {

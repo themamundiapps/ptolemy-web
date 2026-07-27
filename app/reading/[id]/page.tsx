@@ -38,6 +38,7 @@ function ReadingPageInner() {
   const [userId, setUserId] = useState("");
   const [tab, setTab] = useState<TabKey>(DEFAULT_TAB);
   const [remaining, setRemaining] = useState(FREE_MESSAGE_LIMIT);
+  const [initialQuestion, setInitialQuestion] = useState("");
 
   useEffect(() => {
     setUserId(getGoogleUser()?.id ?? getOrCreateDeviceId());
@@ -48,6 +49,19 @@ function ReadingPageInner() {
     const requested = searchParams.get("tab");
     if (isTabKey(requested)) setTab(requested);
   }, [searchParams]);
+
+  // Consumes a one-time ?q= carried over from the Hub's "Ask the Astrologer"
+  // banner, then strips it from the URL so revisiting the Ask tab later
+  // doesn't keep re-populating the input with a stale question.
+  useEffect(() => {
+    const q = searchParams.get("q");
+    if (!q) return;
+    setInitialQuestion(q);
+    const next = new URLSearchParams(searchParams.toString());
+    next.delete("q");
+    router.replace(`/reading/${params.id}?${next.toString()}`, { scroll: false });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     setRemaining(Math.max(FREE_MESSAGE_LIMIT - totalUserMessageCount(), 0));
@@ -131,6 +145,7 @@ function ReadingPageInner() {
                 messages={saved.messages}
                 onMessagesChange={handleMessagesChange}
                 remaining={remaining}
+                initialInput={initialQuestion}
               />
             )}
           </div>
