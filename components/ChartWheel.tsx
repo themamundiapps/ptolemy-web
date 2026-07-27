@@ -1,5 +1,5 @@
 import type { ChartResponse } from "@/lib/types";
-import { ASPECT_SYMBOLS, HARMONIOUS_ASPECTS, PLANET_ORDER, PLANET_SYMBOLS, SIGN_ORDER, SIGN_SYMBOLS } from "@/lib/astro";
+import { ASPECT_SYMBOLS, HARMONIOUS_ASPECTS, PLANET_ORDER, SIGN_ORDER, SIGN_SYMBOLS } from "@/lib/astro";
 
 const SIZE = 560;
 const CENTER = SIZE / 2;
@@ -21,6 +21,84 @@ function pointOnWheel(longitude: number, ascLongitude: number, radius: number) {
     x: CENTER + radius * Math.cos(thetaRad),
     y: CENTER - radius * Math.sin(thetaRad),
   };
+}
+
+/**
+ * Hand-drawn planet glyphs, scoped to the wheel only. The Unicode symbols
+ * (used everywhere else the app shows a planet, e.g. the Chart tab's list)
+ * are at the mercy of whatever font/emoji set the browser substitutes them
+ * with, which on some systems renders them in colors and weights that clash
+ * with the wheel's ink-and-bronze palette. Drawing them as plain strokes
+ * keeps them exactly on-palette and independent of any font.
+ */
+function PlanetGlyph({ name, x, y, color }: { name: string; x: number; y: number; color: string }) {
+  const stroke = { stroke: color, fill: "none", strokeWidth: 1.5, strokeLinecap: "round" as const };
+  let content: React.ReactNode;
+  switch (name) {
+    case "Sun":
+      content = (
+        <>
+          <circle r={5.5} {...stroke} />
+          <circle r={1.4} fill={color} />
+        </>
+      );
+      break;
+    case "Moon":
+      content = <path d="M 2,-6.5 A 6.5,6.5 0 1 0 2,6.5 A 4.6,6.5 0 1 1 2,-6.5 Z" fill={color} />;
+      break;
+    case "Mercury":
+      content = (
+        <g {...stroke}>
+          <path d="M -2.3,-7.3 a 2.3,2.3 0 1 1 4.6,0" />
+          <circle cy={-2.3} r={3.6} />
+          <line x1={0} y1={1.3} x2={0} y2={7} />
+          <line x1={-2.7} y1={4.2} x2={2.7} y2={4.2} />
+        </g>
+      );
+      break;
+    case "Venus":
+      content = (
+        <g {...stroke}>
+          <circle cy={-2.8} r={3.8} />
+          <line x1={0} y1={1} x2={0} y2={7.3} />
+          <line x1={-2.9} y1={4.2} x2={2.9} y2={4.2} />
+        </g>
+      );
+      break;
+    case "Mars":
+      content = (
+        <g {...stroke} strokeLinejoin="round">
+          <circle cx={-1.6} cy={1.8} r={3.8} />
+          <line x1={0.9} y1={-0.6} x2={6.5} y2={-6.5} />
+          <polyline points="2.6,-6.5 6.5,-6.5 6.5,-2.6" />
+        </g>
+      );
+      break;
+    case "Jupiter":
+      content = (
+        <g {...stroke}>
+          <path d="M -6.6,-6 q -0.3,4.6 4.2,4.6 h 3.4" />
+          <line x1={2.6} y1={-7} x2={2.6} y2={7} />
+        </g>
+      );
+      break;
+    case "Saturn":
+      content = (
+        <g {...stroke}>
+          <line x1={-3.6} y1={-7} x2={-3.6} y2={1.5} />
+          <line x1={-6.2} y1={-4.4} x2={-1} y2={-4.4} />
+          <path d="M -3.6,-1 q -0.3,5 3.4,5 q 4,0 4,-3.6 q 0,-3.6 -3.7,-3.4" />
+        </g>
+      );
+      break;
+    default:
+      content = (
+        <text fill={color} fontSize={13} textAnchor="middle" dominantBaseline="middle">
+          {name.slice(0, 2)}
+        </text>
+      );
+  }
+  return <g transform={`translate(${x},${y})`}>{content}</g>;
 }
 
 /**
@@ -211,9 +289,7 @@ export default function ChartWheel({ chart }: { chart: ChartResponse }) {
               <line x1={truePoint.x} y1={truePoint.y} x2={p.x} y2={p.y} stroke="#B08D57" strokeOpacity={0.35} strokeWidth={0.75} />
             )}
             <circle cx={p.x} cy={p.y} r={15} fill="#E4DAC5" stroke="#B08D57" strokeOpacity={0.8} />
-            <text x={p.x} y={p.y} fill="#1B2438" fontSize={17} textAnchor="middle" dominantBaseline="middle">
-              {PLANET_SYMBOLS[name] ?? name.slice(0, 2)}
-            </text>
+            <PlanetGlyph name={name} x={p.x} y={p.y} color="#1B2438" />
             {planet.retrograde && (
               <text x={p.x + 14} y={p.y - 11} fill="#D9836B" fontSize={11}>
                 ℞
