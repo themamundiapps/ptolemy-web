@@ -1,16 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Nav from "@/components/Nav";
 import PricingCard from "@/components/PricingCard";
 import PaywallModal from "@/components/PaywallModal";
 import BirthDataForm from "@/components/BirthDataForm";
-import ChartResults from "@/components/ChartResults";
 import Footer from "@/components/Footer";
-import { ApiError, fetchChartAnalysis, fetchChartPositions } from "@/lib/api";
-import { getGoogleUser } from "@/lib/auth";
-import { getOrCreateDeviceId } from "@/lib/storage";
-import type { BirthData, ChartResponse, ChatMessage } from "@/lib/types";
+import { ApiError, fetchChartPositions } from "@/lib/api";
+import { saveChart, setActiveChartId } from "@/lib/storage";
+import type { BirthData } from "@/lib/types";
 
 const PILLARS = [
   {
@@ -49,38 +48,22 @@ const STEPS = [
 ];
 
 export default function LandingPage() {
+  const router = useRouter();
   const [paywallOpen, setPaywallOpen] = useState(false);
-  const [userId, setUserId] = useState("");
-
   const [chartLoading, setChartLoading] = useState(false);
   const [chartError, setChartError] = useState<string | null>(null);
-  const [result, setResult] = useState<{ birth: BirthData; chart: ChartResponse } | null>(null);
-  const [analysis, setAnalysis] = useState<string | undefined>();
-  const [analysisLoading, setAnalysisLoading] = useState(false);
-  const [analysisError, setAnalysisError] = useState<string | null>(null);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-
-  useEffect(() => {
-    setUserId(getGoogleUser()?.id ?? getOrCreateDeviceId());
-  }, []);
 
   const handleCast = async (birth: BirthData) => {
     setChartLoading(true);
     setChartError(null);
     try {
       const chart = await fetchChartPositions(birth);
-      setResult({ birth, chart });
-      setMessages([]);
-      setAnalysis(undefined);
-      setAnalysisError(null);
-      setAnalysisLoading(true);
-      fetchChartAnalysis(birth, userId)
-        .then(({ analysis }) => setAnalysis(analysis))
-        .catch((e) => setAnalysisError(e instanceof ApiError ? e.message : "Could not generate a reading."))
-        .finally(() => setAnalysisLoading(false));
+      const id = crypto.randomUUID();
+      saveChart({ id, birthData: birth, chart, messages: [], createdAt: new Date().toISOString() });
+      setActiveChartId(id);
+      router.push("/hub");
     } catch (e) {
       setChartError(e instanceof ApiError ? e.message : "Something went wrong. Please try again.");
-    } finally {
       setChartLoading(false);
     }
   };
@@ -89,30 +72,7 @@ export default function LandingPage() {
     <div className="bg-parchment text-ink">
       <Nav onSignInClick={() => setPaywallOpen(true)} />
 
-      {result ? (
-        <section className="mx-auto max-w-5xl px-6 pb-20 pt-16 sm:px-10">
-          <div className="mb-10 text-center">
-            <h1 className="font-cinzel text-3xl font-semibold text-ink">
-              {result.birth.name ? `${result.birth.name}'s Chart` : "Your Chart"}
-            </h1>
-            <p className="mt-2 font-cormorant italic text-ink-2">
-              {result.birth.date} · {result.birth.time} · {result.birth.place_name}
-            </p>
-          </div>
-          <ChartResults
-            birth={result.birth}
-            chart={result.chart}
-            analysis={analysis}
-            analysisLoading={analysisLoading}
-            analysisError={analysisError}
-            messages={messages}
-            onMessagesChange={setMessages}
-            userId={userId}
-            onUpgradeClick={() => setPaywallOpen(true)}
-          />
-        </section>
-      ) : (
-        <section className="mx-auto max-w-5xl px-6 pb-16 pt-20 text-center sm:px-10">
+      <section className="mx-auto max-w-5xl px-6 pb-16 pt-20 text-center sm:px-10">
           <p className="mb-6 font-ebgaramond text-xs uppercase tracking-[0.35em] text-terracotta">
             After the Tetrabiblos and Valens&apos; Anthologies
           </p>
@@ -170,7 +130,6 @@ export default function LandingPage() {
             <p className="mt-6 text-center font-cormorant text-lg italic text-bronze-dark">Casting your chart…</p>
           )}
         </section>
-      )}
 
       <section id="pillars" className="border-y border-line">
         <div className="mx-auto grid max-w-5xl gap-y-10 px-6 py-14 sm:grid-cols-3 sm:px-10">

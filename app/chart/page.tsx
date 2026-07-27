@@ -7,7 +7,7 @@ import Footer from "@/components/Footer";
 import PaywallModal from "@/components/PaywallModal";
 import BirthDataForm from "@/components/BirthDataForm";
 import { ApiError, fetchChartPositions } from "@/lib/api";
-import { saveChart } from "@/lib/storage";
+import { saveChart, setActiveChartId } from "@/lib/storage";
 import type { BirthData } from "@/lib/types";
 
 const EXAMPLE_BIRTH: BirthData = {
@@ -39,7 +39,8 @@ function ChartFormPage() {
         messages: [],
         createdAt: new Date().toISOString(),
       });
-      router.push(`/chart/${id}`);
+      setActiveChartId(id);
+      router.push(`/reading/${id}`);
     } catch (e) {
       setError(e instanceof ApiError ? e.message : "Something went wrong. Please try again.");
       setLoading(false);

@@ -1,4 +1,4 @@
-import type { BirthData, ChartResponse, ChatMessage, CityResult } from "./types";
+import type { BirthData, ChartResponse, ChatMessage, CityResult, TransitsResponse } from "./types";
 
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://ptolemy-production.up.railway.app";
@@ -53,6 +53,13 @@ function birthPayload(birth: BirthData) {
 
 export function fetchChartPositions(birth: BirthData): Promise<ChartResponse> {
   return request("/api/v1/chart/positions", {
+    method: "POST",
+    body: JSON.stringify(birthPayload(birth)),
+  });
+}
+
+export function fetchTransits(birth: BirthData): Promise<TransitsResponse> {
+  return request("/api/v1/chart/transits", {
     method: "POST",
     body: JSON.stringify(birthPayload(birth)),
   });

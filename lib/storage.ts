@@ -2,6 +2,7 @@ import type { ChatMessage, SavedChart } from "./types";
 
 const CHARTS_KEY = "ptolemy:charts";
 const DEVICE_ID_KEY = "ptolemy:device_id";
+const ACTIVE_CHART_KEY = "ptolemy:active_chart_id";
 
 export const FREE_MESSAGE_LIMIT = 5;
 
@@ -38,6 +39,23 @@ export function appendMessage(id: string, message: ChatMessage) {
 
 export function userMessageCount(chart: SavedChart): number {
   return chart.messages.filter((m) => m.role === "user").length;
+}
+
+/** Totals user-sent chat messages across every saved chart on this device,
+ * mirroring the shared daily free-tier limit rather than a per-chart one. */
+export function totalUserMessageCount(): number {
+  return Object.values(readCharts()).reduce((sum, chart) => sum + userMessageCount(chart), 0);
+}
+
+/** The most recently cast chart, used by the Hub to know which natal chart
+ * to read transits and dignities against. */
+export function setActiveChartId(id: string) {
+  window.localStorage.setItem(ACTIVE_CHART_KEY, id);
+}
+
+export function getActiveChartId(): string | null {
+  if (typeof window === "undefined") return null;
+  return window.localStorage.getItem(ACTIVE_CHART_KEY);
 }
 
 /** Locally-generated id used to key the shared free-tier daily AI limit for

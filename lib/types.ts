@@ -50,6 +50,30 @@ export interface ChatMessage {
   content: string;
 }
 
+export interface Transit {
+  transiting_planet: string;
+  natal_planet: string;
+  aspect: string;
+  aspect_symbol: string;
+  orb: number;
+  is_applying: boolean;
+  interpretation_key: string;
+  is_harmonious: boolean;
+}
+
+export interface MoonPosition {
+  sign: string;
+  house: number;
+  phase_name: string;
+  phase_angle: number;
+}
+
+export interface TransitsResponse {
+  transits: Transit[];
+  moon_position: MoonPosition;
+  moon_natal_aspect: Transit | null;
+}
+
 export interface SavedChart {
   id: string;
   birthData: BirthData;
