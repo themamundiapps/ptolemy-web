@@ -1,4 +1,15 @@
-import type { BirthData, ChartResponse, ChatMessage, CityResult, TransitsResponse } from "./types";
+import type {
+  BirthData,
+  ChartResponse,
+  ChatMessage,
+  CityResult,
+  ElectionalResult,
+  HouseLordEntry,
+  SynastryPersonInput,
+  SynastryResult,
+  TemperamentResult,
+  TransitsResponse,
+} from "./types";
 
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://ptolemy-production.up.railway.app";
@@ -62,6 +73,43 @@ export function fetchTransits(birth: BirthData): Promise<TransitsResponse> {
   return request("/api/v1/chart/transits", {
     method: "POST",
     body: JSON.stringify(birthPayload(birth)),
+  });
+}
+
+export function fetchHouseLords(birth: BirthData): Promise<{ entries: HouseLordEntry[] }> {
+  return request("/api/v1/chart/house-lords", {
+    method: "POST",
+    body: JSON.stringify(birthPayload(birth)),
+  });
+}
+
+export function fetchTemperament(birth: BirthData): Promise<TemperamentResult> {
+  return request("/api/v1/temperament", {
+    method: "POST",
+    body: JSON.stringify(birthPayload(birth)),
+  });
+}
+
+export function fetchElectional(
+  birth: BirthData,
+  startDate: string,
+  endDate: string,
+  theme: string,
+): Promise<ElectionalResult> {
+  return request("/api/v1/electional", {
+    method: "POST",
+    body: JSON.stringify({ ...birthPayload(birth), start_date: startDate, end_date: endDate, theme }),
+  });
+}
+
+export function fetchSynastry(
+  personA: SynastryPersonInput,
+  personB: SynastryPersonInput,
+  userId?: string,
+): Promise<SynastryResult> {
+  return request("/api/v1/chart/synastry", {
+    method: "POST",
+    body: JSON.stringify({ person_a: personA, person_b: personB, user_id: userId ?? null }),
   });
 }
 

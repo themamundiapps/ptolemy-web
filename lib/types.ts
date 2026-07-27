@@ -74,6 +74,93 @@ export interface TransitsResponse {
   moon_natal_aspect: Transit | null;
 }
 
+export interface HouseLordEntry {
+  house_number: number;
+  sign: string;
+  lord: string;
+  lord_house: number;
+  lord_sign: string;
+  lord_dignity: string | null;
+  interpretation_key: string;
+}
+
+export interface TemperamentFactor {
+  label: string;
+  detail: string;
+}
+
+export interface TemperamentResult {
+  temperament: string;
+  qualities: string;
+  net_heat: number;
+  net_moisture: number;
+  description: string;
+  citation: string;
+  factors: TemperamentFactor[];
+}
+
+export interface ElectionalHit {
+  planet: string;
+  house: number;
+  house_name: string;
+  aspect: string;
+  mode: string;
+  orb: number;
+  score: number;
+  is_supporting: boolean;
+  is_cazimi: boolean;
+}
+
+export interface ElectionalDay {
+  date: string;
+  best_time: string;
+  quality_label: string;
+  reasons: string[];
+  hits: ElectionalHit[];
+}
+
+export interface ElectionalResult {
+  theme: string;
+  theme_label: string;
+  banner: string | null;
+  note: string | null;
+  days: ElectionalDay[];
+}
+
+export interface SynastryPersonInput {
+  name?: string;
+  date: string;
+  time: string;
+  latitude: number;
+  longitude: number;
+  tz_offset?: number;
+}
+
+export interface SynastryHouseOverlay {
+  planet: string;
+  from_chart: "A" | "B";
+  sign: string;
+  house: number;
+}
+
+export interface SynastryAspect {
+  planet_a: string;
+  from_chart: "A" | "B";
+  planet_b: string;
+  is_angle: boolean;
+  aspect: string;
+  angle: number;
+  orb: number;
+}
+
+export interface SynastryResult {
+  person_a_name: string;
+  person_b_name: string;
+  house_overlays: SynastryHouseOverlay[];
+  aspects: SynastryAspect[];
+  analysis: string;
+}
+
 export interface SavedChart {
   id: string;
   birthData: BirthData;

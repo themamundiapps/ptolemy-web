@@ -7,15 +7,40 @@ import { ApiError, fetchTransits } from "@/lib/api";
 import { getGoogleUser } from "@/lib/auth";
 import { FREE_MESSAGE_LIMIT, getActiveChartId, getChart, totalUserMessageCount } from "@/lib/storage";
 import { PLANET_SYMBOLS, dignitySummary, formatDegree } from "@/lib/astro";
+import type { TabKey } from "@/lib/tabs";
 import type { SavedChart, TransitsResponse } from "@/lib/types";
 
-const FEATURES = [
-  { glyph: "☌", name: "House Lords", desc: "144 interpretations — who rules each area of your life", pro: false },
-  { glyph: "⚕", name: "Temperament", desc: "Humoral complexion and recommendations from Tetrabiblos III", pro: true },
-  { glyph: "⚡", name: "Electional Astrology", desc: "Choose the best moment by the essential criteria", pro: true },
-  { glyph: "⚭", name: "Synastry", desc: "Interaspects and house overlay between two charts", pro: true },
+const FEATURES: { glyph: string; name: string; desc: string; pro: boolean; tab?: TabKey }[] = [
+  {
+    glyph: "☌",
+    name: "House Lords",
+    desc: "12 interpretations — who rules each area of your life",
+    pro: false,
+    tab: "house-lords",
+  },
+  {
+    glyph: "⚕",
+    name: "Temperament",
+    desc: "Humoral complexion and recommendations from Tetrabiblos III",
+    pro: true,
+    tab: "temperament",
+  },
+  {
+    glyph: "⚡",
+    name: "Electional Astrology",
+    desc: "Choose the best moment by the essential criteria",
+    pro: true,
+    tab: "electional",
+  },
+  {
+    glyph: "⚭",
+    name: "Synastry",
+    desc: "Interaspects and house overlay between two charts",
+    pro: true,
+    tab: "synastry",
+  },
   { glyph: "☀", name: "Annual Profections", desc: "Lord of the Year and the profection technique", pro: false },
-  { glyph: "✦", name: "Hellenistic Lots", desc: "Fortune, Spirit and the derived lots", pro: false },
+  { glyph: "✦", name: "Hellenistic Lots", desc: "Fortune, Spirit and the derived lots", pro: false, tab: "chart" },
 ];
 
 function formatToday(): string {
@@ -172,14 +197,30 @@ export default function HubPage() {
             <h3>What your chart still has to say</h3>
             <p style={{ marginBottom: 0 }}>Every traditional technique, in one place — no need to go looking.</p>
             <div className="feature-grid">
-              {FEATURES.map((f) => (
-                <div className="feature-tile" key={f.name}>
-                  {f.pro && <span className="pro">PRO</span>}
-                  <span className="glyph">{f.glyph}</span>
-                  <span className="name">{f.name}</span>
-                  <span className="desc">{f.desc}</span>
-                </div>
-              ))}
+              {FEATURES.map((f) => {
+                const inner = (
+                  <>
+                    {f.pro && <span className="pro">PRO</span>}
+                    <span className="glyph">{f.glyph}</span>
+                    <span className="name">{f.name}</span>
+                    <span className="desc">{f.desc}</span>
+                  </>
+                );
+                return f.tab && saved ? (
+                  <Link
+                    href={`/reading/${saved.id}?tab=${f.tab}`}
+                    className="feature-tile"
+                    style={{ cursor: "pointer", display: "block" }}
+                    key={f.name}
+                  >
+                    {inner}
+                  </Link>
+                ) : (
+                  <div className="feature-tile" key={f.name}>
+                    {inner}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -201,7 +242,7 @@ export default function HubPage() {
             )}
             {saved && (
               <div className="go-deeper" style={{ marginTop: 10 }}>
-                <Link href={`/reading/${saved.id}#s-dignities`} style={{ color: "inherit" }}>
+                <Link href={`/reading/${saved.id}?tab=analysis`} style={{ color: "inherit" }}>
                   Read the full dignities analysis →
                 </Link>
               </div>
@@ -213,10 +254,10 @@ export default function HubPage() {
             <div className="doc-list">
               {saved ? (
                 <>
-                  <Link href={`/reading/${saved.id}`}>
+                  <Link href={`/reading/${saved.id}?tab=chart`}>
                     Full natal chart <span className="arrow">→</span>
                   </Link>
-                  <Link href={`/reading/${saved.id}#s-character`}>
+                  <Link href={`/reading/${saved.id}?tab=analysis`}>
                     Nativity reading <span className="arrow">→</span>
                   </Link>
                 </>
@@ -245,7 +286,7 @@ export default function HubPage() {
               {remaining} question{remaining === 1 ? "" : "s"} remaining today
             </p>
             {saved ? (
-              <Link href={`/reading/${saved.id}#chat-dock`} className="consult-cta">
+              <Link href={`/reading/${saved.id}?tab=ask`} className="consult-cta">
                 Start a consultation
               </Link>
             ) : (
