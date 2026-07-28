@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ApiError, fetchChartAnalysis } from "@/lib/api";
+import { ApiError, fetchChartAnalysis, fetchTemperament } from "@/lib/api";
 import { saveChart } from "@/lib/storage";
 import {
   ASPECT_SYMBOLS,
@@ -11,30 +11,12 @@ import {
   PLANET_SYMBOLS,
   dignitySummary,
   formatDegree,
+  hasTrueDignity,
   housesRuledBy,
+  leadAspect,
+  naturalList,
 } from "@/lib/astro";
 import type { SavedChart } from "@/lib/types";
-
-const SIGN_ELEMENT: Record<string, string> = {
-  Aries: "Fire",
-  Leo: "Fire",
-  Sagittarius: "Fire",
-  Taurus: "Earth",
-  Virgo: "Earth",
-  Capricorn: "Earth",
-  Gemini: "Air",
-  Libra: "Air",
-  Aquarius: "Air",
-  Cancer: "Water",
-  Scorpio: "Water",
-  Pisces: "Water",
-};
-const ELEMENT_HUMOR: Record<string, string> = {
-  Fire: "Choleric",
-  Earth: "Melancholic",
-  Air: "Sanguine",
-  Water: "Phlegmatic",
-};
 
 function paragraphsFromAnalysis(analysis?: string): string[] {
   if (!analysis) return [];
@@ -56,18 +38,6 @@ function splitPullQuote(paragraph: string): { quote: string | null; body: string
   return { quote, body: body || paragraph };
 }
 
-function extractTemperament(paragraph: string): string | null {
-  const m = paragraph.match(
-    /(sanguine|choleric|melancholic|phlegmatic)(-(sanguine|choleric|melancholic|phlegmatic))?\s+temperament/i,
-  );
-  if (!m) return null;
-  return m[0]
-    .replace(/\s+temperament/i, "")
-    .split("-")
-    .map((w) => w[0].toUpperCase() + w.slice(1).toLowerCase())
-    .join("-");
-}
-
 function dominantPlanets(paragraph: string): string[] {
   return PLANET_ORDER.map((p) => ({ p, idx: paragraph.indexOf(p) }))
     .filter((x) => x.idx !== -1)
@@ -87,6 +57,7 @@ export default function AnalysisTab({
 }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [temperament, setTemperament] = useState<string | null>(null);
 
   useEffect(() => {
     if (saved.analysis || loading) return;
@@ -103,13 +74,29 @@ export default function AnalysisTab({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [saved.id, userId]);
 
+  // The canonical humoral label — same 5-significator calculation the
+  // Temperament tab reads, and the single source of truth for it. The AI
+  // reading text is never a valid source for this: it's free prose that can
+  // (and does) describe the chart using different temperament language than
+  // what was actually calculated.
+  useEffect(() => {
+    let cancelled = false;
+    fetchTemperament(saved.birthData)
+      .then((r) => {
+        if (!cancelled) setTemperament(r.temperament);
+      })
+      .catch(() => {
+        /* Section I falls back to a loading state; not worth a separate error UI here. */
+      });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [saved.birthData.date, saved.birthData.time, saved.birthData.latitude, saved.birthData.longitude]);
+
   const paragraphs = useMemo(() => paragraphsFromAnalysis(saved.analysis), [saved.analysis]);
   const chart = saved.chart;
 
-  const temperament = useMemo(
-    () => extractTemperament(paragraphs[0] ?? "") ?? ELEMENT_HUMOR[SIGN_ELEMENT[chart.ascendant.sign]] ?? "—",
-    [chart, paragraphs],
-  );
   const ruler = DOMICILE_RULERS[chart.ascendant.sign];
   const { quote: charQuote, body: charBody } = splitPullQuote(paragraphs[0] ?? "");
 
@@ -121,11 +108,13 @@ export default function AnalysisTab({
         if (!pos) return null;
         const houses = housesRuledBy(planet, chart.ascendant.sign);
         const housesText = houses.length
-          ? `Rules House${houses.length > 1 ? "s" : ""} ${houses.join(" and ")}`
+          ? `Rules House${houses.length > 1 ? "s" : ""} ${naturalList(houses.map(String))}`
           : "Rules no house from this Ascendant";
-        const dignityText = pos.dignities.length
-          ? `Dignified here by ${pos.dignities.join(" and ")}, lending its rulership real strength.`
-          : "Peregrine here, ruling without essential dignity to anchor its authority.";
+        const dignityText = hasTrueDignity(pos.dignities)
+          ? `Dignified here by ${naturalList(pos.dignities)}, lending its rulership real strength.`
+          : pos.dignities.length
+            ? `In ${naturalList(pos.dignities)} here, weakening its rulership.`
+            : "Peregrine here, ruling without essential dignity to anchor its authority.";
         return { planet, title: `${planet} in ${pos.sign}, House ${pos.house}`, desc: `${housesText}. ${dignityText}` };
       })
       .filter((x): x is NonNullable<typeof x> => x !== null);
@@ -137,6 +126,7 @@ export default function AnalysisTab({
 
   const topAspects = useMemo(() => [...chart.aspects].sort((a, b) => a.orb - b.orb).slice(0, 5), [chart]);
   const { quote: aspectsQuote, body: aspectsBody } = splitPullQuote(paragraphs[3] ?? "");
+  const titleAspect = useMemo(() => leadAspect(aspectsBody, topAspects), [aspectsBody, topAspects]);
 
   const { quote: synthesisQuote, body: synthesisBody } = splitPullQuote(paragraphs[4] ?? "");
 
@@ -147,7 +137,7 @@ export default function AnalysisTab({
           <span className="n">I</span>
           <span className="n">— Character and Temperament</span>
         </div>
-        <h2>{`A ${temperament.toLowerCase()} nativity`}</h2>
+        <h2>{temperament ? `A ${temperament.toLowerCase()} nativity` : "Reading the nativity…"}</h2>
         <div className="fact-strip">
           <div className="fact">
             Sect <b>{chart.sect === "diurnal" ? "Diurnal" : "Nocturnal"}</b>
@@ -162,7 +152,7 @@ export default function AnalysisTab({
             </b>
           </div>
           <div className="fact">
-            Temperament <b>{temperament}</b>
+            Temperament <b>{temperament ?? "…"}</b>
           </div>
         </div>
         {loading && !saved.analysis && <p style={{ fontStyle: "italic" }}>The astrologer is casting this reading…</p>}
@@ -204,10 +194,10 @@ export default function AnalysisTab({
         </div>
         <h2>
           {dignities.dignified.length > 0
-            ? `${dignities.dignified.map((d) => d.name).join(" and ")} hold${
+            ? `${naturalList(dignities.dignified.map((d) => d.name))} hold${
                 dignities.dignified.length === 1 ? "s" : ""
               } essential dignity`
-            : "No planet holds essential dignity here"}
+            : "No planet holds essential dignity"}
         </h2>
         {dignitiesBody && <p>{dignitiesBody}</p>}
         {dignitiesQuote && <p className="pull">&ldquo;{dignitiesQuote}&rdquo;</p>}
@@ -221,11 +211,22 @@ export default function AnalysisTab({
             </div>
           </div>
         ))}
+        {dignities.debilitated.map((d) => (
+          <div className="aspect-item" key={d.name}>
+            <div className="orb">{PLANET_SYMBOLS[d.name] ?? d.name.slice(0, 2)}</div>
+            <div>
+              <div className="a-title">
+                {d.name} — {d.value}
+              </div>
+              <div className="a-desc">A debility, not a dignity — this weakens rather than strengthens the planet.</div>
+            </div>
+          </div>
+        ))}
         {dignities.peregrine.length > 0 && (
           <div className="aspect-item">
             <div className="orb">—</div>
             <div>
-              <div className="a-title">{dignities.peregrine.join(", ")}</div>
+              <div className="a-title">{naturalList(dignities.peregrine)}</div>
               <div className="a-desc">Peregrine — without essential dignity in this chart.</div>
             </div>
           </div>
@@ -238,8 +239,8 @@ export default function AnalysisTab({
           <span className="n">— Key Aspects</span>
         </div>
         <h2>
-          {topAspects[0]
-            ? `${topAspects[0].planet_a} ${topAspects[0].aspect} ${topAspects[0].planet_b} anchors the chart`
+          {titleAspect
+            ? `${titleAspect.planet_a} ${titleAspect.aspect} ${titleAspect.planet_b} anchors the chart`
             : "Key aspects"}
         </h2>
         {aspectsBody && <p>{aspectsBody}</p>}

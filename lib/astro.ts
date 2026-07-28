@@ -1,4 +1,4 @@
-import type { ZodiacPosition } from "./types";
+import type { Aspect, ZodiacPosition } from "./types";
 
 export const PLANET_ORDER = ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn"];
 
@@ -83,16 +83,47 @@ export function dignityLabel(dignities: string[]): string {
   return dignities.map((d) => d[0].toUpperCase() + d.slice(1)).join(" & ");
 }
 
+/** The backend's `dignities` field on a planet position holds every essential
+ * dignity *or debility* it holds in its sign (domicile/exaltation/detriment/
+ * fall — see backend/app/services/ephemeris.py's ESSENTIAL_DIGNITIES table).
+ * Only these two count as a true dignity; detriment/fall are debilities and
+ * must never be treated as "the planet is dignified here". */
+const TRUE_DIGNITIES = new Set(["domicile", "exaltation"]);
+
+/** True only for an actual dignity (domicile/exaltation) -- a non-empty
+ * `dignities` array is not enough, since it may hold only debilities
+ * (detriment/fall). Use this anywhere "is this planet dignified?" is asked;
+ * never gate on `dignities.length` alone. */
+export function hasTrueDignity(dignities: string[]): boolean {
+  return dignities.some((d) => TRUE_DIGNITIES.has(d));
+}
+
+/** Formats a list of items as natural-language prose: "A", "A and B", or
+ * "A, B, and C" for one, two, or three-or-more items (serial/Oxford comma). */
+export function naturalList(items: string[]): string {
+  if (items.length === 0) return "";
+  if (items.length === 1) return items[0];
+  if (items.length === 2) return `${items[0]} and ${items[1]}`;
+  return `${items.slice(0, -1).join(", ")}, and ${items[items.length - 1]}`;
+}
+
 export function dignitySummary(planets: Record<string, ZodiacPosition>): {
   dignified: { name: string; value: string }[];
+  debilitated: { name: string; value: string }[];
   peregrine: string[];
 } {
-  const dignified = PLANET_ORDER.filter((name) => planets[name]?.dignities.length).map((name) => ({
+  const dignified = PLANET_ORDER.filter((name) => hasTrueDignity(planets[name]?.dignities ?? [])).map((name) => ({
     name,
     value: `${dignityLabel(planets[name].dignities)} · ${planets[name].sign}`,
   }));
-  const peregrine = PLANET_ORDER.filter((name) => !planets[name]?.dignities.length);
-  return { dignified, peregrine };
+  const debilitated = PLANET_ORDER.filter(
+    (name) => !hasTrueDignity(planets[name]?.dignities ?? []) && (planets[name]?.dignities.length ?? 0) > 0,
+  ).map((name) => ({
+    name,
+    value: `${dignityLabel(planets[name].dignities)} · ${planets[name].sign}`,
+  }));
+  const peregrine = PLANET_ORDER.filter((name) => !(planets[name]?.dignities.length ?? 0));
+  return { dignified, debilitated, peregrine };
 }
 
 /** The point 180° opposite a given position (e.g. Descendant from the
@@ -106,6 +137,21 @@ export function oppositePoint(pos: ZodiacPosition): { sign: string; sign_longitu
     sign_longitude: oppositeLongitude % 30,
     house: ((pos.house + 5) % 12) + 1,
   };
+}
+
+/** Picks the aspect a piece of prose actually opens with, by finding the
+ * first aspect (in [orbSorted]'s order) whose two planet names both appear in
+ * [paragraph] -- so a section title stays in sync with what the prose
+ * discusses instead of silently defaulting to the tightest orb regardless of
+ * what the text leads with. Falls back to the tightest-orb aspect when the
+ * paragraph doesn't clearly reference any of them (e.g. no body text yet,
+ * mid-generation). */
+export function leadAspect(paragraph: string, orbSorted: Aspect[]): Aspect | undefined {
+  if (paragraph) {
+    const mentioned = orbSorted.find((a) => paragraph.includes(a.planet_a) && paragraph.includes(a.planet_b));
+    if (mentioned) return mentioned;
+  }
+  return orbSorted[0];
 }
 
 /** Whole-sign houses a planet rules, given the Ascendant's sign -- house N's
