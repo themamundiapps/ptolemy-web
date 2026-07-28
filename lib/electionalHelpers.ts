@@ -84,6 +84,22 @@ export function qualityIndicatorFor(hit: ElectionalHit): "★" | "△" | null {
   return null;
 }
 
+/** What a HitRow's is_supporting actually earned:
+ *  - "direct": a direct-position aspect the theme tracks -- full support,
+ *    the same thing that can move a day's quality label.
+ *  - "antiscion": no direct aspect earns support here, but the antiscion
+ *    (mirrored) point does. Antiscion is a legitimate traditional technique
+ *    (Ptolemy discusses degrees of equal power), but the backend's
+ *    _important_reasons/_auspicious_reasons/_desirable_reasons -- the
+ *    functions that decide a day's label -- never look at antiscion hits at
+ *    all (only ELECTIONAL_ORBS-based direct-position matching). Folding an
+ *    antiscion-only hit into "direct" support would tell the user it
+ *    counted toward the label when it never could have.
+ *  - "none": present but not counted either way (a tense aspect, or a
+ *    harmonious one from a planet/house pair this theme doesn't track).
+ */
+export type SupportKind = "direct" | "antiscion" | "none";
+
 /** A planetary-details row after merging a planet's direct and antiscion
  * hits on the same house into one line, so the same planet's two aspect
  * modes don't render as separate rows. */
@@ -91,6 +107,7 @@ export interface GroupedHit {
   hit: ElectionalHit;
   modeLabel: string;
   isCazimi: boolean;
+  supportKind: SupportKind;
 }
 
 export function groupHits(hits: ElectionalHit[]): GroupedHit[] {
@@ -104,20 +121,48 @@ export function groupHits(hits: ElectionalHit[]): GroupedHit[] {
 
   const grouped: GroupedHit[] = [];
   for (const list of Array.from(byKey.values())) {
-    const hasDirect = list.some((h) => h.mode === "direct");
-    const hasAntiscion = list.some((h) => h.mode === "antiscion");
+    const direct = list.find((h) => h.mode === "direct");
+    const antiscion = list.find((h) => h.mode === "antiscion");
     // Cazimi is a planet-to-Sun relationship (only ever set on the direct
     // hit), so it's tracked across the whole group rather than trusting
-    // whichever single hit the score sort happens to pick first.
+    // whichever single hit ends up as the row's displayed `hit`.
     const isCazimi = list.some((h) => h.is_cazimi);
-    if (list.length === 2 && hasDirect && hasAntiscion) {
-      const byScore = [...list].sort((a, b) => b.score - a.score);
-      grouped.push({ hit: byScore[0], modeLabel: "direct + antiscion", isCazimi });
-    } else {
-      for (const h of list) {
-        grouped.push({ hit: h, modeLabel: h.mode === "antiscion" ? "antiscion" : "direct", isCazimi: h.is_cazimi });
-      }
+
+    // A direct supporting aspect earns full support on its own, even if an
+    // antiscion hit also exists on the same (planet, house) -- the
+    // antiscion is still shown in modeLabel, it just doesn't change the
+    // category. Only when direct doesn't support (or doesn't exist) does
+    // an antiscion hit's own is_supporting get its own category.
+    let supportKind: SupportKind = "none";
+    let primary: ElectionalHit = direct ?? antiscion!;
+    if (direct?.is_supporting) {
+      supportKind = "direct";
+      primary = direct;
+    } else if (antiscion?.is_supporting) {
+      supportKind = "antiscion";
+      primary = antiscion;
+    } else if (direct && antiscion) {
+      primary = [direct, antiscion].sort((a, b) => b.score - a.score)[0];
     }
+
+    const modeLabel = direct && antiscion ? "direct + antiscion" : primary.mode === "antiscion" ? "antiscion" : "direct";
+    grouped.push({ hit: primary, modeLabel, isCazimi, supportKind });
   }
   return grouped;
+}
+
+/** Plain-language reason a "present but not counted" row didn't count --
+ * derivable entirely from what's already on the hit, no theme-table lookup
+ * needed: is_supporting already encodes "harmonious aspect AND a (planet,
+ * house) pair this theme tracks" as a single bool, so a harmonious aspect
+ * that isn't supporting can only mean the pair isn't tracked. */
+export function notCountedReason(grouped: GroupedHit): string {
+  const { hit, modeLabel } = grouped;
+  if (TENSE_ASPECTS.has(hit.aspect)) {
+    return "Square/opposition — geometrically tense, never counted as support regardless of which planet forms it.";
+  }
+  if (modeLabel === "antiscion") {
+    return "Only forms through antiscion (a mirrored reflection point, not the planet's true position), and isn't one of this theme's tracked significator pairings either way.";
+  }
+  return "A harmonious aspect, but not one of this theme's tracked significator-to-house pairings.";
 }

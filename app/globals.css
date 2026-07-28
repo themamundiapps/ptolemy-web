@@ -1017,6 +1017,17 @@ body {
   margin: 0 0 12px;
   color: var(--ink);
 }
+.pt-app .elect-results-header {
+  display: flow-root;
+  margin-bottom: 20px;
+}
+.pt-app .elect-results-header h4 {
+  font-family: var(--font-cormorant), serif;
+  font-size: 1.15rem;
+  font-weight: 500;
+  margin: 0;
+  color: var(--ink);
+}
 .pt-app .data-card .empty {
   color: var(--ink-soft);
   font-style: italic;
@@ -1390,6 +1401,18 @@ body {
   font-style: italic;
   color: var(--ink-soft);
   margin-top: 4px;
+}
+.pt-app .elect-not-counted-reason {
+  font-size: 0.78rem;
+  font-style: italic;
+  color: var(--ink-soft);
+  margin-top: 4px;
+}
+.pt-app .elect-antiscion-note {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  margin: 0 0 8px;
+  line-height: 1.5;
 }
 
 /* ---- clickable data rows (open a detail modal) ---- */

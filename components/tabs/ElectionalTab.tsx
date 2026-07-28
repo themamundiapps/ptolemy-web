@@ -3,7 +3,15 @@
 import { useMemo, useState } from "react";
 import { ApiError, fetchElectional } from "@/lib/api";
 import { ELECTIONAL_THEMES, type ElectionalTheme } from "@/lib/electionalThemes";
-import { formatDayHeading, groupHits, humanizedTimeOfDay, qualityIndicatorFor, favorableRulerFor, type GroupedHit } from "@/lib/electionalHelpers";
+import {
+  formatDayHeading,
+  groupHits,
+  humanizedTimeOfDay,
+  notCountedReason,
+  qualityIndicatorFor,
+  favorableRulerFor,
+  type GroupedHit,
+} from "@/lib/electionalHelpers";
 import { buildContextualAwareness, buildSynthesis, QUALITATIVE_SYMBOLS } from "@/lib/electionalSynthesis";
 import { ASPECT_SYMBOLS, PLANET_SYMBOLS } from "@/lib/astro";
 import type { BirthData, ElectionalDay, ElectionalResult } from "@/lib/types";
@@ -25,7 +33,7 @@ function isoDateToLocalDate(isoDate: string): Date {
   return new Date(y, m - 1, d);
 }
 
-function HitRow({ grouped }: { grouped: GroupedHit }) {
+function HitRow({ grouped, showReason }: { grouped: GroupedHit; showReason?: boolean }) {
   const { hit, modeLabel, isCazimi } = grouped;
   const symbol = ASPECT_SYMBOLS[hit.aspect] ?? hit.aspect;
   const subject = hit.planet === "Sun" || hit.planet === "Moon" ? `The ${hit.planet}` : hit.planet;
@@ -42,10 +50,18 @@ function HitRow({ grouped }: { grouped: GroupedHit }) {
             This planet is in the heart of the Sun — an exceptionally empowering condition in traditional astrology.
           </div>
         )}
+        {showReason && <div className="elect-not-counted-reason">{notCountedReason(grouped)}</div>}
       </div>
       <div className="elect-hit-meta">
         <span className="elect-mode">{modeLabel}</span>
-        {indicator && <span className={`elect-indicator ${indicator === "★" ? "star" : "warn"}`}>{indicator}</span>}
+        {indicator && (
+          <span
+            className={`elect-indicator ${indicator === "★" ? "star" : "warn"}`}
+            title={indicator === "★" ? "Benefic in a harmonious aspect" : "Tense aspect (square or opposition)"}
+          >
+            {indicator}
+          </span>
+        )}
       </div>
     </div>
   );
@@ -69,8 +85,14 @@ function DayCard({
   const rulerPlanet = useMemo(() => favorableRulerFor(themeKey, isoDateToLocalDate(day.date)), [themeKey, day.date]);
   const symbol = QUALITATIVE_SYMBOLS[day.quality_label] ?? "";
 
-  const supporting = useMemo(() => groupHits(day.hits.filter((h) => h.is_supporting)), [day.hits]);
-  const notCounted = useMemo(() => groupHits(day.hits.filter((h) => !h.is_supporting)), [day.hits]);
+  // Grouped once over the full hit list, then split by supportKind -- not
+  // filtered into two lists *before* grouping, which used to be able to
+  // split a direct+antiscion pair on the same (planet, house) across both
+  // buckets instead of merging them into one row (see Problem 4).
+  const grouped = useMemo(() => groupHits(day.hits), [day.hits]);
+  const supporting = useMemo(() => grouped.filter((g) => g.supportKind === "direct"), [grouped]);
+  const antiscionOnly = useMemo(() => grouped.filter((g) => g.supportKind === "antiscion"), [grouped]);
+  const notCounted = useMemo(() => grouped.filter((g) => g.supportKind === "none"), [grouped]);
 
   return (
     <div className="data-card">
@@ -117,11 +139,24 @@ function DayCard({
               ))}
             </>
           )}
+          {antiscionOnly.length > 0 && (
+            <>
+              <span className="elect-details-label">Antiscion support</span>
+              <p className="elect-antiscion-note">
+                These only form through antiscion, a mirrored reflection point rather than the planet&apos;s true
+                position — a legitimate traditional technique, but secondary: it never moves this day&apos;s rating
+                on its own.
+              </p>
+              {antiscionOnly.map((g, i) => (
+                <HitRow key={i} grouped={g} />
+              ))}
+            </>
+          )}
           {notCounted.length > 0 && (
             <>
               <span className="elect-details-label">Present but not counted</span>
               {notCounted.map((g, i) => (
-                <HitRow key={i} grouped={g} />
+                <HitRow key={i} grouped={g} showReason />
               ))}
             </>
           )}
@@ -225,9 +260,17 @@ export default function ElectionalTab({ birth }: { birth: BirthData }) {
   }
 
   if (step === "results" && result && theme) {
+    // banner and note are never both worth showing: banner only fires when
+    // a theme's essential-direct planet (Venus for Love, Mercury for
+    // Travel/Business) is retrograde on every single scanned day, which
+    // means every day already fails the essential retrograde check and
+    // note is left as the generic "no favorable configurations" fallback —
+    // banner names the actual planet and gives theme-specific guidance, so
+    // it's strictly more informative whenever both are present.
+    const notice = result.banner ?? result.note;
     return (
       <div>
-        <div className="data-card">
+        <div className="elect-results-header">
           <h4>
             Best Moments for {result.theme_label}
             <span style={{ float: "right" }}>
@@ -236,8 +279,12 @@ export default function ElectionalTab({ birth }: { birth: BirthData }) {
               </button>
             </span>
           </h4>
-          {result.note && <p style={{ color: "var(--ink-soft)" }}>{result.note}</p>}
         </div>
+        {notice && (
+          <div className="data-card">
+            <p style={{ color: "var(--ink-soft)" }}>{notice}</p>
+          </div>
+        )}
         {result.days.length === 0 && (
           <div className="data-card">
             <p className="empty">No auspicious moments found in this window. Try a wider date range.</p>
