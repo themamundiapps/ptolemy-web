@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Markdown from "@/components/Markdown";
 import { ApiError, fetchChartAnalysis, fetchTemperament } from "@/lib/api";
 import { saveChart } from "@/lib/storage";
 import {
@@ -157,8 +158,8 @@ export default function AnalysisTab({
         </div>
         {loading && !saved.analysis && <p style={{ fontStyle: "italic" }}>The astrologer is casting this reading…</p>}
         {error && !saved.analysis && <p style={{ color: "var(--terracotta)" }}>{error}</p>}
-        {charBody && <p>{charBody}</p>}
-        {charQuote && <p className="pull">&ldquo;{charQuote}&rdquo;</p>}
+        {charBody && <Markdown>{charBody}</Markdown>}
+        {charQuote && <Markdown className="pull">{`\u201C${charQuote}\u201D`}</Markdown>}
       </div>
 
       <div className="section-card">
@@ -174,8 +175,8 @@ export default function AnalysisTab({
               : "The chart's guiding planets"}
         </h2>
         {loading && !saved.analysis && <p style={{ fontStyle: "italic" }}>Reading the dominant planets…</p>}
-        {planetsBody && <p>{planetsBody}</p>}
-        {planetsQuote && <p className="pull">&ldquo;{planetsQuote}&rdquo;</p>}
+        {planetsBody && <Markdown>{planetsBody}</Markdown>}
+        {planetsQuote && <Markdown className="pull">{`\u201C${planetsQuote}\u201D`}</Markdown>}
         {spotlights.map((s) => (
           <div className="aspect-item" key={s.planet}>
             <div className="orb">{PLANET_SYMBOLS[s.planet] ?? s.planet.slice(0, 2)}</div>
@@ -199,8 +200,8 @@ export default function AnalysisTab({
               } essential dignity`
             : "No planet holds essential dignity"}
         </h2>
-        {dignitiesBody && <p>{dignitiesBody}</p>}
-        {dignitiesQuote && <p className="pull">&ldquo;{dignitiesQuote}&rdquo;</p>}
+        {dignitiesBody && <Markdown>{dignitiesBody}</Markdown>}
+        {dignitiesQuote && <Markdown className="pull">{`\u201C${dignitiesQuote}\u201D`}</Markdown>}
         {dignities.dignified.map((d) => (
           <div className="aspect-item" key={d.name}>
             <div className="orb">{PLANET_SYMBOLS[d.name] ?? d.name.slice(0, 2)}</div>
@@ -243,8 +244,8 @@ export default function AnalysisTab({
             ? `${titleAspect.planet_a} ${titleAspect.aspect} ${titleAspect.planet_b} anchors the chart`
             : "Key aspects"}
         </h2>
-        {aspectsBody && <p>{aspectsBody}</p>}
-        {aspectsQuote && <p className="pull">&ldquo;{aspectsQuote}&rdquo;</p>}
+        {aspectsBody && <Markdown>{aspectsBody}</Markdown>}
+        {aspectsQuote && <Markdown className="pull">{`\u201C${aspectsQuote}\u201D`}</Markdown>}
         {topAspects.map((a, i) => (
           <div className="aspect-item" key={i}>
             <div className="orb">{formatDegree(a.orb)}</div>
@@ -284,8 +285,8 @@ export default function AnalysisTab({
         </div>
         <h2>According to the Ptolemaic tradition</h2>
         {loading && !saved.analysis && <p style={{ fontStyle: "italic" }}>Weaving the synthesis…</p>}
-        {synthesisBody && <p>{synthesisBody}</p>}
-        {synthesisQuote && <p className="pull">&ldquo;{synthesisQuote}&rdquo;</p>}
+        {synthesisBody && <Markdown>{synthesisBody}</Markdown>}
+        {synthesisQuote && <Markdown className="pull">{`\u201C${synthesisQuote}\u201D`}</Markdown>}
         <div className="go-deeper">
           Every statement above traces back to its source — the Tetrabiblos, Valens&apos; Anthologies — available at a
           touch.

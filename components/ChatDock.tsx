@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Markdown from "@/components/Markdown";
 import { ApiError, chatWithAstrologer } from "@/lib/api";
 import { FREE_MESSAGE_LIMIT } from "@/lib/storage";
 import type { BirthData, ChatMessage } from "@/lib/types";
@@ -56,7 +57,7 @@ export default function ChatDock({
         <div className="messages">
           {messages.map((m, i) => (
             <div key={i} className={`bubble ${m.role}`}>
-              {m.content}
+              {m.role === "assistant" ? <Markdown>{m.content}</Markdown> : m.content}
             </div>
           ))}
           {sending && <div className="bubble assistant" style={{ fontStyle: "italic" }}>The astrologer is consulting your chart…</div>}
