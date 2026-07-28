@@ -4,19 +4,21 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import BrandGlyph from "@/components/BrandGlyph";
 import { getGoogleUser } from "@/lib/auth";
-import { getActiveChartId } from "@/lib/storage";
 
+/** Product-level navigation (Dashboard, Guide, account) -- shown on the Hub
+ * and on the reading page. Deliberately carries no per-tab links: on the
+ * reading page, the Sidebar already owns every chart-tab destination (Chart,
+ * House Lords, Temperament, Electional, Transits, Synastry, Analysis, Chat),
+ * and having both duplicate four of those with different scroll behavior
+ * (this nav hides on scroll, the sidebar doesn't) was two entry points to
+ * the same place acting differently. */
 export default function AppNav() {
   const [name, setName] = useState("Guest");
-  const [chartId, setChartId] = useState<string | null>(null);
 
   useEffect(() => {
     const user = getGoogleUser();
     if (user?.name) setName(user.name.split(" ")[0]);
-    setChartId(getActiveChartId());
   }, []);
-
-  const tabHref = (tab: string) => (chartId ? `/reading/${chartId}?tab=${tab}` : "/chart");
 
   return (
     <nav className="top">
@@ -30,10 +32,7 @@ export default function AppNav() {
         </div>
       </Link>
       <div className="links">
-        <Link href={tabHref("chart")}>Chart</Link>
-        <Link href={tabHref("electional")}>Electional</Link>
-        <Link href={tabHref("transits")}>Transits</Link>
-        <Link href={tabHref("synastry")}>Synastry</Link>
+        <Link href="/hub">Dashboard</Link>
         <a href="/#process">Guide</a>
       </div>
       <div className="account" title={name}>
