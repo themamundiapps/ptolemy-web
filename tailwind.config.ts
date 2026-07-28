@@ -24,8 +24,6 @@ const config: Config = {
         serif: ["var(--font-cormorant)", "Georgia", "serif"],
         cormorant: ["var(--font-cormorant)", "Georgia", "serif"],
         cinzel: ["var(--font-cinzel)", "Georgia", "serif"],
-        crimson: ["var(--font-crimson)", "Georgia", "serif"],
-        ebgaramond: ["var(--font-ebgaramond)", "Georgia", "serif"],
       },
     },
   },

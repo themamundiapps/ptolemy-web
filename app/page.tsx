@@ -89,7 +89,8 @@ export default function LandingPage() {
           </p>
 
           <div className="mt-14 flex flex-wrap items-center justify-center gap-x-16 gap-y-10">
-            <svg viewBox="0 0 280 280" className="h-[280px] w-[280px] shrink-0">
+            <div className="shrink-0 border border-line bg-parchment-2 p-6">
+            <svg viewBox="0 0 280 280" className="h-[280px] w-[280px]">
               <circle cx="140" cy="140" r="128" fill="none" stroke="#1B2438" strokeWidth="1" />
               <circle cx="140" cy="140" r="98" fill="none" stroke="#8F6A35" strokeWidth="1" />
               <g stroke="rgba(27,36,56,0.14)" strokeWidth="0.75">
@@ -125,6 +126,7 @@ export default function LandingPage() {
                 ♄
               </text>
             </svg>
+            </div>
 
             <BirthDataForm onSubmit={handleCast} loading={chartLoading} error={chartError} />
           </div>

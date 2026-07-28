@@ -10,7 +10,7 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: var(--font-crimson), Georgia, serif;
+  font-family: var(--font-cormorant), Georgia, serif;
 }
 
 @layer utilities {
@@ -674,7 +674,7 @@ body {
   border: none;
   background: transparent;
   padding: 10px 12px;
-  font-family: var(--font-crimson), serif;
+  font-family: var(--font-cormorant), serif;
   font-style: italic;
   color: var(--ink-soft);
   font-size: 0.9rem;
@@ -851,9 +851,9 @@ body {
 .pt-app .sidebar .item .icon {
   flex: none;
   width: 24px;
-  text-align: center;
-  font-family: var(--font-crimson), serif;
-  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: var(--bronze-deep);
   text-transform: none;
   letter-spacing: normal;
@@ -949,9 +949,10 @@ body {
   margin-bottom: 20px;
 }
 .pt-app .data-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: 14px;
+  column-gap: 14px;
   padding: 12px 0;
   border-top: 1px solid var(--rule);
 }
@@ -971,28 +972,31 @@ body {
   font-size: 0.9rem;
 }
 .pt-app .data-row .d-label {
-  flex: none;
-  width: 96px;
   font-family: var(--font-cinzel), serif;
   font-size: 0.68rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--bronze-deep);
+  text-align: left;
 }
 .pt-app .data-row .d-main {
-  flex: 1;
   font-size: 0.95rem;
   color: var(--ink);
+  text-align: left;
 }
 .pt-app .data-row .d-tag {
-  flex: none;
   font-size: 0.78rem;
   color: var(--ink-soft);
   font-style: italic;
+  text-align: right;
+  white-space: nowrap;
 }
 
-/* ---- planet rows (Chart tab): glyph circle + aligned columns + chevron ---- */
+/* ---- planet rows (Chart tab): glyph circle + aligned columns + chevron ----
+   Six columns (glyph, name, sign, house, dignity, chevron), not the label/
+   main/tag three-column grid above -- overrides back to flex. */
 .pt-app .data-row.planet-row {
+  display: flex;
   gap: 16px;
 }
 .pt-app .d-glyph {
@@ -1103,7 +1107,7 @@ body {
   padding: 16px 18px;
   cursor: pointer;
   text-align: left;
-  font-family: var(--font-crimson), serif;
+  font-family: var(--font-cormorant), serif;
 }
 .pt-app .theme-tile:hover {
   border-color: var(--bronze);
@@ -1154,7 +1158,7 @@ body {
   border: 1px solid var(--rule);
   background: var(--parchment);
   padding: 9px 12px;
-  font-family: var(--font-crimson), serif;
+  font-family: var(--font-cormorant), serif;
   font-size: 0.9rem;
   color: var(--ink);
   outline: none;

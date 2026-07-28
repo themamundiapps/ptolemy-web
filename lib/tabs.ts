@@ -8,15 +8,15 @@ export type TabKey =
   | "analysis"
   | "ask";
 
-export const SIDEBAR_ITEMS: { key: TabKey; label: string; icon: string }[] = [
-  { key: "chart", label: "Chart", icon: "☽" },
-  { key: "house-lords", label: "House Lords", icon: "⊕" },
-  { key: "temperament", label: "Temperament", icon: "♄" },
-  { key: "electional", label: "Electional", icon: "⚡" },
-  { key: "transits", label: "Transits", icon: "☉" },
-  { key: "synastry", label: "Synastry", icon: "⚭" },
-  { key: "analysis", label: "Analysis", icon: "✦" },
-  { key: "ask", label: "Chat", icon: "✉" },
+export const SIDEBAR_ITEMS: { key: TabKey; label: string }[] = [
+  { key: "chart", label: "Chart" },
+  { key: "house-lords", label: "House Lords" },
+  { key: "temperament", label: "Temperament" },
+  { key: "electional", label: "Electional" },
+  { key: "transits", label: "Transits" },
+  { key: "synastry", label: "Synastry" },
+  { key: "analysis", label: "Analysis" },
+  { key: "ask", label: "Chat" },
 ];
 
 export const DEFAULT_TAB: TabKey = "chart";

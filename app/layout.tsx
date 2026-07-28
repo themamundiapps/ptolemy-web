@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cinzel, Cormorant_Garamond, Crimson_Pro, EB_Garamond } from "next/font/google";
+import { Cinzel, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -16,19 +16,6 @@ const cinzel = Cinzel({
   variable: "--font-cinzel",
   display: "swap",
 });
-const crimson = Crimson_Pro({
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  style: ["normal", "italic"],
-  variable: "--font-crimson",
-  display: "swap",
-});
-const ebGaramond = EB_Garamond({
-  subsets: ["latin"],
-  weight: ["500"],
-  variable: "--font-ebgaramond",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "Ptolemy — Traditional Astrology",
@@ -42,7 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${cormorant.variable} ${cinzel.variable} ${crimson.variable} ${ebGaramond.variable}`}>
+    <html lang="en" className={`${cormorant.variable} ${cinzel.variable}`}>
       <body className="antialiased bg-parchment text-ink">{children}</body>
     </html>
   );

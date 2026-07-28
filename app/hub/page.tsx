@@ -38,7 +38,12 @@ const FEATURES: {
     tab: "temperament",
   },
   {
-    glyph: "⚡",
+    // Was the lightning-bolt emoji (⚡, U+26A1) -- renders with emoji color
+    // presentation on most platforms, clashing with the monochrome bronze
+    // glyphs around it. Same fix as the Electional sidebar icon: a
+    // moment-in-time motif instead. This dingbat isn't in the Unicode emoji
+    // list, so it can't render as a colored emoji on any platform.
+    glyph: "◔",
     name: "Electional Astrology",
     desc: "Choose the best moment by the essential criteria",
     pro: true,

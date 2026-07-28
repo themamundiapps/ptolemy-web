@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import BrandGlyph from "@/components/BrandGlyph";
+import SidebarIcon from "@/components/SidebarIcon";
 import { SIDEBAR_ITEMS, type TabKey } from "@/lib/tabs";
 
 export default function Sidebar({
@@ -27,7 +28,9 @@ export default function Sidebar({
             const className = `item${active === item.key ? " active" : ""}`;
             const content = (
               <>
-                <span className="icon">{item.icon}</span>
+                <span className="icon">
+                  <SidebarIcon tab={item.key} />
+                </span>
                 <span className="label">{item.label}</span>
               </>
             );

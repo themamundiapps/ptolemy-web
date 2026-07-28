@@ -167,7 +167,7 @@ export default function ChartWheel({ chart }: { chart: ChartResponse }) {
 
   return (
     <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="mx-auto block w-full" role="img" aria-label="Natal chart wheel">
-      <rect x={0} y={0} width={SIZE} height={SIZE} rx={10} fill="#1B2438" />
+      <rect x={0} y={0} width={SIZE} height={SIZE} rx={10} fill="#F5F1E6" />
       <circle cx={CENTER} cy={CENTER} r={OUTER_R} fill="none" stroke="#B08D57" strokeOpacity={0.65} />
       <circle cx={CENTER} cy={CENTER} r={SIGN_RING_R} fill="none" stroke="#B08D57" strokeOpacity={0.5} />
       <circle cx={CENTER} cy={CENTER} r={ASPECT_R} fill="none" stroke="#B08D57" strokeOpacity={0.35} />
@@ -204,14 +204,14 @@ export default function ChartWheel({ chart }: { chart: ChartResponse }) {
         return (
           <g key={sign}>
             <line x1={inner.x} y1={inner.y} x2={outer.x} y2={outer.y} stroke="#B08D57" strokeOpacity={0.28} />
-            <text x={signMid.x} y={signMid.y} fill="#D9C08F" fontSize={19} textAnchor="middle" dominantBaseline="middle">
+            <text x={signMid.x} y={signMid.y} fill="#1B2438" fontSize={19} textAnchor="middle" dominantBaseline="middle">
               {SIGN_SYMBOLS[sign]}
             </text>
             <text
               x={housePos.x}
               y={housePos.y}
-              fill="#E4DAC5"
-              fillOpacity={0.6}
+              fill="#1B2438"
+              fillOpacity={0.45}
               fontSize={13}
               textAnchor="middle"
               dominantBaseline="middle"
@@ -234,8 +234,8 @@ export default function ChartWheel({ chart }: { chart: ChartResponse }) {
             y1={a.y}
             x2={b.x}
             y2={b.y}
-            stroke="#E4DAC5"
-            strokeOpacity={0.45}
+            stroke="#1B2438"
+            strokeOpacity={0.35}
             strokeDasharray={label === "MC" ? "4 3" : undefined}
           />
         );
@@ -243,7 +243,7 @@ export default function ChartWheel({ chart }: { chart: ChartResponse }) {
       {(Object.keys(anglePoints) as (keyof typeof anglePoints)[]).map((label) => {
         const p = pointOnWheel(anglePoints[label], ascLon, ANGLE_LABEL_R);
         return (
-          <text key={label} x={p.x} y={p.y} fill="#E4DAC5" fontSize={14} textAnchor="middle" dominantBaseline="middle">
+          <text key={label} x={p.x} y={p.y} fill="#1B2438" fontSize={14} textAnchor="middle" dominantBaseline="middle">
             {label}
           </text>
         );
@@ -264,7 +264,7 @@ export default function ChartWheel({ chart }: { chart: ChartResponse }) {
             y1={p1.y}
             x2={p2.x}
             y2={p2.y}
-            stroke={harmonious ? "#B08D57" : "#C2705A"}
+            stroke={harmonious ? "#B08D57" : "#A8553C"}
             strokeOpacity={0.65}
             strokeWidth={aspect.aspect === "conjunction" ? 1.5 : 1}
           >
@@ -288,10 +288,10 @@ export default function ChartWheel({ chart }: { chart: ChartResponse }) {
             {nudged && (
               <line x1={truePoint.x} y1={truePoint.y} x2={p.x} y2={p.y} stroke="#B08D57" strokeOpacity={0.35} strokeWidth={0.75} />
             )}
-            <circle cx={p.x} cy={p.y} r={15} fill="#E4DAC5" stroke="#B08D57" strokeOpacity={0.8} />
+            <circle cx={p.x} cy={p.y} r={15} fill="#F5F1E6" stroke="#B08D57" />
             <PlanetGlyph name={name} x={p.x} y={p.y} color="#1B2438" />
             {planet.retrograde && (
-              <text x={p.x + 14} y={p.y - 11} fill="#D9836B" fontSize={11}>
+              <text x={p.x + 14} y={p.y - 11} fill="#A8553C" fontSize={11}>
                 ℞
               </text>
             )}

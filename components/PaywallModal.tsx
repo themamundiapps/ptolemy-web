@@ -29,11 +29,11 @@ export default function PaywallModal({ open, onClose }: { open: boolean; onClose
       >
         <div className="flex items-start justify-between">
           <h2 className="font-cinzel text-2xl font-semibold text-ink">Upgrade to Ptolemy Pro</h2>
-          <button onClick={onClose} className="font-crimson text-2xl leading-none text-ink-2 hover:text-ink">
+          <button onClick={onClose} className="font-cormorant text-2xl leading-none text-ink-2 hover:text-ink">
             &times;
           </button>
         </div>
-        <p className="mt-2 font-crimson text-ink-2">
+        <p className="mt-2 font-cormorant text-ink-2">
           Unlimited guidance from the astrologer, plus the full traditional toolkit.
         </p>
 
@@ -44,7 +44,7 @@ export default function PaywallModal({ open, onClose }: { open: boolean; onClose
         {comingSoon ? (
           <div className="mt-8 border border-bronze bg-parchment-2 p-6 text-center">
             <p className="font-cinzel text-xl text-ink">Coming soon — launching shortly.</p>
-            <p className="mt-2 font-crimson text-sm text-ink-2">
+            <p className="mt-2 font-cormorant text-sm text-ink-2">
               We&apos;re finishing up billing. Check back soon to subscribe to Ptolemy Pro.
             </p>
           </div>

@@ -37,7 +37,7 @@ export default function GoogleSignInButton({ onSignedIn }: { onSignedIn?: (user:
     <>
       <Script src="https://accounts.google.com/gsi/client" async defer onLoad={() => setScriptReady(true)} />
       {user ? (
-        <p className="font-crimson text-sm text-ink-2">
+        <p className="font-cormorant text-sm text-ink-2">
           Signed in as <span className="text-ink">{user.email}</span>
         </p>
       ) : (
