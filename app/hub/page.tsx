@@ -6,12 +6,23 @@ import { useRouter } from "next/navigation";
 import AppNav from "@/components/AppNav";
 import { ApiError, fetchTransits } from "@/lib/api";
 import { getGoogleUser } from "@/lib/auth";
-import { FREE_MESSAGE_LIMIT, getActiveChartId, getChart, totalUserMessageCount } from "@/lib/storage";
+import {
+  FREE_MESSAGE_LIMIT,
+  getActiveChartId,
+  getChart,
+  totalUserMessageCount,
+} from "@/lib/storage";
 import { PLANET_SYMBOLS, formatDegree } from "@/lib/astro";
 import type { TabKey } from "@/lib/tabs";
 import type { SavedChart, TransitsResponse } from "@/lib/types";
 
-const FEATURES: { glyph: string; name: string; desc: string; pro: boolean; tab?: TabKey }[] = [
+const FEATURES: {
+  glyph: string;
+  name: string;
+  desc: string;
+  pro: boolean;
+  tab?: TabKey;
+}[] = [
   {
     glyph: "☌",
     name: "House Lords",
@@ -40,8 +51,19 @@ const FEATURES: { glyph: string; name: string; desc: string; pro: boolean; tab?:
     pro: true,
     tab: "synastry",
   },
-  { glyph: "☀", name: "Annual Profections", desc: "Lord of the Year and the profection technique", pro: false },
-  { glyph: "✦", name: "Hellenistic Lots", desc: "Fortune, Spirit and the derived lots", pro: false, tab: "chart" },
+  {
+    glyph: "☀",
+    name: "Annual Profections",
+    desc: "Lord of the Year and the profection technique",
+    pro: false,
+  },
+  {
+    glyph: "✦",
+    name: "Hellenistic Lots",
+    desc: "Fortune, Spirit and the derived lots",
+    pro: false,
+    tab: "chart",
+  },
 ];
 
 function formatToday(): string {
@@ -84,7 +106,11 @@ export default function HubPage() {
     setTransitsError(null);
     fetchTransits(saved.birthData)
       .then(setTransits)
-      .catch((e) => setTransitsError(e instanceof ApiError ? e.message : "Could not read today's sky."))
+      .catch((e) =>
+        setTransitsError(
+          e instanceof ApiError ? e.message : "Could not read today's sky.",
+        ),
+      )
       .finally(() => setTransitsLoading(false));
   }, [saved]);
 
@@ -92,7 +118,13 @@ export default function HubPage() {
 
   const skyRows = useMemo(() => {
     if (!transits) return [];
-    type Row = { key: string; glyph: string; name: string; detail: string; favorable: boolean };
+    type Row = {
+      key: string;
+      glyph: string;
+      name: string;
+      detail: string;
+      favorable: boolean;
+    };
     const rows: Row[] = [];
 
     if (transits.moon_position) {
@@ -119,7 +151,9 @@ export default function HubPage() {
       if (isMoonAspect) continue;
       rows.push({
         key: `${t.transiting_planet}-${t.natal_planet}-${t.aspect}`,
-        glyph: PLANET_SYMBOLS[t.transiting_planet] ?? t.transiting_planet.slice(0, 2),
+        glyph:
+          PLANET_SYMBOLS[t.transiting_planet] ??
+          t.transiting_planet.slice(0, 2),
         name: `Transiting ${t.transiting_planet} ${t.aspect} natal ${t.natal_planet}`,
         detail: `${t.is_applying ? "Applying" : "Separating"} — orb ${formatDegree(t.orb)}`,
         favorable: t.is_harmonious,
@@ -135,7 +169,9 @@ export default function HubPage() {
       router.push("/chart");
       return;
     }
-    router.push(`/reading/${saved.id}?tab=ask${q ? `&q=${encodeURIComponent(q)}` : ""}`);
+    router.push(
+      `/reading/${saved.id}?tab=ask${q ? `&q=${encodeURIComponent(q)}` : ""}`,
+    );
   };
 
   return (
@@ -144,7 +180,9 @@ export default function HubPage() {
 
       <div className="hub-header">
         <div className="eyebrow">
-          {sunPosition ? `Sun in ${sunPosition.sign} · House ${sunPosition.house}` : "Casting your sky…"}
+          {sunPosition
+            ? `Sun in ${sunPosition.sign} · House ${sunPosition.house}`
+            : "Casting your sky…"}
         </div>
         <h1>Welcome back, {firstName}.</h1>
         <div className="today">
@@ -157,130 +195,147 @@ export default function HubPage() {
         </div>
       </div>
 
+      <div className="consult-banner">
+        <div className="cb-left">
+          <h2>Ask the Astrologer</h2>
+          <p>
+            Your chart is open. Ask anything about your nativity — planets,
+            houses, timing, temperament.
+          </p>
+        </div>
+        <div className="cb-right">
+          <form className="cb-input" onSubmit={handleAsk}>
+            <input
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              placeholder="What does my chart say about…"
+            />
+            <button type="submit">Ask</button>
+          </form>
+          <div className="cb-remaining">
+            {remaining} question{remaining === 1 ? "" : "s"} remaining today
+          </div>
+        </div>
+      </div>
+
       <div className="hub-grid">
-        <div className="ledger" id="today-sky">
-          <div className="eyebrow" style={{ marginBottom: 8 }}>
-            Today&apos;s Sky
-          </div>
-          <h3>Transits touching your chart</h3>
-          <div className="meta">
-            {saved ? "Calculated against your natal chart · Ptolemaic orbs" : "Cast a chart to see your live transits"}
-          </div>
-
-          {transitsLoading && <p style={{ fontStyle: "italic", color: "var(--ink-soft)" }}>Reading the sky…</p>}
-          {transitsError && <p style={{ color: "var(--terracotta)" }}>{transitsError}</p>}
-          {saved === null && (
-            <p>
-              <Link href="/chart" style={{ color: "var(--bronze-deep)" }}>
-                Cast your chart
-              </Link>{" "}
-              to unlock today&apos;s transits, dignities and readings.
-            </p>
-          )}
-
-          {skyRows.map((row) => (
-            <div className="transit-row" key={row.key}>
-              <div className="glyph">{row.glyph}</div>
-              <div>
-                <div className="t-name">{row.name}</div>
-                <div className="t-detail">{row.detail}</div>
-              </div>
-              <div className={`t-tag${row.favorable ? "" : " muted"}`}>{row.favorable ? "Favorable" : "Caution"}</div>
+        <div className="hub-col-left">
+          <div className="ledger" id="today-sky">
+            <div className="eyebrow" style={{ marginBottom: 8 }}>
+              Today&apos;s Sky
             </div>
-          ))}
-
-          {skyRows.length > 0 && (
-            <div className="go-deeper" style={{ marginTop: 16 }}>
-              Each transit traces back to its doctrine — Valens on the Moon applying, Ptolemy on squares between
-              signs of aversion.
+            <h3>Transits touching your chart</h3>
+            <div className="meta">
+              {saved
+                ? "Calculated against your natal chart · Ptolemaic orbs"
+                : "Cast a chart to see your live transits"}
             </div>
-          )}
-        </div>
 
-        <div className="side-card">
-          <h4>Your Records</h4>
-          <div className="doc-list">
-            {saved ? (
-              <>
-                <Link href={`/reading/${saved.id}?tab=chart`}>
-                  Full natal chart <span className="arrow">→</span>
-                </Link>
-                <Link href={`/reading/${saved.id}?tab=analysis`}>
-                  Nativity reading <span className="arrow">→</span>
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link href="/chart">
-                  Full natal chart <span className="arrow">→</span>
-                </Link>
-                <Link href="/chart">
-                  Nativity reading <span className="arrow">→</span>
-                </Link>
-              </>
+            {transitsLoading && (
+              <p style={{ fontStyle: "italic", color: "var(--ink-soft)" }}>
+                Reading the sky…
+              </p>
             )}
-            <a className="disabled">
-              Annual profection 2026 <span className="arrow">→</span>
-            </a>
-            <a className="disabled">
-              Saved elections <span className="arrow">→</span>
-            </a>
-          </div>
-        </div>
+            {transitsError && (
+              <p style={{ color: "var(--terracotta)" }}>{transitsError}</p>
+            )}
+            {saved === null && (
+              <p>
+                <Link href="/chart" style={{ color: "var(--bronze-deep)" }}>
+                  Cast your chart
+                </Link>{" "}
+                to unlock today&apos;s transits, dignities and readings.
+              </p>
+            )}
 
-        <div className="consult-banner">
-          <div className="cb-left">
-            <h2>Ask the Astrologer</h2>
-            <p>
-              Your chart is open. Ask anything about your nativity — planets, houses, timing, temperament.
-            </p>
+            {skyRows.map((row) => (
+              <div className="transit-row" key={row.key}>
+                <div className="glyph">{row.glyph}</div>
+                <div>
+                  <div className="t-name">{row.name}</div>
+                  <div className="t-detail">{row.detail}</div>
+                </div>
+                <div className={`t-tag${row.favorable ? "" : " muted"}`}>
+                  {row.favorable ? "Favorable" : "Caution"}
+                </div>
+              </div>
+            ))}
+
+            {skyRows.length > 0 && (
+              <div className="go-deeper" style={{ marginTop: 16 }}>
+                Each transit traces back to its doctrine — Valens on the Moon
+                applying, Ptolemy on squares between signs of aversion.
+              </div>
+            )}
           </div>
-          <div className="cb-right">
-            <form className="cb-input" onSubmit={handleAsk}>
-              <input
-                value={question}
-                onChange={(e) => setQuestion(e.target.value)}
-                placeholder="What does my chart say about…"
-              />
-              <button type="submit">Ask</button>
-            </form>
-            <div className="cb-remaining">
-              {remaining} question{remaining === 1 ? "" : "s"} remaining today
+
+          <div className="ledger">
+            <div className="eyebrow" style={{ marginBottom: 8 }}>
+              Your Techniques
+            </div>
+            <h3>What your chart still has to say</h3>
+            <p style={{ marginBottom: 0 }}>
+              Every traditional technique, in one place — no need to go looking.
+            </p>
+            <div className="feature-grid">
+              {FEATURES.map((f) => {
+                const inner = (
+                  <>
+                    {f.pro && <span className="pro">PRO</span>}
+                    <span className="glyph">{f.glyph}</span>
+                    <span className="name">{f.name}</span>
+                    <span className="desc">{f.desc}</span>
+                  </>
+                );
+                return f.tab && saved ? (
+                  <Link
+                    href={`/reading/${saved.id}?tab=${f.tab}`}
+                    className="feature-tile"
+                    style={{ cursor: "pointer", display: "block" }}
+                    key={f.name}
+                  >
+                    {inner}
+                  </Link>
+                ) : (
+                  <div className="feature-tile" key={f.name}>
+                    {inner}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
 
-        <div className="ledger">
-          <div className="eyebrow" style={{ marginBottom: 8 }}>
-            Your Techniques
-          </div>
-          <h3>What your chart still has to say</h3>
-          <p style={{ marginBottom: 0 }}>Every traditional technique, in one place — no need to go looking.</p>
-          <div className="feature-grid">
-            {FEATURES.map((f) => {
-              const inner = (
+        <div className="hub-col-right">
+          <div className="side-card">
+            <h4>Your Records</h4>
+            <div className="doc-list">
+              {saved ? (
                 <>
-                  {f.pro && <span className="pro">PRO</span>}
-                  <span className="glyph">{f.glyph}</span>
-                  <span className="name">{f.name}</span>
-                  <span className="desc">{f.desc}</span>
+                  <Link href={`/reading/${saved.id}?tab=chart`}>
+                    Full natal chart <span className="arrow">→</span>
+                  </Link>
+                  <Link href={`/reading/${saved.id}?tab=analysis`}>
+                    Nativity reading <span className="arrow">→</span>
+                  </Link>
                 </>
-              );
-              return f.tab && saved ? (
-                <Link
-                  href={`/reading/${saved.id}?tab=${f.tab}`}
-                  className="feature-tile"
-                  style={{ cursor: "pointer", display: "block" }}
-                  key={f.name}
-                >
-                  {inner}
-                </Link>
               ) : (
-                <div className="feature-tile" key={f.name}>
-                  {inner}
-                </div>
-              );
-            })}
+                <>
+                  <Link href="/chart">
+                    Full natal chart <span className="arrow">→</span>
+                  </Link>
+                  <Link href="/chart">
+                    Nativity reading <span className="arrow">→</span>
+                  </Link>
+                </>
+              )}
+              <a className="disabled">
+                Annual profection 2026 <span className="arrow">→</span>
+              </a>
+              <a className="disabled">
+                Saved elections <span className="arrow">→</span>
+              </a>
+            </div>
           </div>
         </div>
       </div>

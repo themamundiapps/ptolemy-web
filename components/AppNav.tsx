@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import BrandGlyph from "@/components/BrandGlyph";
 import { getGoogleUser } from "@/lib/auth";
 import { getActiveChartId } from "@/lib/storage";
 
@@ -20,7 +21,9 @@ export default function AppNav() {
   return (
     <nav className="top">
       <Link href="/hub" className="brand">
-        <div className="glyph">♃</div>
+        <div className="glyph">
+          <BrandGlyph />
+        </div>
         <div>
           <span className="name">Ptolemy</span>
           <span className="sub">Traditional Astrology</span>

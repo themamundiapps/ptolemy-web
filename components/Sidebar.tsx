@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import BrandGlyph from "@/components/BrandGlyph";
 import { SIDEBAR_ITEMS, type TabKey } from "@/lib/tabs";
 
 export default function Sidebar({
@@ -16,7 +17,9 @@ export default function Sidebar({
     <aside className="sidebar">
       <div className="sidebar-sticky">
         <div className="brand">
-          <div className="glyph">♃</div>
+          <div className="glyph">
+            <BrandGlyph size={18} />
+          </div>
           <span className="name">Ptolemy</span>
         </div>
         <nav>

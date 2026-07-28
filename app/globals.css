@@ -24,16 +24,16 @@ body {
    Ported 1:1 from the approved mockup (parchment/ink/bronze/terracotta).
    ========================================================= */
 :root {
-  --parchment: #f2e9d8;
-  --parchment-deep: #e9dcc2;
-  --ink: #1e2a3a;
-  --ink-soft: #3c4a5c;
-  --bronze: #a9793f;
-  --bronze-deep: #8a6230;
+  --parchment: #ede6d6;
+  --parchment-deep: #e3dbc7;
+  --ink: #1b2438;
+  --ink-soft: #3c4658;
+  --bronze: #b08d57;
+  --bronze-deep: #8f6a35;
   --terracotta: #a8553c;
-  --rule: #c9b98f;
-  --card: #f8f3e6;
-  --shadow: 0 1px 0 rgba(30, 42, 58, 0.06);
+  --rule: rgba(27, 36, 56, 0.14);
+  --card: #f5f1e6;
+  --shadow: 0 1px 0 rgba(27, 36, 56, 0.06);
 }
 
 .pt-app {
@@ -143,7 +143,7 @@ body {
   margin-bottom: 6px;
 }
 .pt-app .hub-header h1 {
-  font-size: 2.1rem;
+  font-size: 2.6rem;
   font-weight: 500;
   margin: 0;
   color: var(--ink);
@@ -157,11 +157,17 @@ body {
 
 .pt-app .hub-grid {
   max-width: 1180px;
-  margin: 26px auto 60px;
+  margin: 0 auto 60px;
   padding: 0 40px;
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 24px;
+  align-items: start;
+}
+.pt-app .hub-col-left,
+.pt-app .hub-col-right {
+  display: flex;
+  flex-direction: column;
 }
 @media (max-width: 900px) {
   .pt-app .hub-grid {
@@ -1280,11 +1286,12 @@ body {
 
 /* ---- Consult the Astrologer banner (hub) ---- */
 .pt-app .consult-banner {
-  grid-column: 1 / -1;
-  background: #1b2438;
+  max-width: 1180px;
+  margin: 26px auto 32px;
+  padding: 40px 44px;
+  background: var(--ink);
   color: var(--parchment);
   border-radius: 2px;
-  padding: 40px 44px;
   display: flex;
   align-items: center;
   justify-content: space-between;
