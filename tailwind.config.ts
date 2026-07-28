@@ -10,14 +10,15 @@ const config: Config = {
     extend: {
       colors: {
         // Traditional parchment/bronze palette, used across every page.
+        // Kept 1:1 with the CSS custom properties in globals.css.
         parchment: "#EDE6D6",
-        "parchment-2": "#E4DAC5",
+        "parchment-2": "#E3DBC7",
         ink: "#1B2438",
-        "ink-2": "#2A3550",
+        "ink-2": "#3C4658",
         bronze: "#B08D57",
-        "bronze-dark": "#8A6B3D",
-        terracotta: "#8C3B2E",
-        line: "rgba(27,36,56,0.18)",
+        "bronze-dark": "#8F6A35",
+        terracotta: "#A8553C",
+        line: "rgba(27,36,56,0.14)",
       },
       fontFamily: {
         serif: ["var(--font-cormorant)", "Georgia", "serif"],

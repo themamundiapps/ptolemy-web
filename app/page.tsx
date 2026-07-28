@@ -76,7 +76,7 @@ export default function LandingPage() {
       <Nav onSignInClick={() => setPaywallOpen(true)} />
 
       <section className="mx-auto max-w-5xl px-6 pb-16 pt-20 text-center sm:px-10">
-          <p className="mb-6 font-ebgaramond text-xs uppercase tracking-[0.35em] text-terracotta">
+          <p className="mb-6 font-cinzel text-[11px] uppercase tracking-[0.16em] text-terracotta">
             After the Tetrabiblos and Valens&apos; Anthologies
           </p>
           <h1 className="mx-auto max-w-3xl font-cinzel text-4xl font-semibold leading-tight sm:text-5xl md:text-[50px]">
@@ -91,8 +91,8 @@ export default function LandingPage() {
           <div className="mt-14 flex flex-wrap items-center justify-center gap-x-16 gap-y-10">
             <svg viewBox="0 0 280 280" className="h-[280px] w-[280px] shrink-0">
               <circle cx="140" cy="140" r="128" fill="none" stroke="#1B2438" strokeWidth="1" />
-              <circle cx="140" cy="140" r="98" fill="none" stroke="#8A6B3D" strokeWidth="1" />
-              <g stroke="rgba(27,36,56,0.18)" strokeWidth="0.75">
+              <circle cx="140" cy="140" r="98" fill="none" stroke="#8F6A35" strokeWidth="1" />
+              <g stroke="rgba(27,36,56,0.14)" strokeWidth="0.75">
                 <line x1="140" y1="12" x2="140" y2="268" />
                 <line x1="12" y1="140" x2="268" y2="140" />
                 <line x1="49" y1="49" x2="231" y2="231" />
@@ -102,26 +102,26 @@ export default function LandingPage() {
                 <line x1="140" y1="42" x2="140" y2="238" transform="rotate(120 140 140)" />
                 <line x1="140" y1="42" x2="140" y2="238" transform="rotate(150 140 140)" />
               </g>
-              <line x1="12" y1="140" x2="268" y2="140" stroke="#8C3B2E" strokeWidth="1.5" />
-              <text x="248" y="145" fontFamily="var(--font-ebgaramond)" fontSize="13" fill="#2A3550">
+              <line x1="12" y1="140" x2="268" y2="140" stroke="#A8553C" strokeWidth="1.5" />
+              <text x="248" y="145" fontFamily="var(--font-cormorant)" fontSize="13" fill="#3C4658">
                 ☉
               </text>
-              <text x="220" y="66" fontFamily="var(--font-ebgaramond)" fontSize="13" fill="#2A3550">
+              <text x="220" y="66" fontFamily="var(--font-cormorant)" fontSize="13" fill="#3C4658">
                 ☽
               </text>
-              <text x="128" y="24" fontFamily="var(--font-ebgaramond)" fontSize="13" fill="#2A3550">
+              <text x="128" y="24" fontFamily="var(--font-cormorant)" fontSize="13" fill="#3C4658">
                 ☿
               </text>
-              <text x="46" y="66" fontFamily="var(--font-ebgaramond)" fontSize="13" fill="#2A3550">
+              <text x="46" y="66" fontFamily="var(--font-cormorant)" fontSize="13" fill="#3C4658">
                 ♀
               </text>
-              <text x="18" y="145" fontFamily="var(--font-ebgaramond)" fontSize="13" fill="#2A3550">
+              <text x="18" y="145" fontFamily="var(--font-cormorant)" fontSize="13" fill="#3C4658">
                 ♂
               </text>
-              <text x="46" y="220" fontFamily="var(--font-ebgaramond)" fontSize="13" fill="#2A3550">
+              <text x="46" y="220" fontFamily="var(--font-cormorant)" fontSize="13" fill="#3C4658">
                 ♃
               </text>
-              <text x="128" y="262" fontFamily="var(--font-ebgaramond)" fontSize="13" fill="#2A3550">
+              <text x="128" y="262" fontFamily="var(--font-cormorant)" fontSize="13" fill="#3C4658">
                 ♄
               </text>
             </svg>
@@ -144,10 +144,10 @@ export default function LandingPage() {
               >
                 <span className="font-cinzel text-2xl text-bronze-dark">{p.degree}</span>
                 <div>
-                  <div className="mb-1.5 font-cinzel text-xs tracking-[0.15em] text-terracotta">{p.num}</div>
+                  <div className="mb-1.5 font-cinzel text-[11px] tracking-[0.16em] text-terracotta">{p.num}</div>
                   <h3 className="font-cinzel text-[19px] font-semibold">{p.title}</h3>
                 </div>
-                <p className="font-crimson text-[15.5px] leading-relaxed text-ink-2">{p.body}</p>
+                <p className="font-cormorant text-base leading-relaxed text-ink-2">{p.body}</p>
               </div>
             ))}
           </div>
@@ -172,7 +172,7 @@ export default function LandingPage() {
                 </span>
                 <div className="sm:mt-6">
                   <h4 className="mb-2 font-cinzel text-[17px] font-semibold">{s.title}</h4>
-                  <p className="font-crimson text-[15px] text-ink-2">{s.body}</p>
+                  <p className="font-cormorant text-[15px] text-ink-2">{s.body}</p>
                 </div>
               </div>
             ))}
@@ -181,7 +181,7 @@ export default function LandingPage() {
       </section>
 
       <section className="border-t border-line bg-parchment-2 px-6 py-24 text-center">
-        <p className="font-ebgaramond text-xs uppercase tracking-[0.35em] text-terracotta">
+        <p className="font-cinzel text-[11px] uppercase tracking-[0.16em] text-terracotta">
           Cast in minutes
         </p>
         <h2 className="mx-auto mt-4 max-w-xl font-cinzel text-3xl font-semibold text-ink">
