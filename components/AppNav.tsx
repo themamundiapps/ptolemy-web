@@ -36,9 +36,8 @@ export default function AppNav() {
         <Link href={tabHref("synastry")}>Synastry</Link>
         <a href="/#process">Guide</a>
       </div>
-      <div className="account">
+      <div className="account" title={name}>
         <div className="av">{name.charAt(0).toUpperCase() || "G"}</div>
-        {name}
       </div>
     </nav>
   );

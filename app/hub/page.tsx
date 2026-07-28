@@ -178,6 +178,7 @@ export default function HubPage() {
     <div className="pt-app min-h-screen">
       <AppNav />
 
+      <div className="hub-main">
       <div className="hub-header">
         <div className="eyebrow">
           {sunPosition
@@ -196,25 +197,21 @@ export default function HubPage() {
       </div>
 
       <div className="consult-banner">
-        <div className="cb-left">
-          <h2>Ask the Astrologer</h2>
-          <p>
-            Your chart is open. Ask anything about your nativity — planets,
-            houses, timing, temperament.
-          </p>
-        </div>
-        <div className="cb-right">
-          <form className="cb-input" onSubmit={handleAsk}>
-            <input
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              placeholder="What does my chart say about…"
-            />
-            <button type="submit">Ask</button>
-          </form>
-          <div className="cb-remaining">
-            {remaining} question{remaining === 1 ? "" : "s"} remaining today
-          </div>
+        <h2>Ask the Astrologer</h2>
+        <p>
+          Your chart is open. Ask anything about your nativity — planets,
+          houses, timing, temperament.
+        </p>
+        <form className="cb-input" onSubmit={handleAsk}>
+          <input
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            placeholder="What does my chart say about…"
+          />
+          <button type="submit">Ask</button>
+        </form>
+        <div className="cb-remaining">
+          {remaining} question{remaining === 1 ? "" : "s"} remaining today
         </div>
       </div>
 
@@ -338,6 +335,7 @@ export default function HubPage() {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );
