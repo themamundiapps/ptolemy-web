@@ -78,7 +78,9 @@ function DayCard({
         <span style={{ color: "var(--bronze-deep)", marginRight: 8 }}>{rank}</span>
         {formatDayHeading(day.date)}
       </h4>
-      <p className="elect-meta">Best time: {humanizedTimeOfDay(day.best_time)}</p>
+      <p className="elect-meta">
+        Best time: {day.best_time} <span className="elect-time-qualitative">({humanizedTimeOfDay(day.best_time)})</span>
+      </p>
       {rulerPlanet && (
         <p className="elect-ruler">
           {PLANET_SYMBOLS[rulerPlanet] ?? ""} Ruled by {rulerPlanet}
@@ -181,6 +183,12 @@ export default function ElectionalTab({ birth }: { birth: BirthData }) {
               <span className="t-desc">{t.description}</span>
             </button>
           ))}
+        </div>
+        <div className="go-deeper">
+          Each day in your range is checked against a traditional three-tier checklist, not a single averaged score:
+          essential conditions that must all hold for a day to be usable at all, at least one supporting aspect to
+          call it Favorable, and desirable extras — a waxing Moon, a benefic day-ruler — that lift it to Auspicious.
+          After the electional method of the Hellenistic and medieval tradition.
         </div>
       </div>
     );

@@ -39,6 +39,18 @@ function ReadingPageInner() {
   const [tab, setTab] = useState<TabKey>(DEFAULT_TAB);
   const [remaining, setRemaining] = useState(FREE_MESSAGE_LIMIT);
   const [initialQuestion, setInitialQuestion] = useState("");
+  const [headerCollapsed, setHeaderCollapsed] = useState(false);
+
+  // The full "A Reading of the Nativity" header runs ~250px tall -- fine at
+  // the top of the page, but it pushed every tab's actual content below the
+  // fold on every visit. Collapses to a compact name+sect bar once scrolled
+  // past, expands back at the top.
+  useEffect(() => {
+    const onScroll = () => setHeaderCollapsed(window.scrollY > 80);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     setUserId(getGoogleUser()?.id ?? getOrCreateDeviceId());
@@ -113,11 +125,9 @@ function ReadingPageInner() {
       <div className="app-shell">
         <Sidebar active={tab} onSelect={handleSelectTab} />
         <main className="app-main">
-          <div className="read-header" style={{ maxWidth: 880, margin: "0 auto", padding: "0 0 20px" }}>
+          <div className={`read-header${headerCollapsed ? " is-collapsed" : ""}`}>
             <div className="eyebrow">A Reading of the Nativity</div>
-            <h1 style={{ fontSize: "1.7rem" }}>
-              {saved.birthData.name ? `The Chart of ${saved.birthData.name}` : "Your Chart"}
-            </h1>
+            <h1>{saved.birthData.name ? `The Chart of ${saved.birthData.name}` : "Your Chart"}</h1>
             <div className="meta">
               {saved.birthData.date} · {saved.birthData.time} · {saved.birthData.place_name}
             </div>

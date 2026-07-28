@@ -409,24 +409,62 @@ body {
    READING
    ========================================================= */
 .pt-app .read-header {
-  max-width: 1180px;
+  position: sticky;
+  top: 0;
+  z-index: 15;
+  background: var(--parchment);
+  max-width: 880px;
   margin: 0 auto;
-  padding: 34px 40px 10px;
+  padding: 0 0 20px;
   text-align: center;
+  transition: padding 0.15s ease;
 }
 .pt-app .read-header .eyebrow {
   margin-bottom: 8px;
+  transition:
+    opacity 0.15s ease,
+    max-height 0.15s ease,
+    margin 0.15s ease;
 }
 .pt-app .read-header h1 {
-  font-size: 2.3rem;
+  font-size: 1.7rem;
   margin: 0;
   font-weight: 500;
+  transition: font-size 0.15s ease;
 }
 .pt-app .read-header .meta {
   font-size: 0.9rem;
   color: var(--ink-soft);
   font-style: italic;
   margin-top: 6px;
+  transition:
+    opacity 0.15s ease,
+    max-height 0.15s ease,
+    margin 0.15s ease;
+}
+
+/* Collapsed once scrolled past: just the name + sect, on one compact line,
+   pinned via .read-header's own position:sticky above. */
+.pt-app .read-header.is-collapsed {
+  padding: 10px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  border-bottom: 1px solid var(--rule);
+}
+.pt-app .read-header.is-collapsed .eyebrow,
+.pt-app .read-header.is-collapsed .meta {
+  opacity: 0;
+  max-height: 0;
+  margin: 0;
+  overflow: hidden;
+}
+.pt-app .read-header.is-collapsed h1 {
+  font-size: 1.05rem;
+}
+.pt-app .read-header.is-collapsed .sect-badge {
+  margin: 0;
 }
 
 .pt-app .read-toc {
@@ -538,8 +576,10 @@ body {
   color: var(--ink);
 }
 .pt-app .section-card p {
-  font-size: 1.02rem;
-  line-height: 1.72;
+  max-width: 70ch;
+  font-size: 1.08rem;
+  font-weight: 500;
+  line-height: 1.8;
   color: var(--ink-soft);
   margin: 0 0 14px;
 }
@@ -727,6 +767,17 @@ body {
 .pt-app .md p {
   margin: 0 0 0.9em;
   line-height: 1.65;
+}
+/* Chart Analysis specifically: the tab with the most running prose in the
+   product. Cormorant Garamond is a light-weight display face by design --
+   fine for short italic captions, too thin for sustained reading -- so bump
+   weight/size/line-height and cap the measure at a comfortable ~70 characters
+   rather than letting lines run the section-card's full width. */
+.pt-app .section-card .md p {
+  max-width: 70ch;
+  font-size: 1.08rem;
+  font-weight: 500;
+  line-height: 1.8;
 }
 .pt-app .md strong {
   font-weight: 600;
@@ -1201,6 +1252,10 @@ body {
   font-size: 0.85rem;
   color: var(--ink-soft);
   margin: 0 0 4px;
+}
+.pt-app .elect-time-qualitative {
+  opacity: 0.7;
+  font-style: italic;
 }
 .pt-app .elect-ruler {
   font-size: 0.8rem;

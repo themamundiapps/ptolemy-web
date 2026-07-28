@@ -91,6 +91,10 @@ export default function TransitsTab({ birth }: { birth: BirthData }) {
             <div className="d-tag">{formatDegree(t.orb)}</div>
           </div>
         ))}
+        <div className="go-deeper">
+          Calculated live against your natal chart, using the same Ptolemaic orbs and whole-sign houses as the rest
+          of your reading — not a generic daily horoscope.
+        </div>
       </div>
     </div>
   );
