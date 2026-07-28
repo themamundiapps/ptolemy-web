@@ -1269,6 +1269,34 @@ body {
   color: var(--bronze-deep);
   margin: 0 0 10px;
 }
+.pt-app .elect-caution {
+  font-size: 0.85rem;
+  color: var(--terracotta);
+  border-left: 2px solid var(--terracotta);
+  padding: 6px 0 6px 12px;
+  margin: 0 0 14px;
+  line-height: 1.55;
+}
+
+.pt-app .moon-state-row {
+  display: flex;
+  gap: 8px;
+  margin: 2px 0 14px 48px;
+}
+.pt-app .moon-state-badge {
+  font-family: var(--font-cinzel), serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--favor);
+  border: 1px solid var(--favor);
+  padding: 3px 9px;
+  border-radius: 20px;
+}
+.pt-app .moon-state-badge.active {
+  color: var(--terracotta);
+  border-color: var(--terracotta);
+}
 .pt-app .elect-reasons {
   margin: 0 0 14px;
   padding-left: 18px;

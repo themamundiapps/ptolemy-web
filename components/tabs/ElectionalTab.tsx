@@ -90,6 +90,8 @@ function DayCard({
         {symbol} {day.quality_label}
       </p>
 
+      {day.caution && <p className="elect-caution">{day.caution}</p>}
+
       {day.reasons.length > 0 && (
         <ul className="elect-reasons">
           {day.reasons.map((r, i) => (

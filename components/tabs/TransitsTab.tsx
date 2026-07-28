@@ -57,6 +57,14 @@ export default function TransitsTab({ birth }: { birth: BirthData }) {
             {transits.moon_position.phase_name})
           </div>
         </div>
+        <div className="moon-state-row">
+          <span className={`moon-state-badge${transits.moon_position.voc ? " active" : ""}`}>
+            {transits.moon_position.voc ? "Void of course" : "Not void of course"}
+          </span>
+          <span className={`moon-state-badge${transits.moon_position.via_combusta ? " active" : ""}`}>
+            {transits.moon_position.via_combusta ? "Via combusta" : "Not via combusta"}
+          </span>
+        </div>
         {transits.moon_natal_aspect && (
           <div className="data-row">
             <div className="d-label">{PLANET_SYMBOLS[transits.moon_natal_aspect.natal_planet] ?? "☽"}</div>
@@ -67,6 +75,12 @@ export default function TransitsTab({ birth }: { birth: BirthData }) {
             <div className="d-tag">{formatDegree(transits.moon_natal_aspect.orb)}</div>
           </div>
         )}
+        <div className="go-deeper">
+          The Moon is the axis of every electional reading below — void of course here uses the strict, classical
+          definition (Lilly): she must complete an aspect with another planet before leaving her current sign.
+          Some other software uses a more permissive definition that also counts an aspect completing after a sign
+          change; Ptolemy deliberately doesn&apos;t.
+        </div>
       </div>
 
       <div className="data-card">

@@ -66,6 +66,8 @@ export interface MoonPosition {
   house: number;
   phase_name: string;
   phase_angle: number;
+  voc: boolean;
+  via_combusta: boolean;
 }
 
 export interface TransitsResponse {
@@ -122,6 +124,9 @@ export interface ElectionalDay {
   quality_label: string;
   reasons: string[];
   hits: ElectionalHit[];
+  moon_voc: boolean;
+  via_combusta: boolean;
+  caution: string | null;
 }
 
 export interface ElectionalResult {
