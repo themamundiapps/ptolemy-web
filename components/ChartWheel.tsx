@@ -1,5 +1,5 @@
 import type { ChartResponse } from "@/lib/types";
-import { ASPECT_SYMBOLS, HARMONIOUS_ASPECTS, PLANET_ORDER, SIGN_ORDER, SIGN_SYMBOLS } from "@/lib/astro";
+import { ASPECT_SYMBOLS, formatDegree, HARMONIOUS_ASPECTS, PLANET_ORDER, SIGN_ORDER, SIGN_SYMBOLS } from "@/lib/astro";
 
 const SIZE = 560;
 const CENTER = SIZE / 2;
@@ -7,7 +7,7 @@ const OUTER_R = 232;
 const SIGN_RING_R = 198;
 const HOUSE_NUM_R = 178;
 const PLANET_R = 148;
-const ASPECT_R = 96;
+const ASPECT_R = 58;
 const ANGLE_LABEL_R = OUTER_R + 18;
 // Minimum angular gap (degrees) between two planet glyphs at PLANET_R so
 // their circles (r=15) never touch. Below this, a planet gets nudged
@@ -204,7 +204,15 @@ export default function ChartWheel({ chart }: { chart: ChartResponse }) {
         return (
           <g key={sign}>
             <line x1={inner.x} y1={inner.y} x2={outer.x} y2={outer.y} stroke="#B08D57" strokeOpacity={0.28} />
-            <text x={signMid.x} y={signMid.y} fill="#1B2438" fontSize={19} textAnchor="middle" dominantBaseline="middle">
+            <text
+              x={signMid.x}
+              y={signMid.y}
+              fill="#1B2438"
+              fillOpacity={0.5}
+              fontSize={14}
+              textAnchor="middle"
+              dominantBaseline="middle"
+            >
               {SIGN_SYMBOLS[sign]}
             </text>
             <text
@@ -257,6 +265,7 @@ export default function ChartWheel({ chart }: { chart: ChartResponse }) {
         const p1 = pointOnWheel(a.longitude, ascLon, ASPECT_R);
         const p2 = pointOnWheel(b.longitude, ascLon, ASPECT_R);
         const harmonious = HARMONIOUS_ASPECTS.has(aspect.aspect);
+        const hard = aspect.aspect === "square" || aspect.aspect === "opposition";
         return (
           <line
             key={`${aspect.planet_a}-${aspect.planet_b}-${i}`}
@@ -265,8 +274,9 @@ export default function ChartWheel({ chart }: { chart: ChartResponse }) {
             x2={p2.x}
             y2={p2.y}
             stroke={harmonious ? "#B08D57" : "#A8553C"}
-            strokeOpacity={0.65}
-            strokeWidth={aspect.aspect === "conjunction" ? 1.5 : 1}
+            strokeOpacity={0.32}
+            strokeWidth={0.75}
+            strokeDasharray={hard ? "3 3" : undefined}
           >
             <title>
               {aspect.planet_a} {ASPECT_SYMBOLS[aspect.aspect] ?? aspect.aspect} {aspect.planet_b} (orb {aspect.orb.toFixed(1)}°)
@@ -285,13 +295,17 @@ export default function ChartWheel({ chart }: { chart: ChartResponse }) {
         const nudged = Math.min(rawDiff, 360 - rawDiff) > 0.01;
         return (
           <g key={name}>
+            <title>
+              {name} {formatDegree(planet.sign_longitude)} {planet.sign}
+              {planet.retrograde ? " ℞ retrograde" : ""}
+            </title>
             {nudged && (
               <line x1={truePoint.x} y1={truePoint.y} x2={p.x} y2={p.y} stroke="#B08D57" strokeOpacity={0.35} strokeWidth={0.75} />
             )}
             <circle cx={p.x} cy={p.y} r={15} fill="#F5F1E6" stroke="#B08D57" />
             <PlanetGlyph name={name} x={p.x} y={p.y} color="#1B2438" />
             {planet.retrograde && (
-              <text x={p.x + 14} y={p.y - 11} fill="#A8553C" fontSize={11}>
+              <text x={p.x + 11} y={p.y - 11} fill="#1B2438" fontSize={8} textAnchor="middle" dominantBaseline="middle">
                 ℞
               </text>
             )}

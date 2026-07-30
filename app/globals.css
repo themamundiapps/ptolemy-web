@@ -36,6 +36,11 @@ body {
   --card: #f5f1e6;
   --shadow: 0 1px 0 rgba(27, 36, 56, 0.06);
 
+  /* Button system rule: enabled primary actions are solid bronze; disabled
+     ones are the same bronze at reduced opacity -- never neutral gray/ink,
+     which reads as "broken" rather than "not ready yet". */
+  --btn-disabled-opacity: 0.45;
+
   /* Typography scale. Cormorant Garamond is a display face with a low
      x-height, so it reads ~2-3px smaller than a UI font at the same nominal
      size -- these tiers compensate with larger sizes and heavier weight
@@ -706,6 +711,35 @@ body {
   color: var(--ink-soft);
   margin: 0 0 12px;
 }
+.pt-app .chat-suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0 0 18px;
+}
+.pt-app .chat-suggestion {
+  text-align: left;
+  border: 1px solid var(--bronze);
+  background: var(--parchment);
+  color: var(--bronze-deep);
+  border-radius: 20px;
+  padding: 10px 16px;
+  font-family: var(--font-cormorant), serif;
+  font-size: var(--text-secondary-size);
+  line-height: var(--text-secondary-line);
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+.pt-app .chat-suggestion:hover:not(:disabled) {
+  background: var(--bronze);
+  color: var(--ink);
+}
+.pt-app .chat-suggestion:disabled {
+  opacity: var(--btn-disabled-opacity);
+  cursor: not-allowed;
+}
 .pt-app .chat-dock .messages {
   display: flex;
   flex-direction: column;
@@ -752,8 +786,8 @@ body {
 }
 .pt-app .chat-dock .input button {
   border: none;
-  background: var(--ink);
-  color: var(--parchment);
+  background: var(--bronze);
+  color: var(--ink);
   font-family: var(--font-cinzel), serif;
   font-size: 0.62rem;
   letter-spacing: 0.1em;
@@ -761,8 +795,11 @@ body {
   padding: 0 18px;
   cursor: pointer;
 }
+.pt-app .chat-dock .input button:hover:not(:disabled) {
+  background: var(--bronze-deep);
+}
 .pt-app .chat-dock .input button:disabled {
-  opacity: 0.4;
+  opacity: var(--btn-disabled-opacity);
   cursor: not-allowed;
 }
 
@@ -978,6 +1015,23 @@ body {
 .pt-app .app-main .tab-body {
   max-width: 880px;
   margin: 0 auto;
+}
+/* Chart tab only: the wheel + planets table pair needs more room side by
+   side than the 880px prose/card measure gives every other tab. */
+.pt-app .app-main .tab-body:has(.chart-layout) {
+  max-width: 1100px;
+}
+.pt-app .chart-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .pt-app .chart-layout {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
 }
 
 @media (max-width: 900px) {
@@ -1266,8 +1320,8 @@ body {
 }
 .pt-app .btn-primary {
   border: none;
-  background: var(--ink);
-  color: var(--parchment);
+  background: var(--bronze);
+  color: var(--ink);
   font-family: var(--font-cinzel), serif;
   font-size: 0.65rem;
   letter-spacing: 0.1em;
@@ -1275,11 +1329,11 @@ body {
   padding: 11px 22px;
   cursor: pointer;
 }
-.pt-app .btn-primary:hover {
-  background: var(--ink-soft);
+.pt-app .btn-primary:hover:not(:disabled) {
+  background: var(--bronze-deep);
 }
 .pt-app .btn-primary:disabled {
-  opacity: 0.4;
+  opacity: var(--btn-disabled-opacity);
   cursor: not-allowed;
 }
 .pt-app .btn-link {
@@ -1454,6 +1508,31 @@ body {
   color: var(--ink-soft);
   margin: 0 0 8px;
   line-height: var(--text-secondary-line);
+}
+
+/* ---- Synastry: intro copy + form, side by side on wide screens ---- */
+.pt-app .synastry-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .pt-app .synastry-layout {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
+.pt-app .synastry-intro {
+  padding-top: 4px;
+}
+.pt-app .synastry-intro h4 {
+  font-family: var(--font-cinzel), serif;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  font-size: 1rem;
+  margin: 0 0 0.6em;
 }
 
 /* ---- clickable data rows (open a detail modal) ---- */

@@ -29,6 +29,13 @@ export function getChart(id: string): SavedChart | null {
   return readCharts()[id] ?? null;
 }
 
+/** Every chart saved on this device, most recently cast first -- used to
+ * offer "compare with a saved chart" instead of re-typing birth details
+ * (e.g. Synastry). */
+export function listCharts(): SavedChart[] {
+  return Object.values(readCharts()).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
 export function appendMessage(id: string, message: ChatMessage) {
   const charts = readCharts();
   const chart = charts[id];

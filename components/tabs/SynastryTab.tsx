@@ -1,15 +1,33 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import BirthDataForm from "@/components/BirthDataForm";
 import { ApiError, fetchSynastry } from "@/lib/api";
 import { ASPECT_SYMBOLS, PLANET_SYMBOLS } from "@/lib/astro";
-import type { BirthData, SynastryResult } from "@/lib/types";
+import { listCharts } from "@/lib/storage";
+import type { BirthData, SavedChart, SynastryResult } from "@/lib/types";
 
-export default function SynastryTab({ personA, userId }: { personA: BirthData; userId: string }) {
+export default function SynastryTab({
+  personA,
+  userId,
+  currentChartId,
+}: {
+  personA: BirthData;
+  userId: string;
+  currentChartId?: string;
+}) {
   const [result, setResult] = useState<SynastryResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [otherCharts, setOtherCharts] = useState<SavedChart[]>([]);
+  const [showManual, setShowManual] = useState(false);
+
+  // Read from localStorage after mount only -- listCharts() returns [] during
+  // SSR (no window), so reading it at render time would mismatch the client's
+  // first render and trip a hydration warning.
+  useEffect(() => {
+    setOtherCharts(listCharts().filter((c) => c.id !== currentChartId));
+  }, [currentChartId]);
 
   const handleSubmit = async (personB: BirthData) => {
     setLoading(true);
@@ -43,16 +61,57 @@ export default function SynastryTab({ personA, userId }: { personA: BirthData; u
   };
 
   if (!result) {
+    const hasSaved = otherCharts.length > 0;
     return (
-      <div className="data-card" style={{ display: "flex", justifyContent: "center" }}>
-        <BirthDataForm
-          onSubmit={handleSubmit}
-          loading={loading}
-          error={error}
-          title="Compare with another chart"
-          submitLabel="Compare charts"
-          helperText="Enter the other person's birth details to compare charts."
-        />
+      <div className="synastry-layout">
+        <div className="synastry-intro md">
+          <h4>What synastry delivers</h4>
+          <p>
+            Two nativities read against each other by the same traditional method as the rest of Ptolemy — no
+            generic compatibility score.
+          </p>
+          <ul>
+            <li>Inter-aspects between both charts, with orbs</li>
+            <li>House overlay — where each person&apos;s planets land in the other&apos;s houses</li>
+            <li>A full written reading, source-grounded like every chart in Ptolemy</li>
+          </ul>
+        </div>
+        <div>
+          {hasSaved && (
+            <div className="data-card">
+              <h4>Compare with a saved chart</h4>
+              {otherCharts.map((c) => (
+                <button
+                  key={c.id}
+                  type="button"
+                  className="data-row"
+                  disabled={loading}
+                  onClick={() => handleSubmit(c.birthData)}
+                >
+                  <div className="d-label">○</div>
+                  <div className="d-main">{c.birthData.name || "Untitled chart"}</div>
+                  <div className="d-tag">{c.birthData.date}</div>
+                </button>
+              ))}
+              {error && <p style={{ color: "var(--terracotta)", marginTop: 10 }}>{error}</p>}
+              <button type="button" className="btn-link" style={{ marginTop: 14 }} onClick={() => setShowManual((v) => !v)}>
+                {showManual ? "Hide manual entry" : "or enter details manually"}
+              </button>
+            </div>
+          )}
+          {(!hasSaved || showManual) && (
+            <div style={{ display: "flex", justifyContent: hasSaved ? "flex-start" : "center", marginTop: hasSaved ? 20 : 0 }}>
+              <BirthDataForm
+                onSubmit={handleSubmit}
+                loading={loading}
+                error={hasSaved ? null : error}
+                title="Compare with another chart"
+                submitLabel="Compare charts"
+                helperText="Enter the other person's birth details to compare charts."
+              />
+            </div>
+          )}
+        </div>
       </div>
     );
   }

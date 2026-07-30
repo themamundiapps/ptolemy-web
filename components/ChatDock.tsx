@@ -1,13 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Markdown from "@/components/Markdown";
 import { ApiError, chatWithAstrologer } from "@/lib/api";
+import { buildChatSuggestions } from "@/lib/chatSuggestions";
 import { FREE_MESSAGE_LIMIT } from "@/lib/storage";
-import type { BirthData, ChatMessage } from "@/lib/types";
+import type { BirthData, ChartResponse, ChatMessage } from "@/lib/types";
 
 export default function ChatDock({
   birth,
+  chart,
   userId,
   messages,
   onMessagesChange,
@@ -15,6 +17,7 @@ export default function ChatDock({
   initialInput = "",
 }: {
   birth: BirthData;
+  chart: ChartResponse;
   userId: string;
   messages: ChatMessage[];
   onMessagesChange: (messages: ChatMessage[]) => void;
@@ -26,10 +29,9 @@ export default function ChatDock({
   const [error, setError] = useState<string | null>(null);
 
   const limitReached = remaining <= 0;
+  const suggestions = useMemo(() => buildChatSuggestions(chart), [chart]);
 
-  const handleSend = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const content = input.trim();
+  const sendMessage = async (content: string) => {
     if (!content || sending || limitReached) return;
 
     const withUser = [...messages, { role: "user", content } as ChatMessage];
@@ -48,10 +50,27 @@ export default function ChatDock({
     }
   };
 
+  const handleSend = (e: React.FormEvent) => {
+    e.preventDefault();
+    sendMessage(input.trim());
+  };
+
   return (
     <div className="chat-dock" id="chat-dock">
       <h4>Ask the Astrologer</h4>
-      <p>About your sect, your ruling planet, or any aspect above worth going deeper on.</p>
+      <p>
+        Readings drawn from Ptolemy, Valens, and Lilly — anchored to your own chart, not a generic horoscope.
+      </p>
+
+      {messages.length === 0 && suggestions.length > 0 && (
+        <div className="chat-suggestions">
+          {suggestions.map((q) => (
+            <button key={q} type="button" className="chat-suggestion" disabled={sending || limitReached} onClick={() => sendMessage(q)}>
+              {q}
+            </button>
+          ))}
+        </div>
+      )}
 
       {messages.length > 0 && (
         <div className="messages">
@@ -76,7 +95,7 @@ export default function ChatDock({
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Why does Saturn in the 12th matter so much here?"
+            placeholder="Or ask your own question"
             disabled={sending}
           />
           <button type="submit" disabled={sending || !input.trim()}>

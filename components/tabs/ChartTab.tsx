@@ -70,8 +70,34 @@ export default function ChartTab({ chart }: { chart: ChartResponse }) {
 
   return (
     <div>
-      <div className="data-card">
-        <ChartWheel chart={chart} />
+      <div className="chart-layout">
+        <div className="data-card">
+          <ChartWheel chart={chart} />
+        </div>
+
+        <div className="data-card">
+          <h4>Planets</h4>
+          {planetRows.map((row) => (
+            <button
+              type="button"
+              className="data-row planet-row"
+              key={row.name}
+              onClick={() => openModal({ kind: "planet", planet: row.name, sign: row.position.sign, house: row.position.house })}
+            >
+              <span className="d-glyph">{row.symbol}</span>
+              <span className="d-col d-col-name">{row.name}</span>
+              <span className="d-col d-col-sign">
+                {row.position.sign} {formatDegree(row.position.sign_longitude)}
+                {row.position.retrograde ? " ℞" : ""}
+              </span>
+              <span className="d-col d-col-house">House {row.position.house}</span>
+              <span className="d-col d-col-dignity">
+                {row.position.dignities.length > 0 ? dignityLabel(row.position.dignities) : ""}
+              </span>
+              <span className="d-chevron">›</span>
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="data-card">
@@ -100,30 +126,6 @@ export default function ChartTab({ chart }: { chart: ChartResponse }) {
             {ic.sign} {formatDegree(ic.sign_longitude)} · House {ic.house}
           </div>
         </div>
-      </div>
-
-      <div className="data-card">
-        <h4>Planets</h4>
-        {planetRows.map((row) => (
-          <button
-            type="button"
-            className="data-row planet-row"
-            key={row.name}
-            onClick={() => openModal({ kind: "planet", planet: row.name, sign: row.position.sign, house: row.position.house })}
-          >
-            <span className="d-glyph">{row.symbol}</span>
-            <span className="d-col d-col-name">{row.name}</span>
-            <span className="d-col d-col-sign">
-              {row.position.sign} {formatDegree(row.position.sign_longitude)}
-              {row.position.retrograde ? " ℞" : ""}
-            </span>
-            <span className="d-col d-col-house">House {row.position.house}</span>
-            <span className="d-col d-col-dignity">
-              {row.position.dignities.length > 0 ? dignityLabel(row.position.dignities) : ""}
-            </span>
-            <span className="d-chevron">›</span>
-          </button>
-        ))}
       </div>
 
       <div className="data-card">

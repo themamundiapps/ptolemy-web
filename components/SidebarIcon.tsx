@@ -31,11 +31,12 @@ export default function SidebarIcon({ tab }: { tab: TabKey }) {
         </svg>
       );
     case "house-lords":
-      // A house cusp: a circle with one ruling division marked off.
+      // Rulership/dominion, not timing: a crown -- was previously a clock-face
+      // construction (circle + hand) that duplicated the Electional glyph.
       return (
         <svg {...common}>
-          <circle cx="12" cy="12" r="8" />
-          <path d="M12 4v8l6 3" />
+          <path d="M5 17V11l3.5 3L12 8l3.5 6 3.5-3v6z" />
+          <path d="M5 17h14" />
         </svg>
       );
     case "temperament":

@@ -241,7 +241,7 @@ export default function BirthDataForm({
       <button
         type="submit"
         disabled={!canSubmit}
-        className="mt-2 w-full bg-bronze py-3 font-cinzel text-[13px] uppercase tracking-[0.12em] text-ink transition-colors hover:bg-bronze-dark disabled:cursor-not-allowed disabled:opacity-40"
+        className="mt-2 w-full bg-bronze py-3 font-cinzel text-[13px] uppercase tracking-[0.12em] text-ink transition-colors hover:bg-bronze-dark disabled:cursor-not-allowed disabled:opacity-[var(--btn-disabled-opacity)] disabled:hover:bg-bronze"
       >
         {loading ? "Calculating…" : submitLabel}
       </button>

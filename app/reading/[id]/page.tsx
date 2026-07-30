@@ -145,11 +145,14 @@ function ReadingPageInner() {
             {tab === "temperament" && <TemperamentTab birth={saved.birthData} />}
             {tab === "electional" && <ElectionalTab birth={saved.birthData} />}
             {tab === "transits" && <TransitsTab birth={saved.birthData} />}
-            {tab === "synastry" && <SynastryTab personA={saved.birthData} userId={userId} />}
+            {tab === "synastry" && (
+              <SynastryTab personA={saved.birthData} userId={userId} currentChartId={saved.id} />
+            )}
             {tab === "analysis" && <AnalysisTab saved={saved} userId={userId} onUpdate={setSaved} />}
             {tab === "ask" && (
               <ChatDock
                 birth={saved.birthData}
+                chart={saved.chart}
                 userId={userId}
                 messages={saved.messages}
                 onMessagesChange={handleMessagesChange}
