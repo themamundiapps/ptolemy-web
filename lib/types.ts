@@ -50,6 +50,12 @@ export interface ChatMessage {
   content: string;
 }
 
+export interface AiQuota {
+  remaining: number;
+  limit: number;
+  resets_at: string;
+}
+
 export interface Transit {
   transiting_planet: string;
   natal_planet: string;

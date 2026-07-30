@@ -13,10 +13,11 @@ import ElectionalTab from "@/components/tabs/ElectionalTab";
 import TransitsTab from "@/components/tabs/TransitsTab";
 import SynastryTab from "@/components/tabs/SynastryTab";
 import AnalysisTab from "@/components/tabs/AnalysisTab";
+import { fetchAiQuota } from "@/lib/api";
 import { getGoogleUser } from "@/lib/auth";
-import { FREE_MESSAGE_LIMIT, getChart, getOrCreateDeviceId, saveChart, totalUserMessageCount } from "@/lib/storage";
+import { getChart, getOrCreateDeviceId, saveChart } from "@/lib/storage";
 import { DEFAULT_TAB, isTabKey, type TabKey } from "@/lib/tabs";
-import type { ChatMessage, SavedChart } from "@/lib/types";
+import type { AiQuota, ChatMessage, SavedChart } from "@/lib/types";
 
 const TAB_META: Record<TabKey, { title: string; subtitle: string }> = {
   chart: { title: "Chart", subtitle: "Wheel, planets, lots and aspects" },
@@ -26,7 +27,10 @@ const TAB_META: Record<TabKey, { title: string; subtitle: string }> = {
   transits: { title: "Transits", subtitle: "Today's active transits to your natal chart" },
   synastry: { title: "Synastry", subtitle: "Compare your chart with another" },
   analysis: { title: "Analysis", subtitle: "A full reading of the nativity" },
-  ask: { title: "Chat with the Astrologer", subtitle: "Chat about your chart" },
+  ask: {
+    title: "Consult the Astrologer",
+    subtitle: "Readings drawn from Ptolemy, Valens, and Lilly — anchored to your own chart, not a generic horoscope.",
+  },
 };
 
 function ReadingPageInner() {
@@ -37,7 +41,7 @@ function ReadingPageInner() {
   const [saved, setSaved] = useState<SavedChart | null | undefined>(undefined);
   const [userId, setUserId] = useState("");
   const [tab, setTab] = useState<TabKey>(DEFAULT_TAB);
-  const [remaining, setRemaining] = useState(FREE_MESSAGE_LIMIT);
+  const [quota, setQuota] = useState<AiQuota | null>(null);
   const [initialQuestion, setInitialQuestion] = useState("");
   const [headerCollapsed, setHeaderCollapsed] = useState(false);
 
@@ -75,9 +79,16 @@ function ReadingPageInner() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Real backend truth for the shared daily AI budget (Chart Analysis,
+  // Synastry, Personal Synthesis, and Chat all draw from the same count) --
+  // fetched once userId resolves. A failed fetch just hides the badge; the
+  // chat send itself still enforces the real limit server-side regardless.
   useEffect(() => {
-    setRemaining(Math.max(FREE_MESSAGE_LIMIT - totalUserMessageCount(), 0));
-  }, [saved?.messages]);
+    if (!userId) return;
+    fetchAiQuota(userId)
+      .then(setQuota)
+      .catch(() => {});
+  }, [userId]);
 
   const handleSelectTab = (key: TabKey) => {
     setTab(key);
@@ -138,6 +149,11 @@ function ReadingPageInner() {
           <div className="tab-header">
             <h1>{meta.title}</h1>
             <p>{meta.subtitle}</p>
+            {tab === "ask" && quota && (
+              <div className="chat-quota">
+                {quota.remaining} of {quota.limit} consultations remaining today
+              </div>
+            )}
           </div>
           <div className="tab-body">
             {tab === "chart" && <ChartTab chart={saved.chart} />}
@@ -156,7 +172,8 @@ function ReadingPageInner() {
                 userId={userId}
                 messages={saved.messages}
                 onMessagesChange={handleMessagesChange}
-                remaining={remaining}
+                quota={quota}
+                onQuotaChange={setQuota}
                 initialInput={initialQuestion}
               />
             )}

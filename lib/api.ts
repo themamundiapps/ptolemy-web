@@ -1,4 +1,5 @@
 import type {
+  AiQuota,
   BirthData,
   ChartResponse,
   ChatMessage,
@@ -158,6 +159,14 @@ export function chatWithAstrologer(
     method: "POST",
     body: JSON.stringify({ ...birthPayload(birth), messages, user_id: userId ?? null }),
   });
+}
+
+/** Read-only lookup of the shared daily AI-call budget (Chart Analysis,
+ * Synastry, Personal Synthesis, and Chat all draw from the same count) --
+ * never consumes a unit itself. */
+export function fetchAiQuota(userId?: string): Promise<AiQuota> {
+  const query = userId ? `?user_id=${encodeURIComponent(userId)}` : "";
+  return request(`/api/v1/user/ai-quota${query}`);
 }
 
 export { ApiError };

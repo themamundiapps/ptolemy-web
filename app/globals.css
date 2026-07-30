@@ -38,8 +38,10 @@ body {
 
   /* Button system rule: enabled primary actions are solid bronze; disabled
      ones are the same bronze at reduced opacity -- never neutral gray/ink,
-     which reads as "broken" rather than "not ready yet". */
-  --btn-disabled-opacity: 0.45;
+     which reads as "broken" rather than "not ready yet". 0.45 still read as
+     washed-out/gray in practice, so this bumps the floor for a more visibly
+     bronze (not just "dim") disabled state. */
+  --btn-disabled-opacity: 0.6;
 
   /* Typography scale. Cormorant Garamond is a display face with a low
      x-height, so it reads ~2-3px smaller than a UI font at the same nominal
@@ -699,17 +701,78 @@ body {
   padding: 20px 22px;
   margin-top: 6px;
 }
-.pt-app .chat-dock h4 {
-  margin: 0 0 6px;
-  font-size: 1rem;
-  font-weight: 500;
-  font-family: var(--font-cormorant), serif;
+/* ---- consultation log: stacked Q/A entries, no chat bubbles ---- */
+.pt-app .chat-log {
+  margin-bottom: 8px;
 }
-.pt-app .chat-dock p {
+.pt-app .chat-entry {
+  padding: 20px 0;
+  border-top: 1px solid var(--rule);
+}
+.pt-app .chat-entry:first-of-type {
+  padding-top: 0;
+  border-top: none;
+}
+.pt-app .chat-entry-question {
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--ink);
+  margin: 6px 0 10px;
+}
+.pt-app .chat-entry-answer {
+  margin-top: 4px;
+}
+.pt-app .chat-pending {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink-soft);
+  font-style: italic;
+  font-size: var(--text-secondary-size);
+}
+.pt-app .chat-dots {
+  display: inline-flex;
+  gap: 3px;
+}
+.pt-app .chat-dots i {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--bronze);
+  font-style: normal;
+  animation: chat-dot-pulse 1.2s ease-in-out infinite;
+}
+.pt-app .chat-dots i:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.pt-app .chat-dots i:nth-child(3) {
+  animation-delay: 0.3s;
+}
+@keyframes chat-dot-pulse {
+  0%,
+  80%,
+  100% {
+    opacity: 0.25;
+  }
+  40% {
+    opacity: 1;
+  }
+}
+.pt-app .chat-entry-error {
+  color: var(--terracotta);
   font-size: var(--text-secondary-size);
   line-height: var(--text-secondary-line);
+}
+.pt-app .chat-limit-note {
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--parchment);
+  padding: 16px 18px;
   color: var(--ink-soft);
-  margin: 0 0 12px;
+  font-size: var(--text-secondary-size);
+  line-height: var(--text-secondary-line);
+  margin-bottom: 4px;
 }
 .pt-app .chat-suggestions {
   display: flex;
@@ -722,7 +785,7 @@ body {
   border: 1px solid var(--bronze);
   background: var(--parchment);
   color: var(--bronze-deep);
-  border-radius: 20px;
+  border-radius: 8px;
   padding: 10px 16px;
   font-family: var(--font-cormorant), serif;
   font-size: var(--text-secondary-size);
@@ -739,33 +802,6 @@ body {
 .pt-app .chat-suggestion:disabled {
   opacity: var(--btn-disabled-opacity);
   cursor: not-allowed;
-}
-.pt-app .chat-dock .messages {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 14px;
-  max-height: 360px;
-  overflow-y: auto;
-}
-.pt-app .chat-dock .bubble {
-  max-width: min(85%, var(--text-prose-measure));
-  padding: 8px 14px;
-  font-size: var(--text-prose-size);
-  font-weight: var(--text-prose-weight);
-  line-height: var(--text-prose-line);
-  border-radius: 2px;
-}
-.pt-app .chat-dock .bubble.user {
-  align-self: flex-end;
-  background: var(--ink);
-  color: var(--parchment);
-}
-.pt-app .chat-dock .bubble.assistant {
-  align-self: flex-start;
-  border: 1px solid var(--rule);
-  background: var(--parchment);
-  color: var(--ink);
 }
 .pt-app .chat-dock .input {
   display: flex;
@@ -1011,6 +1047,18 @@ body {
   color: var(--ink-soft);
   font-style: italic;
   margin: 0;
+}
+.pt-app .app-main .tab-header .chat-quota {
+  display: inline-block;
+  margin-top: 10px;
+  font-family: var(--font-cinzel), serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--bronze-deep);
+  border: 1px solid var(--bronze);
+  padding: 4px 10px;
+  border-radius: 2px;
 }
 .pt-app .app-main .tab-body {
   max-width: 880px;
