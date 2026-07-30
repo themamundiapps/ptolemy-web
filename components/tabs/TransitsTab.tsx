@@ -94,8 +94,7 @@ export default function TransitsTab({ birth }: { birth: BirthData }) {
               <span
                 style={{
                   marginLeft: 8,
-                  fontSize: ".78rem",
-                  fontStyle: "italic",
+                  fontSize: "var(--text-secondary-size)",
                   color: t.is_harmonious ? "var(--bronze-deep)" : "var(--terracotta)",
                 }}
               >

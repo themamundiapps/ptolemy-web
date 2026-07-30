@@ -35,6 +35,28 @@ body {
   --rule: rgba(27, 36, 56, 0.14);
   --card: #f5f1e6;
   --shadow: 0 1px 0 rgba(27, 36, 56, 0.06);
+
+  /* Typography scale. Cormorant Garamond is a display face with a low
+     x-height, so it reads ~2-3px smaller than a UI font at the same nominal
+     size -- these tiers compensate with larger sizes and heavier weight
+     rather than relying on ad hoc rem values per component. */
+  --text-prose-size: 19px; /* Analysis, chat, synthesis prose */
+  --text-prose-weight: 500;
+  --text-prose-line: 1.7;
+  --text-prose-measure: 68ch;
+
+  --text-body-size: 17px; /* general body: lists, cards */
+  --text-body-weight: 500;
+  --text-body-line: 1.6;
+
+  --text-secondary-size: 15px; /* secondary text and captions */
+  --text-secondary-weight: 400;
+  --text-secondary-line: 1.5;
+
+  --text-label-size: 12.5px; /* Cinzel-caps form labels, 12-13px */
+  --text-label-weight: 500;
+
+  --text-min-size: 14px; /* absolute floor for any text anywhere */
 }
 
 .pt-app {
@@ -215,13 +237,16 @@ body {
   color: var(--ink);
 }
 .pt-app .ledger .meta {
-  font-size: 0.8rem;
+  font-size: var(--text-secondary-size);
+  font-weight: var(--text-secondary-weight);
+  line-height: var(--text-secondary-line);
   color: var(--ink-soft);
   margin-bottom: 14px;
 }
 .pt-app .ledger p {
-  font-size: 1rem;
-  line-height: 1.65;
+  font-size: var(--text-body-size);
+  font-weight: var(--text-body-weight);
+  line-height: var(--text-body-line);
   color: var(--ink-soft);
   margin: 0 0 14px;
 }
@@ -254,7 +279,8 @@ body {
   color: var(--ink);
 }
 .pt-app .transit-row .t-detail {
-  font-size: 0.85rem;
+  font-size: var(--text-secondary-size);
+  line-height: var(--text-secondary-line);
   color: var(--ink-soft);
 }
 .pt-app .transit-row .t-tag {
@@ -306,7 +332,7 @@ body {
   display: block;
 }
 .pt-app .feature-tile .desc {
-  font-size: 0.9375rem;
+  font-size: var(--text-secondary-size);
   color: #5c5747;
   display: block;
   margin-top: 2px;
@@ -344,7 +370,7 @@ body {
 .pt-app .lot-row {
   display: flex;
   justify-content: space-between;
-  font-size: 0.9rem;
+  font-size: var(--text-secondary-size);
   padding: 8px 0;
   border-top: 1px solid var(--rule);
 }
@@ -433,7 +459,8 @@ body {
   transition: font-size 0.15s ease;
 }
 .pt-app .read-header .meta {
-  font-size: 0.9rem;
+  font-size: var(--text-secondary-size);
+  line-height: var(--text-secondary-line);
   color: var(--ink-soft);
   font-style: italic;
   margin-top: 6px;
@@ -528,7 +555,8 @@ body {
 }
 .pt-app .chart-pane .cap {
   text-align: center;
-  font-size: 0.8rem;
+  font-size: var(--text-secondary-size);
+  line-height: var(--text-secondary-line);
   color: var(--ink-soft);
   font-style: italic;
   margin-top: 10px;
@@ -576,10 +604,10 @@ body {
   color: var(--ink);
 }
 .pt-app .section-card p {
-  max-width: 70ch;
-  font-size: 1.08rem;
-  font-weight: 500;
-  line-height: 1.8;
+  max-width: var(--text-prose-measure);
+  font-size: var(--text-prose-size);
+  font-weight: var(--text-prose-weight);
+  line-height: var(--text-prose-line);
   color: var(--ink-soft);
   margin: 0 0 14px;
 }
@@ -605,7 +633,7 @@ body {
   border: 1px solid var(--rule);
   border-radius: 2px;
   padding: 6px 12px;
-  font-size: 0.82rem;
+  font-size: var(--text-secondary-size);
   color: var(--ink-soft);
   background: var(--parchment);
 }
@@ -645,18 +673,18 @@ body {
   margin-bottom: 2px;
 }
 .pt-app .aspect-item .a-desc {
-  font-size: 0.88rem;
+  font-size: var(--text-body-size);
   color: var(--ink-soft);
-  line-height: 1.5;
+  line-height: var(--text-body-line);
 }
 
 .pt-app .go-deeper {
   margin-top: 8px;
-  font-size: 0.85rem;
+  font-size: var(--text-secondary-size);
+  line-height: var(--text-secondary-line);
   color: var(--bronze-deep);
   border-top: 1px dashed var(--rule);
   padding-top: 14px;
-  font-style: italic;
 }
 
 .pt-app .chat-dock {
@@ -673,7 +701,8 @@ body {
   font-family: var(--font-cormorant), serif;
 }
 .pt-app .chat-dock p {
-  font-size: 0.85rem;
+  font-size: var(--text-secondary-size);
+  line-height: var(--text-secondary-line);
   color: var(--ink-soft);
   margin: 0 0 12px;
 }
@@ -686,10 +715,11 @@ body {
   overflow-y: auto;
 }
 .pt-app .chat-dock .bubble {
-  max-width: 85%;
+  max-width: min(85%, var(--text-prose-measure));
   padding: 8px 14px;
-  font-size: 0.9rem;
-  line-height: 1.5;
+  font-size: var(--text-prose-size);
+  font-weight: var(--text-prose-weight);
+  line-height: var(--text-prose-line);
   border-radius: 2px;
 }
 .pt-app .chat-dock .bubble.user {
@@ -717,7 +747,7 @@ body {
   font-family: var(--font-cormorant), serif;
   font-style: italic;
   color: var(--ink-soft);
-  font-size: 0.9rem;
+  font-size: var(--text-secondary-size);
   outline: none;
 }
 .pt-app .chat-dock .input button {
@@ -766,18 +796,17 @@ body {
 }
 .pt-app .md p {
   margin: 0 0 0.9em;
-  line-height: 1.65;
+  font-size: var(--text-prose-size);
+  font-weight: var(--text-prose-weight);
+  line-height: var(--text-prose-line);
 }
-/* Chart Analysis specifically: the tab with the most running prose in the
+/* Chart Analysis and Chat: the views with the most running prose in the
    product. Cormorant Garamond is a light-weight display face by design --
    fine for short italic captions, too thin for sustained reading -- so bump
-   weight/size/line-height and cap the measure at a comfortable ~70 characters
+   weight/size/line-height and cap the measure at a comfortable ~68 characters
    rather than letting lines run the section-card's full width. */
 .pt-app .section-card .md p {
-  max-width: 70ch;
-  font-size: 1.08rem;
-  font-weight: 500;
-  line-height: 1.8;
+  max-width: var(--text-prose-measure);
 }
 .pt-app .md strong {
   font-weight: 600;
@@ -790,10 +819,12 @@ body {
 .pt-app .md ol {
   margin: 0 0 0.9em;
   padding-left: 1.3em;
+  font-size: var(--text-prose-size);
+  font-weight: var(--text-prose-weight);
 }
 .pt-app .md li {
   margin-bottom: 0.35em;
-  line-height: 1.6;
+  line-height: var(--text-prose-line);
 }
 .pt-app .md ul {
   list-style: none;
@@ -938,7 +969,8 @@ body {
   color: var(--ink);
 }
 .pt-app .app-main .tab-header p {
-  font-size: 0.95rem;
+  font-size: var(--text-secondary-size);
+  line-height: var(--text-secondary-line);
   color: var(--ink-soft);
   font-style: italic;
   margin: 0;
@@ -1031,7 +1063,8 @@ body {
 .pt-app .data-card .empty {
   color: var(--ink-soft);
   font-style: italic;
-  font-size: 0.9rem;
+  font-size: var(--text-secondary-size);
+  line-height: var(--text-secondary-line);
 }
 .pt-app .data-row .d-label {
   font-family: var(--font-cinzel), serif;
@@ -1042,12 +1075,14 @@ body {
   text-align: left;
 }
 .pt-app .data-row .d-main {
-  font-size: 0.95rem;
+  font-size: var(--text-body-size);
+  font-weight: var(--text-body-weight);
   color: var(--ink);
   text-align: left;
 }
 .pt-app .data-row .d-tag {
-  font-size: 0.78rem;
+  font-size: var(--text-secondary-size);
+  line-height: var(--text-secondary-line);
   color: var(--ink-soft);
   font-style: italic;
   text-align: right;
@@ -1074,7 +1109,7 @@ body {
   color: var(--bronze-deep);
 }
 .pt-app .d-col {
-  font-size: 0.9rem;
+  font-size: var(--text-secondary-size);
   color: var(--ink);
 }
 .pt-app .d-col-name {
@@ -1094,8 +1129,7 @@ body {
 .pt-app .d-col-dignity {
   flex: 0 0 108px;
   color: var(--bronze-deep);
-  font-style: italic;
-  font-size: 0.82rem;
+  font-size: var(--text-min-size);
   text-align: right;
 }
 .pt-app .d-chevron {
@@ -1181,7 +1215,8 @@ body {
 }
 .pt-app .theme-tile .t-desc {
   display: block;
-  font-size: 0.8rem;
+  font-size: var(--text-secondary-size);
+  line-height: var(--text-secondary-line);
   color: var(--ink-soft);
   margin-top: 2px;
 }
@@ -1211,7 +1246,8 @@ body {
 }
 .pt-app .field label {
   font-family: var(--font-cinzel), serif;
-  font-size: 0.62rem;
+  font-size: var(--text-label-size);
+  font-weight: var(--text-label-weight);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ink-soft);
@@ -1221,7 +1257,7 @@ body {
   background: var(--parchment);
   padding: 9px 12px;
   font-family: var(--font-cormorant), serif;
-  font-size: 0.9rem;
+  font-size: var(--text-secondary-size);
   color: var(--ink);
   outline: none;
 }
@@ -1260,7 +1296,8 @@ body {
 
 /* ---- electional day results ---- */
 .pt-app .elect-meta {
-  font-size: 0.85rem;
+  font-size: var(--text-secondary-size);
+  line-height: var(--text-secondary-line);
   color: var(--ink-soft);
   margin: 0 0 4px;
 }
@@ -1268,25 +1305,26 @@ body {
   opacity: 0.7;
   font-style: italic;
 }
+/* .elect-ruler / .elect-quality carry meaning through the bronze accent, so
+   italic is dropped here rather than the color -- never stack small size +
+   italic + bronze on the same run of text (see .go-deeper, .elect-context). */
 .pt-app .elect-ruler {
-  font-size: 0.8rem;
-  font-style: italic;
+  font-size: var(--text-secondary-size);
   color: var(--bronze-deep);
   margin: 0 0 4px;
 }
 .pt-app .elect-quality {
-  font-size: 0.85rem;
-  font-style: italic;
+  font-size: var(--text-secondary-size);
   color: var(--bronze-deep);
   margin: 0 0 10px;
 }
 .pt-app .elect-caution {
-  font-size: 0.85rem;
+  font-size: var(--text-secondary-size);
   color: var(--terracotta);
   border-left: 2px solid var(--terracotta);
   padding: 6px 0 6px 12px;
   margin: 0 0 14px;
-  line-height: 1.55;
+  line-height: var(--text-secondary-line);
 }
 
 .pt-app .moon-state-row {
@@ -1312,18 +1350,19 @@ body {
   margin: 0 0 14px;
   padding-left: 18px;
   color: var(--ink-soft);
-  font-size: 0.88rem;
-  line-height: 1.6;
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-line);
 }
 .pt-app .elect-synthesis {
-  font-size: 0.92rem;
-  line-height: 1.65;
+  font-size: var(--text-body-size);
+  font-weight: var(--text-body-weight);
+  line-height: var(--text-body-line);
   color: var(--ink-soft);
   margin: 0 0 10px;
 }
 .pt-app .elect-context {
-  font-size: 0.82rem;
-  font-style: italic;
+  font-size: var(--text-secondary-size);
+  line-height: var(--text-secondary-line);
   color: var(--bronze-deep);
   margin: 0 0 14px;
 }
@@ -1357,8 +1396,8 @@ body {
 }
 .pt-app .elect-hit-text {
   flex: 1;
-  font-size: 0.88rem;
-  line-height: 1.5;
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-line);
   color: var(--ink);
 }
 .pt-app .elect-hit-meta {
@@ -1370,7 +1409,7 @@ body {
   gap: 2px;
 }
 .pt-app .elect-mode {
-  font-size: 0.75rem;
+  font-size: var(--text-secondary-size);
   font-style: italic;
   color: var(--ink-soft);
 }
@@ -1397,22 +1436,24 @@ body {
   margin-right: 6px;
 }
 .pt-app .elect-cazimi-note {
-  font-size: 0.78rem;
+  font-size: var(--text-secondary-size);
+  line-height: var(--text-secondary-line);
   font-style: italic;
   color: var(--ink-soft);
   margin-top: 4px;
 }
 .pt-app .elect-not-counted-reason {
-  font-size: 0.78rem;
+  font-size: var(--text-secondary-size);
+  line-height: var(--text-secondary-line);
   font-style: italic;
   color: var(--ink-soft);
   margin-top: 4px;
 }
 .pt-app .elect-antiscion-note {
-  font-size: 0.8rem;
+  font-size: var(--text-secondary-size);
   color: var(--ink-soft);
   margin: 0 0 8px;
-  line-height: 1.5;
+  line-height: var(--text-secondary-line);
 }
 
 /* ---- clickable data rows (open a detail modal) ---- */
@@ -1481,8 +1522,9 @@ body {
   color: var(--ink);
 }
 .pt-app .modal-body p {
-  font-size: 0.95rem;
-  line-height: 1.7;
+  font-size: var(--text-body-size);
+  font-weight: var(--text-body-weight);
+  line-height: var(--text-body-line);
   color: var(--ink-soft);
   margin: 0 0 14px;
 }
@@ -1502,8 +1544,7 @@ body {
   display: block;
 }
 .pt-app .modal-citation {
-  font-style: italic;
-  font-size: 0.85rem;
+  font-size: var(--text-secondary-size);
   color: var(--bronze-deep);
   border-top: 1px dashed var(--rule);
   padding-top: 12px;

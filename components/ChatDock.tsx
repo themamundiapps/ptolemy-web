@@ -64,7 +64,7 @@ export default function ChatDock({
         </div>
       )}
       {error && (
-        <p style={{ color: "var(--terracotta)", fontSize: ".85rem", marginBottom: 12 }}>{error}</p>
+        <p style={{ color: "var(--terracotta)", fontSize: "var(--text-secondary-size)", marginBottom: 12 }}>{error}</p>
       )}
 
       {limitReached ? (

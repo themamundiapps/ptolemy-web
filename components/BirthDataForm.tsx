@@ -127,7 +127,7 @@ export default function BirthDataForm({
       </div>
 
       <div className="mb-4">
-        <label className="mb-1.5 block font-cinzel text-xs uppercase tracking-[0.08em] text-ink-2">
+        <label className="mb-1.5 block font-cinzel text-xs font-medium uppercase tracking-[0.08em] text-ink-2">
           Name (optional)
         </label>
         <input
@@ -139,7 +139,7 @@ export default function BirthDataForm({
       </div>
 
       <div className="mb-4">
-        <label className="mb-1.5 block font-cinzel text-xs uppercase tracking-[0.08em] text-ink-2">
+        <label className="mb-1.5 block font-cinzel text-xs font-medium uppercase tracking-[0.08em] text-ink-2">
           Date of birth
         </label>
         <div className="grid grid-cols-[1fr_1.4fr_1fr] gap-2">
@@ -187,7 +187,7 @@ export default function BirthDataForm({
       </div>
 
       <div className="mb-4">
-        <label className="mb-1.5 block font-cinzel text-xs uppercase tracking-[0.08em] text-ink-2">
+        <label className="mb-1.5 block font-cinzel text-xs font-medium uppercase tracking-[0.08em] text-ink-2">
           Time of birth
         </label>
         <input
@@ -200,7 +200,7 @@ export default function BirthDataForm({
       </div>
 
       <div className="relative mb-4">
-        <label className="mb-1.5 block font-cinzel text-xs uppercase tracking-[0.08em] text-ink-2">
+        <label className="mb-1.5 block font-cinzel text-xs font-medium uppercase tracking-[0.08em] text-ink-2">
           Place of birth
         </label>
         <input
@@ -245,7 +245,7 @@ export default function BirthDataForm({
       >
         {loading ? "Calculating…" : submitLabel}
       </button>
-      <p className="mt-3.5 text-center font-cormorant text-[12.5px] italic text-ink-2">{helperText}</p>
+      <p className="mt-3.5 text-center font-cormorant text-sm italic text-ink-2">{helperText}</p>
     </form>
   );
 }

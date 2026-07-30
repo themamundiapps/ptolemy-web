@@ -64,8 +64,10 @@ export default function TemperamentTab({ birth }: { birth: BirthData }) {
 
       <div className="data-card">
         <h4>Analysis</h4>
-        <p style={{ fontSize: ".95rem", lineHeight: 1.7, color: "var(--ink-soft)" }}>{result.description}</p>
-        <p style={{ fontStyle: "italic", fontSize: ".85rem", color: "var(--bronze-deep)", marginTop: 14 }}>
+        <p style={{ fontSize: "var(--text-body-size)", fontWeight: "var(--text-body-weight)", lineHeight: "var(--text-body-line)", color: "var(--ink-soft)" }}>
+          {result.description}
+        </p>
+        <p style={{ fontSize: "var(--text-secondary-size)", color: "var(--bronze-deep)", marginTop: 14 }}>
           {result.citation}
         </p>
       </div>
