@@ -5,11 +5,9 @@ import Markdown from "@/components/Markdown";
 import { ApiError, fetchChartAnalysis, fetchTemperament } from "@/lib/api";
 import { saveChart } from "@/lib/storage";
 import {
-  ASPECT_SYMBOLS,
   DOMICILE_RULERS,
   HARMONIOUS_ASPECTS,
   PLANET_ORDER,
-  PLANET_SYMBOLS,
   dignitySummary,
   formatDegree,
   hasTrueDignity,
@@ -17,6 +15,7 @@ import {
   leadAspect,
   naturalList,
 } from "@/lib/astro";
+import { ASPECT_GLYPH, AstroGlyph, PLANET_GLYPH } from "@/components/AstroGlyphs";
 import type { SavedChart } from "@/lib/types";
 
 function paragraphsFromAnalysis(analysis?: string): string[] {
@@ -179,7 +178,9 @@ export default function AnalysisTab({
         {planetsQuote && <Markdown className="pull">{`\u201C${planetsQuote}\u201D`}</Markdown>}
         {spotlights.map((s) => (
           <div className="aspect-item" key={s.planet}>
-            <div className="orb">{PLANET_SYMBOLS[s.planet] ?? s.planet.slice(0, 2)}</div>
+            <div className="orb">
+              {PLANET_GLYPH[s.planet] ? <AstroGlyph name={PLANET_GLYPH[s.planet]} size={18} /> : s.planet.slice(0, 2)}
+            </div>
             <div>
               <div className="a-title">{s.title}</div>
               <div className="a-desc">{s.desc}</div>
@@ -204,7 +205,9 @@ export default function AnalysisTab({
         {dignitiesQuote && <Markdown className="pull">{`\u201C${dignitiesQuote}\u201D`}</Markdown>}
         {dignities.dignified.map((d) => (
           <div className="aspect-item" key={d.name}>
-            <div className="orb">{PLANET_SYMBOLS[d.name] ?? d.name.slice(0, 2)}</div>
+            <div className="orb">
+              {PLANET_GLYPH[d.name] ? <AstroGlyph name={PLANET_GLYPH[d.name]} size={18} /> : d.name.slice(0, 2)}
+            </div>
             <div>
               <div className="a-title">
                 {d.name} — {d.value}
@@ -214,7 +217,9 @@ export default function AnalysisTab({
         ))}
         {dignities.debilitated.map((d) => (
           <div className="aspect-item" key={d.name}>
-            <div className="orb">{PLANET_SYMBOLS[d.name] ?? d.name.slice(0, 2)}</div>
+            <div className="orb">
+              {PLANET_GLYPH[d.name] ? <AstroGlyph name={PLANET_GLYPH[d.name]} size={18} /> : d.name.slice(0, 2)}
+            </div>
             <div>
               <div className="a-title">
                 {d.name} — {d.value}
@@ -251,7 +256,8 @@ export default function AnalysisTab({
             <div className="orb">{formatDegree(a.orb)}</div>
             <div>
               <div className="a-title">
-                {a.planet_a} {ASPECT_SYMBOLS[a.aspect] ?? ""} {a.planet_b}
+                {a.planet_a} {ASPECT_GLYPH[a.aspect] && <AstroGlyph name={ASPECT_GLYPH[a.aspect]} size={13} title={a.aspect} />}{" "}
+                {a.planet_b}
               </div>
               <div className="a-desc">
                 {HARMONIOUS_ASPECTS.has(a.aspect) ? "A harmonious configuration" : "A challenging configuration"} —{" "}

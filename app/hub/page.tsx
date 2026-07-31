@@ -12,7 +12,8 @@ import {
   getChart,
   totalUserMessageCount,
 } from "@/lib/storage";
-import { PLANET_SYMBOLS, formatDegree } from "@/lib/astro";
+import { formatDegree } from "@/lib/astro";
+import { AstroGlyph, PLANET_GLYPH, type GlyphName } from "@/components/AstroGlyphs";
 import type { TabKey } from "@/lib/tabs";
 import type { SavedChart, TransitsResponse } from "@/lib/types";
 
@@ -125,7 +126,8 @@ export default function HubPage() {
     if (!transits) return [];
     type Row = {
       key: string;
-      glyph: string;
+      glyphName: GlyphName | null;
+      glyphFallback: string;
       name: string;
       detail: string;
       favorable: boolean;
@@ -137,7 +139,8 @@ export default function HubPage() {
       const aspect = transits.moon_natal_aspect;
       rows.push({
         key: "moon",
-        glyph: PLANET_SYMBOLS.Moon,
+        glyphName: PLANET_GLYPH.Moon,
+        glyphFallback: "Mo",
         name: `Moon in ${mp.sign} transits your House ${mp.house}`,
         detail: aspect
           ? `${aspect.is_applying ? "Applying" : "Separating"} ${aspect.aspect} to natal ${aspect.natal_planet} — ${formatDegree(aspect.orb)}`
@@ -156,9 +159,8 @@ export default function HubPage() {
       if (isMoonAspect) continue;
       rows.push({
         key: `${t.transiting_planet}-${t.natal_planet}-${t.aspect}`,
-        glyph:
-          PLANET_SYMBOLS[t.transiting_planet] ??
-          t.transiting_planet.slice(0, 2),
+        glyphName: PLANET_GLYPH[t.transiting_planet] ?? null,
+        glyphFallback: t.transiting_planet.slice(0, 2),
         name: `Transiting ${t.transiting_planet} ${t.aspect} natal ${t.natal_planet}`,
         detail: `${t.is_applying ? "Applying" : "Separating"} — orb ${formatDegree(t.orb)}`,
         favorable: t.is_harmonious,
@@ -252,7 +254,9 @@ export default function HubPage() {
 
             {skyRows.map((row) => (
               <div className="transit-row" key={row.key}>
-                <div className="glyph">{row.glyph}</div>
+                <div className="glyph">
+                  {row.glyphName ? <AstroGlyph name={row.glyphName} size={16} /> : row.glyphFallback}
+                </div>
                 <div>
                   <div className="t-name">{row.name}</div>
                   <div className="t-detail">{row.detail}</div>

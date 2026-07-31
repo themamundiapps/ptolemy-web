@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { ApiError, fetchTransits } from "@/lib/api";
-import { PLANET_SYMBOLS, formatDegree } from "@/lib/astro";
+import { formatDegree } from "@/lib/astro";
+import { AstroGlyph, PLANET_GLYPH } from "@/components/AstroGlyphs";
 import type { BirthData, TransitsResponse } from "@/lib/types";
 
 function moonPhaseWord(phaseName: string, phaseAngle: number): string {
@@ -50,7 +51,9 @@ export default function TransitsTab({ birth }: { birth: BirthData }) {
       <div className="data-card">
         <h4>The Moon Right Now</h4>
         <div className="data-row">
-          <div className="d-label">{PLANET_SYMBOLS.Moon}</div>
+          <div className="d-label">
+            <AstroGlyph name={PLANET_GLYPH.Moon} size={14} />
+          </div>
           <div className="d-main">
             Moon in {transits.moon_position.sign}, House {transits.moon_position.house} —{" "}
             {moonPhaseWord(transits.moon_position.phase_name, transits.moon_position.phase_angle)} (
@@ -67,7 +70,9 @@ export default function TransitsTab({ birth }: { birth: BirthData }) {
         </div>
         {transits.moon_natal_aspect && (
           <div className="data-row">
-            <div className="d-label">{PLANET_SYMBOLS[transits.moon_natal_aspect.natal_planet] ?? "☽"}</div>
+            <div className="d-label">
+              <AstroGlyph name={PLANET_GLYPH[transits.moon_natal_aspect.natal_planet] ?? "moon"} size={14} />
+            </div>
             <div className="d-main">
               {transits.moon_natal_aspect.is_applying ? "Applying" : "Separating"} {transits.moon_natal_aspect.aspect}{" "}
               to natal {transits.moon_natal_aspect.natal_planet}
@@ -88,7 +93,13 @@ export default function TransitsTab({ birth }: { birth: BirthData }) {
         {sorted.length === 0 && <p className="empty">No major transiting aspects within orb right now.</p>}
         {sorted.map((t, i) => (
           <div className="data-row" key={i}>
-            <div className="d-label">{PLANET_SYMBOLS[t.transiting_planet] ?? t.transiting_planet.slice(0, 2)}</div>
+            <div className="d-label">
+              {PLANET_GLYPH[t.transiting_planet] ? (
+                <AstroGlyph name={PLANET_GLYPH[t.transiting_planet]} size={14} />
+              ) : (
+                t.transiting_planet.slice(0, 2)
+              )}
+            </div>
             <div className="d-main">
               Transiting {t.transiting_planet} {t.aspect} natal {t.natal_planet}
               <span

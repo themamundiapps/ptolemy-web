@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Cinzel, Cormorant_Garamond } from "next/font/google";
+import { AstroGlyphDefs } from "@/components/AstroGlyphs";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -30,7 +31,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${cormorant.variable} ${cinzel.variable}`}>
-      <body className="antialiased bg-parchment text-ink">{children}</body>
+      <body className="antialiased bg-parchment text-ink">
+        <AstroGlyphDefs />
+        {children}
+      </body>
     </html>
   );
 }

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import BirthDataForm from "@/components/BirthDataForm";
 import { ApiError, fetchSynastry } from "@/lib/api";
-import { ASPECT_SYMBOLS, PLANET_SYMBOLS } from "@/lib/astro";
+import { AstroGlyph, ASPECT_GLYPH, PLANET_GLYPH } from "@/components/AstroGlyphs";
 import { listCharts } from "@/lib/storage";
 import type { BirthData, SavedChart, SynastryResult } from "@/lib/types";
 
@@ -134,7 +134,9 @@ export default function SynastryTab({
           const name = o.from_chart === "A" ? result.person_a_name : result.person_b_name;
           return (
             <div className="data-row" key={i}>
-              <div className="d-label">{PLANET_SYMBOLS[o.planet] ?? o.planet.slice(0, 2)}</div>
+              <div className="d-label">
+                {PLANET_GLYPH[o.planet] ? <AstroGlyph name={PLANET_GLYPH[o.planet]} size={14} /> : o.planet.slice(0, 2)}
+              </div>
               <div className="d-main">
                 {name}&apos;s {o.planet} in {o.sign} falls in House {o.house}
               </div>
@@ -151,7 +153,9 @@ export default function SynastryTab({
           const bName = a.from_chart === "A" ? result.person_b_name : result.person_a_name;
           return (
             <div className="data-row" key={i}>
-              <div className="d-label">{ASPECT_SYMBOLS[a.aspect] ?? a.aspect}</div>
+              <div className="d-label">
+                {ASPECT_GLYPH[a.aspect] ? <AstroGlyph name={ASPECT_GLYPH[a.aspect]} size={14} title={a.aspect} /> : a.aspect}
+              </div>
               <div className="d-main">
                 {aName}&apos;s {a.planet_a} {a.aspect} {bName}&apos;s {a.planet_b}
               </div>

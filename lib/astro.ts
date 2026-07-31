@@ -2,35 +2,6 @@ import type { Aspect, ZodiacPosition } from "./types";
 
 export const PLANET_ORDER = ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn"];
 
-// Trailing U+FE0E forces the text (monochrome) presentation of these glyphs.
-// Without it, systems with a color-emoji font substitute the zodiac symbols
-// (U+2648-U+2653 are emoji-eligible) with cartoonish colored icons that clash
-// with the rest of the traditional/ink-and-bronze design.
-export const PLANET_SYMBOLS: Record<string, string> = {
-  Sun: "☉︎",
-  Moon: "☽︎",
-  Mercury: "☿︎",
-  Venus: "♀︎",
-  Mars: "♂︎",
-  Jupiter: "♃︎",
-  Saturn: "♄︎",
-};
-
-export const SIGN_SYMBOLS: Record<string, string> = {
-  Aries: "♈︎",
-  Taurus: "♉︎",
-  Gemini: "♊︎",
-  Cancer: "♋︎",
-  Leo: "♌︎",
-  Virgo: "♍︎",
-  Libra: "♎︎",
-  Scorpio: "♏︎",
-  Sagittarius: "♐︎",
-  Capricorn: "♑︎",
-  Aquarius: "♒︎",
-  Pisces: "♓︎",
-};
-
 export const SIGN_ORDER = [
   "Aries",
   "Taurus",
@@ -60,6 +31,13 @@ export function formatDegree(signLongitude: number): string {
   const deg = Math.floor(signLongitude);
   const min = Math.round((signLongitude - deg) * 60);
   return `${deg}°${min.toString().padStart(2, "0")}'`;
+}
+
+/** Whole-degree only ("28°", not "28°37'") -- the wheel shows this next to
+ * each planet; the exact minute stays in the side table, which already
+ * carries that precision via formatDegree. */
+export function formatWholeDegree(signLongitude: number): string {
+  return `${Math.floor(signLongitude)}°`;
 }
 
 /** Traditional (Ptolemaic) domicile rulers -- no outer planets. */

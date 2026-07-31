@@ -13,7 +13,7 @@ import {
   type GroupedHit,
 } from "@/lib/electionalHelpers";
 import { buildContextualAwareness, buildSynthesis, QUALITATIVE_SYMBOLS } from "@/lib/electionalSynthesis";
-import { ASPECT_SYMBOLS, PLANET_SYMBOLS } from "@/lib/astro";
+import { ASPECT_GLYPH, AstroGlyph, PLANET_GLYPH } from "@/components/AstroGlyphs";
 import type { BirthData, ElectionalDay, ElectionalResult } from "@/lib/types";
 
 type Step = "theme" | "range" | "results";
@@ -35,7 +35,7 @@ function isoDateToLocalDate(isoDate: string): Date {
 
 function HitRow({ grouped, showReason }: { grouped: GroupedHit; showReason?: boolean }) {
   const { hit, modeLabel, isCazimi } = grouped;
-  const symbol = ASPECT_SYMBOLS[hit.aspect] ?? hit.aspect;
+  const glyphName = ASPECT_GLYPH[hit.aspect];
   const subject = hit.planet === "Sun" || hit.planet === "Moon" ? `The ${hit.planet}` : hit.planet;
   const article = "aeiou".includes(hit.aspect[0]?.toLowerCase() ?? "") ? "an" : "a";
   const indicator = qualityIndicatorFor(hit);
@@ -44,7 +44,9 @@ function HitRow({ grouped, showReason }: { grouped: GroupedHit; showReason?: boo
     <div className="elect-hit-row">
       <div className="elect-hit-text">
         {isCazimi && <span className="elect-cazimi-badge">Cazimi</span>}
-        {subject} forms {article} {hit.aspect} ({symbol}) with your House {hit.house} — {hit.house_name}
+        {subject} forms {article} {hit.aspect} (
+        {glyphName ? <AstroGlyph name={glyphName} size={13} title={hit.aspect} /> : hit.aspect}) with your House{" "}
+        {hit.house} — {hit.house_name}
         {isCazimi && (
           <div className="elect-cazimi-note">
             This planet is in the heart of the Sun — an exceptionally empowering condition in traditional astrology.
@@ -105,7 +107,7 @@ function DayCard({
       </p>
       {rulerPlanet && (
         <p className="elect-ruler">
-          {PLANET_SYMBOLS[rulerPlanet] ?? ""} Ruled by {rulerPlanet}
+          {PLANET_GLYPH[rulerPlanet] && <AstroGlyph name={PLANET_GLYPH[rulerPlanet]} size={13} />} Ruled by {rulerPlanet}
         </p>
       )}
       <p className="elect-quality">

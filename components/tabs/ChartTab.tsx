@@ -10,7 +10,8 @@ import {
   fetchPlanetInHouse,
   fetchPlanetInSign,
 } from "@/lib/api";
-import { ASPECT_SYMBOLS, PLANET_ORDER, PLANET_SYMBOLS, dignityLabel, formatDegree, oppositePoint } from "@/lib/astro";
+import { PLANET_ORDER, dignityLabel, formatDegree, oppositePoint } from "@/lib/astro";
+import { ANGLE_GLYPH, ASPECT_GLYPH, AstroGlyph, LOT_GLYPH, PLANET_GLYPH } from "@/components/AstroGlyphs";
 import type { ChartResponse, Interpretation } from "@/lib/types";
 
 type ModalTarget =
@@ -61,7 +62,6 @@ export default function ChartTab({ chart }: { chart: ChartResponse }) {
 
   const planetRows = PLANET_ORDER.filter((name) => chart.planets[name]).map((name) => ({
     name,
-    symbol: PLANET_SYMBOLS[name],
     position: chart.planets[name],
   }));
 
@@ -84,11 +84,17 @@ export default function ChartTab({ chart }: { chart: ChartResponse }) {
               key={row.name}
               onClick={() => openModal({ kind: "planet", planet: row.name, sign: row.position.sign, house: row.position.house })}
             >
-              <span className="d-glyph">{row.symbol}</span>
+              <span className="d-glyph">
+                <AstroGlyph name={PLANET_GLYPH[row.name]} size={18} color="var(--bronze-deep)" />
+              </span>
               <span className="d-col d-col-name">{row.name}</span>
               <span className="d-col d-col-sign">
                 {row.position.sign} {formatDegree(row.position.sign_longitude)}
-                {row.position.retrograde ? " ℞" : ""}
+                {row.position.retrograde && (
+                  <span style={{ marginLeft: 4 }}>
+                    <AstroGlyph name="retrograde" size={11} title={`${row.name} retrograde`} />
+                  </span>
+                )}
               </span>
               <span className="d-col d-col-house">House {row.position.house}</span>
               <span className="d-col d-col-dignity">
@@ -103,25 +109,33 @@ export default function ChartTab({ chart }: { chart: ChartResponse }) {
       <div className="data-card">
         <h4>Angles</h4>
         <div className="data-row">
-          <div className="d-label">ASC</div>
+          <div className="d-label">
+            <AstroGlyph name={ANGLE_GLYPH.ASC} size={14} title="Ascendant" />
+          </div>
           <div className="d-main">
             {chart.ascendant.sign} {formatDegree(chart.ascendant.sign_longitude)} · House {chart.ascendant.house}
           </div>
         </div>
         <div className="data-row">
-          <div className="d-label">DSC</div>
+          <div className="d-label">
+            <AstroGlyph name={ANGLE_GLYPH.DSC} size={14} title="Descendant" />
+          </div>
           <div className="d-main">
             {descendant.sign} {formatDegree(descendant.sign_longitude)} · House {descendant.house}
           </div>
         </div>
         <div className="data-row">
-          <div className="d-label">MC</div>
+          <div className="d-label">
+            <AstroGlyph name={ANGLE_GLYPH.MC} size={14} title="Midheaven" />
+          </div>
           <div className="d-main">
             {chart.midheaven.sign} {formatDegree(chart.midheaven.sign_longitude)} · House {chart.midheaven.house}
           </div>
         </div>
         <div className="data-row">
-          <div className="d-label">IC</div>
+          <div className="d-label">
+            <AstroGlyph name={ANGLE_GLYPH.IC} size={14} title="Imum Coeli" />
+          </div>
           <div className="d-main">
             {ic.sign} {formatDegree(ic.sign_longitude)} · House {ic.house}
           </div>
@@ -143,7 +157,9 @@ export default function ChartTab({ chart }: { chart: ChartResponse }) {
             })
           }
         >
-          <div className="d-label">⊕</div>
+          <div className="d-label">
+            <AstroGlyph name={LOT_GLYPH.fortune} size={14} />
+          </div>
           <div className="d-main">
             Lot of Fortune — {chart.lot_of_fortune.sign} {formatDegree(chart.lot_of_fortune.sign_longitude)} · House{" "}
             {chart.lot_of_fortune.house}
@@ -162,7 +178,9 @@ export default function ChartTab({ chart }: { chart: ChartResponse }) {
             })
           }
         >
-          <div className="d-label">⊗</div>
+          <div className="d-label">
+            <AstroGlyph name={LOT_GLYPH.spirit} size={14} />
+          </div>
           <div className="d-main">
             Lot of Spirit — {chart.lot_of_spirit.sign} {formatDegree(chart.lot_of_spirit.sign_longitude)} · House{" "}
             {chart.lot_of_spirit.house}
@@ -180,7 +198,9 @@ export default function ChartTab({ chart }: { chart: ChartResponse }) {
             key={i}
             onClick={() => openModal({ kind: "aspect", planetA: a.planet_a, planetB: a.planet_b, aspect: a.aspect })}
           >
-            <div className="d-label">{ASPECT_SYMBOLS[a.aspect] ?? a.aspect}</div>
+            <div className="d-label">
+              <AstroGlyph name={ASPECT_GLYPH[a.aspect]} size={14} title={a.aspect} />
+            </div>
             <div className="d-main">
               {a.planet_a} {a.aspect} {a.planet_b}
             </div>
