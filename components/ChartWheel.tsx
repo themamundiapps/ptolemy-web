@@ -1,22 +1,49 @@
 import type { ChartResponse } from "@/lib/types";
 import { ASPECT_SYMBOLS, formatDegree, formatWholeDegree, HARMONIOUS_ASPECTS, PLANET_ORDER, SIGN_ORDER } from "@/lib/astro";
+import { toRoman } from "@/lib/format";
 import { ANGLE_GLYPH, AstroGlyph, PLANET_GLYPH, SIGN_GLYPH } from "@/components/AstroGlyphs";
 
 const SIZE = 560;
 const CENTER = SIZE / 2;
-const OUTER_R = 232;
-const SIGN_RING_R = 198;
-const HOUSE_NUM_R = 178;
-const PLANET_R = 148;
-const ASPECT_R = 58;
-const ANGLE_LABEL_R = OUTER_R + 18;
-// Minimum angular gap (degrees) between two planet glyphs at PLANET_R so
-// their circles (r=15) never touch. Below this, a planet gets nudged
-// forward and a thin leader line ties its glyph back to its true degree.
-export const MIN_PLANET_SEP = 13;
 
-const ASPECT_LINE_SOFT = "#8B7340"; // trine/sextile -- solid
-const ASPECT_LINE_HARD = "#A8553C"; // square/opposition -- dashed
+// Every ring radius is a fraction of R (the outer limit) rather than an
+// independently-tuned pixel value, so the wheel scales as one coherent
+// instrument instead of a pile of separately-eyeballed numbers.
+const R = 232;
+const SIGN_BAND_OUTER_R = R * 1.0;
+const SIGN_BAND_INNER_R = R * 0.84;
+const SIGN_GLYPH_R = R * 0.92;
+const HOUSE_RING_OUTER_R = R * 0.8;
+const HOUSE_RING_INNER_R = R * 0.67;
+const HOUSE_NUM_R = R * 0.73;
+const PLANET_GLYPH_R = R * 0.62;
+// Not drawn yet -- exported so the degree-label pass (whole-degree labels at
+// a fixed ring instead of tucked under each glyph) has a home to land in.
+export const DEGREE_LABEL_R = R * 0.545;
+const ASPECT_R = R * 0.5;
+const ANGLE_LABEL_R = SIGN_BAND_OUTER_R + 18;
+// Planets carry no disc anymore (Tarefa 5) -- the glyph lands straight on the
+// house ring, so its footprint for collision purposes is just its own size.
+const PLANET_GLYPH_SIZE = 20;
+// Minimum angular gap (degrees) between two planet glyphs at PLANET_GLYPH_R
+// so their ~PLANET_GLYPH_SIZE-wide bounding boxes clear each other (chord
+// length 2*PLANET_GLYPH_R*sin(sep/2) >= glyph size + a few px of breathing
+// room). Below this, a planet gets nudged forward and a thin leader line
+// ties its glyph back to its true degree.
+export const MIN_PLANET_SEP = 10;
+
+const ASPECT_LINE_SOFT = "#7D6B3E"; // trine/sextile -- solid, deep bronze
+const ASPECT_LINE_HARD = "#A8553C"; // square/opposition -- dashed, terracotta
+
+// Three-tier value structure so the wheel doesn't sink into a single flat
+// tone: lightest at the center (aspects circle), stepping down to darkest at
+// the rim (sign band). The panel itself (see the <rect> below) is darker
+// than the page background it sits on, so the wheel reads as an object
+// resting on the page rather than a hole cut into it.
+const SIGN_BAND_FILL = "#DBCDAD";
+const HOUSE_RING_FILL = "#E9E0CA";
+const MIOLO_FILL = "#F8F3E6";
+const RING_CONTOUR = "#A08D66";
 
 // Traditional ceiling for a major aspect's orb (the classical "moiety"
 // ballpark for luminary-involving aspects). The backend has already decided
@@ -24,12 +51,54 @@ const ASPECT_LINE_HARD = "#A8553C"; // square/opposition -- dashed
 // solely to scale line weight, not to gate what's drawn.
 const MAX_ASPECT_ORB = 8;
 
-/** Tighter orb -> heavier line: 1.9 at an exact (0°) aspect down to 1.0 at
+/** Tighter orb -> heavier line: 2.2 at an exact (0°) aspect down to 0.9 at
  * MAX_ASPECT_ORB or wider. Doctrinally motivated, not decorative -- a close
- * aspect is a stronger one. */
+ * aspect is a stronger one, and this is the one place on the wheel that
+ * carries that as a visual weight instead of just a number in a table. */
 function aspectStrokeWidth(orb: number): number {
   const t = Math.min(Math.abs(orb), MAX_ASPECT_ORB) / MAX_ASPECT_ORB;
-  return 1.9 - t * 0.9;
+  return 2.2 - t * 1.3;
+}
+
+// Tarefa 9 (optional) -- tinting the sign band by triplicity/element. Kept
+// as a single flag so it's a one-line revert if it reads as too "colorful"
+// for the parchment/ink/bronze palette.
+const SHOW_TRIPLICITY_TINT = true;
+const SIGN_ELEMENT: Record<string, "fire" | "earth" | "air" | "water"> = {
+  Aries: "fire",
+  Leo: "fire",
+  Sagittarius: "fire",
+  Taurus: "earth",
+  Virgo: "earth",
+  Capricorn: "earth",
+  Gemini: "air",
+  Libra: "air",
+  Aquarius: "air",
+  Cancer: "water",
+  Scorpio: "water",
+  Pisces: "water",
+};
+const ELEMENT_TINT: Record<string, string> = {
+  fire: "#D9BEA6",
+  earth: "#C8CBA7",
+  air: "#DFD6B1",
+  water: "#BCC7C6",
+};
+
+/** A 30-degree sign wedge approximated as a polygon (not a true SVG arc --
+ * that would need a sweep-flag tied to this wheel's rotation convention,
+ * and a handful of straight segments at 5-degree resolution reads as a
+ * smooth arc at this radius anyway). */
+function sectorPath(startDeg: number, endDeg: number, innerR: number, outerR: number, ascLongitude: number): string {
+  const steps = 6;
+  const outerPts = Array.from({ length: steps + 1 }, (_, i) =>
+    pointOnWheel(startDeg + ((endDeg - startDeg) * i) / steps, ascLongitude, outerR)
+  );
+  const innerPts = Array.from({ length: steps + 1 }, (_, i) =>
+    pointOnWheel(startDeg + ((endDeg - startDeg) * i) / steps, ascLongitude, innerR)
+  ).reverse();
+  const pts = [...outerPts, ...innerPts];
+  return `M${pts.map((p) => `${p.x},${p.y}`).join(" L ")} Z`;
 }
 
 function pointOnWheel(longitude: number, ascLongitude: number, radius: number) {
@@ -109,23 +178,45 @@ export default function ChartWheel({ chart }: { chart: ChartResponse }) {
     <div>
       <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="mx-auto block w-full" role="img" aria-label="Natal chart wheel">
         {/* Panel reads as an object sitting on the page, not a cutout: it's
-            deliberately darker/warmer than the page background (#EDE6D6), with
-            the sign band a step darker still and the planet discs lighter than
-            everything so the glyphs are what jumps out. */}
+            deliberately darker/warmer than the page background (#EDE6D6).
+            Inside it, three concentric fills step from darkest at the rim
+            (sign band) to lightest at the center (aspects circle) -- without
+            that contrast the whole wheel sinks into one flat tone. */}
         <rect x={0} y={0} width={SIZE} height={SIZE} rx={10} fill="#E4DAC4" />
-        <circle cx={CENTER} cy={CENTER} r={OUTER_R} fill="#DDD2B8" />
-        <circle cx={CENTER} cy={CENTER} r={SIGN_RING_R} fill="#E4DAC4" />
-        <circle cx={CENTER} cy={CENTER} r={OUTER_R} fill="none" stroke="#B08D57" strokeOpacity={0.65} />
-        <circle cx={CENTER} cy={CENTER} r={SIGN_RING_R} fill="none" stroke="#B08D57" strokeOpacity={0.5} />
-        <circle cx={CENTER} cy={CENTER} r={ASPECT_R} fill="none" stroke="#B08D57" strokeOpacity={0.35} />
+        {SHOW_TRIPLICITY_TINT ? (
+          SIGN_ORDER.map((sign, i) => (
+            <path
+              key={sign}
+              d={sectorPath(i * 30, i * 30 + 30, SIGN_BAND_INNER_R, SIGN_BAND_OUTER_R, ascLon)}
+              fill={ELEMENT_TINT[SIGN_ELEMENT[sign]]}
+            />
+          ))
+        ) : (
+          <circle cx={CENTER} cy={CENTER} r={SIGN_BAND_OUTER_R} fill={SIGN_BAND_FILL} />
+        )}
+        <circle cx={CENTER} cy={CENTER} r={SIGN_BAND_INNER_R} fill="#E4DAC4" />
+        <circle cx={CENTER} cy={CENTER} r={HOUSE_RING_OUTER_R} fill={HOUSE_RING_FILL} />
+        <circle cx={CENTER} cy={CENTER} r={HOUSE_RING_INNER_R} fill={MIOLO_FILL} />
+        <circle cx={CENTER} cy={CENTER} r={SIGN_BAND_OUTER_R} fill="none" stroke={RING_CONTOUR} strokeOpacity={0.65} />
+        <circle cx={CENTER} cy={CENTER} r={SIGN_BAND_INNER_R} fill="none" stroke={RING_CONTOUR} strokeOpacity={0.5} />
+        <circle cx={CENTER} cy={CENTER} r={HOUSE_RING_OUTER_R} fill="none" stroke={RING_CONTOUR} strokeOpacity={0.4} />
+        <circle cx={CENTER} cy={CENTER} r={HOUSE_RING_INNER_R} fill="none" stroke={RING_CONTOUR} strokeOpacity={0.4} />
+        <circle cx={CENTER} cy={CENTER} r={ASPECT_R} fill="none" stroke={RING_CONTOUR} strokeOpacity={0.3} />
 
-        {/* Degree ticks, like a graduated instrument rim (sign cusps get their own full spoke below) */}
-        {Array.from({ length: 72 }, (_, idx) => idx * 5)
+        {/* Degree ticks, graduated like an instrument rim: every 1 degree gets
+            a short hairline, every 5th a medium tick, every 10th a long,
+            heavier one. They project inward from the sign band's inner edge
+            (sign cusps get their own full spoke below, so multiples of 30
+            are skipped here). This is what separates an instrument from an
+            illustration -- not optional polish. */}
+        {Array.from({ length: 360 }, (_, deg) => deg)
           .filter((deg) => deg % 30 !== 0)
           .map((deg) => {
             const isTen = deg % 10 === 0;
-            const outer = pointOnWheel(deg, ascLon, OUTER_R);
-            const inner = pointOnWheel(deg, ascLon, OUTER_R - (isTen ? 10 : 5));
+            const isFive = deg % 5 === 0;
+            const length = isTen ? R * 0.045 : isFive ? R * 0.028 : R * 0.015;
+            const outer = pointOnWheel(deg, ascLon, SIGN_BAND_INNER_R);
+            const inner = pointOnWheel(deg, ascLon, SIGN_BAND_INNER_R - length);
             return (
               <line
                 key={deg}
@@ -133,9 +224,9 @@ export default function ChartWheel({ chart }: { chart: ChartResponse }) {
                 y1={outer.y}
                 x2={inner.x}
                 y2={inner.y}
-                stroke="#B08D57"
-                strokeOpacity={isTen ? 0.55 : 0.3}
-                strokeWidth={isTen ? 1 : 0.75}
+                stroke={RING_CONTOUR}
+                strokeOpacity={isTen ? 0.55 : isFive ? 0.4 : 0.25}
+                strokeWidth={isTen ? 1.1 : isFive ? 0.7 : 0.4}
               />
             );
           })}
@@ -144,9 +235,9 @@ export default function ChartWheel({ chart }: { chart: ChartResponse }) {
         {SIGN_ORDER.map((sign, i) => {
           const cuspLon = i * 30;
           const houseNum = (((cuspLon - ascSignStart) / 30) % 12 + 12) % 12 + 1;
-          const outer = pointOnWheel(cuspLon, ascLon, OUTER_R);
+          const outer = pointOnWheel(cuspLon, ascLon, SIGN_BAND_OUTER_R);
           const inner = pointOnWheel(cuspLon, ascLon, ASPECT_R);
-          const signMid = pointOnWheel(cuspLon + 15, ascLon, (OUTER_R + SIGN_RING_R) / 2);
+          const signMid = pointOnWheel(cuspLon + 15, ascLon, SIGN_GLYPH_R);
           const housePos = pointOnWheel(cuspLon + 5, ascLon, HOUSE_NUM_R);
           const signGlyphSize = 14;
           return (
@@ -160,11 +251,12 @@ export default function ChartWheel({ chart }: { chart: ChartResponse }) {
                 y={housePos.y}
                 fill="#1B2438"
                 fillOpacity={0.45}
-                fontSize={13}
+                fontSize={12}
+                fontFamily="var(--font-cinzel), serif"
                 textAnchor="middle"
                 dominantBaseline="middle"
               >
-                {houseNum}
+                {toRoman(houseNum)}
               </text>
             </g>
           );
@@ -175,8 +267,8 @@ export default function ChartWheel({ chart }: { chart: ChartResponse }) {
             hierarchy, right after the planet glyphs themselves. */}
         {(["ASC", "MC"] as const).map((label) => {
           const opposite = label === "ASC" ? "DSC" : "IC";
-          const a = pointOnWheel(anglePoints[label], ascLon, OUTER_R);
-          const b = pointOnWheel(anglePoints[opposite], ascLon, OUTER_R);
+          const a = pointOnWheel(anglePoints[label], ascLon, SIGN_BAND_OUTER_R);
+          const b = pointOnWheel(anglePoints[opposite], ascLon, SIGN_BAND_OUTER_R);
           return (
             <line
               key={label}
@@ -238,8 +330,8 @@ export default function ChartWheel({ chart }: { chart: ChartResponse }) {
             thin leader tying the glyph back to its true degree on the rim. */}
         {planetLayout.map(({ name, trueLongitude, displayLongitude }) => {
           const planet = chart.planets[name];
-          const p = pointOnWheel(displayLongitude, ascLon, PLANET_R);
-          const truePoint = pointOnWheel(trueLongitude, ascLon, SIGN_RING_R);
+          const p = pointOnWheel(displayLongitude, ascLon, PLANET_GLYPH_R);
+          const truePoint = pointOnWheel(trueLongitude, ascLon, SIGN_BAND_INNER_R);
           const rawDiff = Math.abs(displayLongitude - trueLongitude) % 360;
           const nudged = Math.min(rawDiff, 360 - rawDiff) > 0.01;
           return (
@@ -254,21 +346,23 @@ export default function ChartWheel({ chart }: { chart: ChartResponse }) {
                   y1={truePoint.y}
                   x2={p.x}
                   y2={p.y}
-                  stroke="#B08D57"
-                  strokeOpacity={0.35}
+                  stroke={RING_CONTOUR}
+                  strokeOpacity={0.4}
                   strokeWidth={0.75}
                 />
               )}
-              <circle cx={p.x} cy={p.y} r={15} fill="#F2EBDA" stroke="#B08D57" />
-              <g transform={`translate(${p.x - 8},${p.y - 8})`}>
-                <AstroGlyph name={PLANET_GLYPH[name]} size={16} color="#1B2438" />
+              {/* No disc: at this point the ring's own value contrast (Tarefa
+                  2) already separates the ink glyph from its background, the
+                  way it would sit directly on a printed ephemeris. */}
+              <g transform={`translate(${p.x - PLANET_GLYPH_SIZE / 2},${p.y - PLANET_GLYPH_SIZE / 2})`}>
+                <AstroGlyph name={PLANET_GLYPH[name]} size={PLANET_GLYPH_SIZE} color="#1B2438" />
               </g>
               {/* Whole-degree label -- the wheel is the spatial view now, exact
                   minutes live in the side table. Retrograde rides as a small
                   subscript glued to the degree, not a separate corner mark. */}
               <text
                 x={p.x - (planet.retrograde ? 4 : 0)}
-                y={p.y + 27}
+                y={p.y + PLANET_GLYPH_SIZE + 11}
                 fill="#1B2438"
                 fontSize={10}
                 textAnchor="middle"
@@ -277,7 +371,7 @@ export default function ChartWheel({ chart }: { chart: ChartResponse }) {
                 {formatWholeDegree(planet.sign_longitude)}
               </text>
               {planet.retrograde && (
-                <g transform={`translate(${p.x + 9},${p.y + 30})`}>
+                <g transform={`translate(${p.x + 10},${p.y + PLANET_GLYPH_SIZE + 14})`}>
                   <AstroGlyph name="retrograde" size={7} color="#1B2438" title={`${name} retrograde`} />
                 </g>
               )}

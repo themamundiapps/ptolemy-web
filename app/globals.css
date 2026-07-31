@@ -1067,11 +1067,16 @@ body {
 /* Chart tab only: the wheel + planets table pair needs more room side by
    side than the 880px prose/card measure gives every other tab. */
 .pt-app .app-main .tab-body:has(.chart-layout) {
-  max-width: 1100px;
+  max-width: 1160px;
 }
 .pt-app .chart-layout {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* Wheel column is capped, not proportional: it should read as an
+     instrument at 560-620px on wide screens, not stretch to fill half the
+     row. The planets table takes whatever's left, but its own rows have a
+     genuine (non-shrinkable) minimum width, so it keeps its default
+     min-width:auto protection rather than being forced below that. */
+  grid-template-columns: minmax(0, 620px) 1fr;
   gap: 24px;
   align-items: start;
 }
