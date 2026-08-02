@@ -85,6 +85,14 @@ export function naturalList(items: string[]): string {
   return `${items.slice(0, -1).join(", ")}, and ${items[items.length - 1]}`;
 }
 
+/** The Analysis tab's "Essential Dignities" section title. Only ever fed
+ * dignitySummary().dignified (domicile/exaltation), so a Fall or Detriment
+ * planet structurally cannot reach this title -- see hasTrueDignity. */
+export function dignityTitle(dignified: { name: string }[]): string {
+  if (dignified.length === 0) return "No planet holds essential dignity";
+  return `${naturalList(dignified.map((d) => d.name))} hold${dignified.length === 1 ? "s" : ""} essential dignity`;
+}
+
 export function dignitySummary(planets: Record<string, ZodiacPosition>): {
   dignified: { name: string; value: string }[];
   debilitated: { name: string; value: string }[];

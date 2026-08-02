@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { dignitySummary, hasTrueDignity, leadAspect, naturalList } from "./astro";
+import { dignitySummary, dignityTitle, hasTrueDignity, leadAspect, naturalList } from "./astro";
 import type { Aspect, ZodiacPosition } from "./types";
 
 function pos(sign: string, dignities: string[]): ZodiacPosition {
@@ -53,6 +53,31 @@ describe("hasTrueDignity / dignitySummary — regression for the Fall/Detriment-
     expect(dignified.map((d) => d.name)).toEqual(["Moon"]);
     expect(debilitated.map((d) => d.name).sort()).toEqual(["Jupiter", "Sun"]);
     expect(peregrine.sort()).toEqual(["Mars", "Mercury", "Saturn", "Venus"]);
+  });
+});
+
+describe("dignityTitle — grammatically correct and factually true for any dignified count", () => {
+  // A planet in [debilitated] or [peregrine] must never be able to reach
+  // this title -- it's only ever handed dignitySummary().dignified, and
+  // these fixtures cover every count that shape can take for a 7-planet
+  // chart's title text specifically (dignitySummary's own classification
+  // across debilitated/peregrine is already covered above).
+  it("0 dignified: the no-planet fallback, not an empty or malformed title", () => {
+    expect(dignityTitle([])).toBe("No planet holds essential dignity");
+  });
+
+  it("1 dignified: singular 'holds', no list punctuation", () => {
+    expect(dignityTitle([{ name: "Moon" }])).toBe("Moon holds essential dignity");
+  });
+
+  it("2 dignified: plural 'hold', joined with 'and', no comma", () => {
+    expect(dignityTitle([{ name: "Moon" }, { name: "Venus" }])).toBe("Moon and Venus hold essential dignity");
+  });
+
+  it("3 dignified: plural 'hold', serial (Oxford) comma via naturalList", () => {
+    expect(dignityTitle([{ name: "Sun" }, { name: "Moon" }, { name: "Jupiter" }])).toBe(
+      "Sun, Moon, and Jupiter hold essential dignity",
+    );
   });
 });
 

@@ -2,19 +2,21 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Markdown from "@/components/Markdown";
-import { ApiError, fetchChartAnalysis, fetchTemperament } from "@/lib/api";
+import { ApiError, fetchChartAnalysis } from "@/lib/api";
 import { saveChart } from "@/lib/storage";
 import {
   DOMICILE_RULERS,
   HARMONIOUS_ASPECTS,
   PLANET_ORDER,
   dignitySummary,
+  dignityTitle,
   formatDegree,
   hasTrueDignity,
   housesRuledBy,
   leadAspect,
   naturalList,
 } from "@/lib/astro";
+import { useCanonicalTemperament } from "@/lib/useCanonicalTemperament";
 import { ASPECT_GLYPH, AstroGlyph, PLANET_GLYPH } from "@/components/AstroGlyphs";
 import type { SavedChart } from "@/lib/types";
 
@@ -57,7 +59,6 @@ export default function AnalysisTab({
 }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [temperament, setTemperament] = useState<string | null>(null);
 
   useEffect(() => {
     if (saved.analysis || loading) return;
@@ -74,25 +75,14 @@ export default function AnalysisTab({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [saved.id, userId]);
 
-  // The canonical humoral label — same 5-significator calculation the
-  // Temperament tab reads, and the single source of truth for it. The AI
-  // reading text is never a valid source for this: it's free prose that can
-  // (and does) describe the chart using different temperament language than
-  // what was actually calculated.
-  useEffect(() => {
-    let cancelled = false;
-    fetchTemperament(saved.birthData)
-      .then((r) => {
-        if (!cancelled) setTemperament(r.temperament);
-      })
-      .catch(() => {
-        /* Section I falls back to a loading state; not worth a separate error UI here. */
-      });
-    return () => {
-      cancelled = true;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [saved.birthData.date, saved.birthData.time, saved.birthData.latitude, saved.birthData.longitude]);
+  // The canonical humoral label — same hook, same /temperament call, the
+  // Temperament tab reads. The AI reading text is never a valid source for
+  // this: it's free prose that can (and does) describe the chart using
+  // different temperament language than what was actually calculated. Not
+  // worth a separate error UI here -- Section I just falls back to a loading
+  // state on either a slow fetch or a failed one.
+  const { result: temperamentResult } = useCanonicalTemperament(saved.birthData);
+  const temperament = temperamentResult?.temperament ?? null;
 
   const paragraphs = useMemo(() => paragraphsFromAnalysis(saved.analysis), [saved.analysis]);
   const chart = saved.chart;
@@ -194,13 +184,7 @@ export default function AnalysisTab({
           <span className="n">III</span>
           <span className="n">— Essential Dignities</span>
         </div>
-        <h2>
-          {dignities.dignified.length > 0
-            ? `${naturalList(dignities.dignified.map((d) => d.name))} hold${
-                dignities.dignified.length === 1 ? "s" : ""
-              } essential dignity`
-            : "No planet holds essential dignity"}
-        </h2>
+        <h2>{dignityTitle(dignities.dignified)}</h2>
         {dignitiesBody && <Markdown>{dignitiesBody}</Markdown>}
         {dignitiesQuote && <Markdown className="pull">{`\u201C${dignitiesQuote}\u201D`}</Markdown>}
         {dignities.dignified.map((d) => (

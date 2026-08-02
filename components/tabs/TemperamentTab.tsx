@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { ApiError, fetchTemperament } from "@/lib/api";
-import type { BirthData, TemperamentResult } from "@/lib/types";
+import { useCanonicalTemperament } from "@/lib/useCanonicalTemperament";
+import type { BirthData } from "@/lib/types";
 
 function QualityBar({ leftLabel, rightLabel, value }: { leftLabel: string; rightLabel: string; value: number }) {
   const fraction = Math.max(-1, Math.min(1, value / 6));
@@ -23,19 +22,7 @@ function QualityBar({ leftLabel, rightLabel, value }: { leftLabel: string; right
 }
 
 export default function TemperamentTab({ birth }: { birth: BirthData }) {
-  const [result, setResult] = useState<TemperamentResult | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    setLoading(true);
-    setError(null);
-    fetchTemperament(birth)
-      .then(setResult)
-      .catch((e) => setError(e instanceof ApiError ? e.message : "Could not read your temperament."))
-      .finally(() => setLoading(false));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [birth.date, birth.time, birth.latitude, birth.longitude]);
+  const { result, loading, error } = useCanonicalTemperament(birth);
 
   if (loading) {
     return (
