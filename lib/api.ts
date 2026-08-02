@@ -2,6 +2,7 @@ import type {
   AiQuota,
   BirthData,
   ChartResponse,
+  ChatDepth,
   ChatMessage,
   CityResult,
   ElectionalResult,
@@ -154,10 +155,11 @@ export function chatWithAstrologer(
   birth: BirthData,
   messages: ChatMessage[],
   userId?: string,
+  depth?: ChatDepth,
 ): Promise<{ reply: string }> {
   return request("/api/v1/chat/astrologer", {
     method: "POST",
-    body: JSON.stringify({ ...birthPayload(birth), messages, user_id: userId ?? null }),
+    body: JSON.stringify({ ...birthPayload(birth), messages, user_id: userId ?? null, depth: depth ?? "standard" }),
   });
 }
 

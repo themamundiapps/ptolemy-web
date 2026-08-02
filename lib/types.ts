@@ -50,6 +50,11 @@ export interface ChatMessage {
   content: string;
 }
 
+/** Register the astrologer's reply is written in -- doctrine is identical
+ * across all three, only how it's explained changes. See
+ * backend/app/services/chat.py's REGISTER_BLOCKS. */
+export type ChatDepth = "plain" | "standard" | "traditional";
+
 export interface AiQuota {
   remaining: number;
   limit: number;

@@ -17,7 +17,7 @@ import { fetchAiQuota } from "@/lib/api";
 import { getGoogleUser } from "@/lib/auth";
 import { getChart, getOrCreateDeviceId, saveChart } from "@/lib/storage";
 import { DEFAULT_TAB, isTabKey, type TabKey } from "@/lib/tabs";
-import type { AiQuota, ChatMessage, SavedChart } from "@/lib/types";
+import type { AiQuota, ChatDepth, ChatMessage, SavedChart } from "@/lib/types";
 
 const TAB_META: Record<TabKey, { title: string; subtitle: string }> = {
   chart: { title: "Chart", subtitle: "Wheel, planets, lots and aspects" },
@@ -42,6 +42,7 @@ function ReadingPageInner() {
   const [userId, setUserId] = useState("");
   const [tab, setTab] = useState<TabKey>(DEFAULT_TAB);
   const [quota, setQuota] = useState<AiQuota | null>(null);
+  const [chatDepth, setChatDepth] = useState<ChatDepth>("standard");
   const [initialQuestion, setInitialQuestion] = useState("");
   const [headerCollapsed, setHeaderCollapsed] = useState(false);
 
@@ -174,6 +175,8 @@ function ReadingPageInner() {
                 onMessagesChange={handleMessagesChange}
                 quota={quota}
                 onQuotaChange={setQuota}
+                depth={chatDepth}
+                onDepthChange={setChatDepth}
                 initialInput={initialQuestion}
               />
             )}

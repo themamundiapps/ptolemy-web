@@ -100,3 +100,49 @@ describe("buildChatSuggestions", () => {
     expect(questions.some((q) => q.includes("ascendant say about me"))).toBe(false);
   });
 });
+
+describe("buildChatSuggestions with a theme", () => {
+  it("falls back to general suggestions for an unrecognized theme key", () => {
+    const c = chart({});
+    expect(buildChatSuggestions(c, "not_a_real_theme")).toEqual(buildChatSuggestions(c, null));
+  });
+
+  it("restricts candidates to the theme's significators and primary-house ruler, not the whole chart", () => {
+    // Leo ascendant: house 7 (love's primary house) is Aquarius, ruled by
+    // Saturn, which is cadent (6th) and has no aspects in this fixture, so
+    // only the ruler and cadent-placement candidates apply -- unlike the
+    // general suggestions, which surface the ascendant ruler (Sun) instead.
+    const c = chart({});
+    const questions = buildChatSuggestions(c, "love_relationships");
+    expect(questions.every((q) => /love and relationships/.test(q))).toBe(true);
+    expect(questions.some((q) => q.includes("My Saturn rules the 7th"))).toBe(true);
+    expect(questions.some((q) => q.includes("Venus in the 3rd matter for love"))).toBe(true);
+  });
+
+  it("surfaces a debility on a theme significator, phrased for that theme", () => {
+    const c = chart({
+      planets: { ...chart({}).planets, Venus: position({ sign: "Aries", house: 3, dignities: ["detriment"] }) },
+    });
+    const questions = buildChatSuggestions(c, "love_relationships");
+    expect(questions.some((q) => q.includes("Venus is in detriment — what does that mean for love and relationships?"))).toBe(
+      true,
+    );
+  });
+
+  it("does not surface a debility on a planet the theme doesn't track", () => {
+    // Mars isn't a significator, the 7th-house ruler, or the Ascendant ruler
+    // for a Leo chart, so its detriment shouldn't leak into the Love theme.
+    const c = chart({
+      planets: { ...chart({}).planets, Mars: position({ sign: "Cancer", house: 12, dignities: ["fall"] }) },
+    });
+    const questions = buildChatSuggestions(c, "love_relationships");
+    expect(questions.some((q) => q.includes("Mars is in fall"))).toBe(false);
+  });
+
+  it("keeps different themes' suggestions distinct for the same chart", () => {
+    const c = chart({});
+    const love = buildChatSuggestions(c, "love_relationships");
+    const career = buildChatSuggestions(c, "business_career");
+    expect(love).not.toEqual(career);
+  });
+});

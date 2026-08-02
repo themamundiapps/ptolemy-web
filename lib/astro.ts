@@ -144,3 +144,12 @@ export function housesRuledBy(planet: string, ascendantSign: string): number[] {
   }
   return houses;
 }
+
+/** The whole-sign house's own sign, given the Ascendant's sign -- the inverse
+ * of housesRuledBy: house N's sign is the Nth sign counting from the
+ * Ascendant. */
+export function signOnHouse(house: number, ascendantSign: string): string | undefined {
+  const ascIndex = SIGN_ORDER.indexOf(ascendantSign);
+  if (ascIndex === -1) return undefined;
+  return SIGN_ORDER[(ascIndex + house - 1) % 12];
+}

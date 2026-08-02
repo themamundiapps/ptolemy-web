@@ -701,6 +701,94 @@ body {
   padding: 20px 22px;
   margin-top: 6px;
 }
+/* ---- category selector: groups generated suggestions by domain ---- */
+.pt-app .chat-category-select {
+  margin-bottom: 20px;
+  padding-bottom: 18px;
+  border-bottom: 1px dashed var(--rule);
+}
+.pt-app .chat-category-label {
+  display: block;
+  font-family: var(--font-cinzel), serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--bronze-deep);
+  margin-bottom: 8px;
+}
+.pt-app .chat-category-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.pt-app .chat-category-pill {
+  border: 1px solid var(--bronze);
+  background: transparent;
+  color: var(--bronze-deep);
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-family: var(--font-cinzel), serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+.pt-app .chat-category-pill:hover {
+  background: var(--parchment);
+}
+.pt-app .chat-category-pill.active {
+  background: var(--bronze);
+  color: var(--ink);
+}
+/* ---- depth/register selector: same pill language, compact, sits by the
+   question field rather than at the top of the tab ---- */
+.pt-app .chat-depth-select {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.pt-app .chat-depth-label {
+  font-family: var(--font-cinzel), serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--bronze-deep);
+}
+.pt-app .chat-depth-pills {
+  display: flex;
+  gap: 6px;
+}
+.pt-app .chat-depth-pill {
+  border: 1px solid var(--bronze);
+  background: transparent;
+  color: var(--bronze-deep);
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-family: var(--font-cinzel), serif;
+  font-size: 0.58rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+.pt-app .chat-depth-pill:hover:not(:disabled) {
+  background: var(--parchment);
+}
+.pt-app .chat-depth-pill.active {
+  background: var(--bronze);
+  color: var(--ink);
+}
+.pt-app .chat-depth-pill:disabled {
+  opacity: var(--btn-disabled-opacity);
+  cursor: not-allowed;
+}
 /* ---- consultation log: stacked Q/A entries, no chat bubbles ---- */
 .pt-app .chat-log {
   margin-bottom: 8px;
@@ -758,6 +846,23 @@ body {
   40% {
     opacity: 1;
   }
+}
+.pt-app .chat-answer-toggle {
+  display: inline-block;
+  margin-top: 10px;
+  border: none;
+  background: none;
+  padding: 0;
+  font-family: var(--font-cinzel), serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--bronze-deep);
+  cursor: pointer;
+}
+.pt-app .chat-answer-toggle:hover {
+  color: var(--bronze);
+  text-decoration: underline;
 }
 .pt-app .chat-entry-error {
   color: var(--terracotta);
