@@ -23,6 +23,7 @@ const FEATURES: {
   desc: string;
   pro: boolean;
   tab?: TabKey;
+  soon?: boolean;
 }[] = [
   {
     glyph: "☌",
@@ -62,6 +63,7 @@ const FEATURES: {
     name: "Annual Profections",
     desc: "Lord of the Year and the profection technique",
     pro: false,
+    soon: true,
   },
   {
     glyph: "✦",
@@ -288,6 +290,7 @@ export default function HubPage() {
                 const inner = (
                   <>
                     {f.pro && <span className="pro">PRO</span>}
+                    {f.soon && <span className="soon">SOON</span>}
                     <span className="glyph">{f.glyph}</span>
                     <span className="name">{f.name}</span>
                     <span className="desc">{f.desc}</span>
@@ -303,7 +306,7 @@ export default function HubPage() {
                     {inner}
                   </Link>
                 ) : (
-                  <div className="feature-tile" key={f.name}>
+                  <div className={`feature-tile${f.soon ? " is-soon" : ""}`} key={f.name}>
                     {inner}
                   </div>
                 );
@@ -336,10 +339,10 @@ export default function HubPage() {
                 </>
               )}
               <a className="disabled">
-                Annual profection 2026 <span className="arrow">→</span>
+                Annual profection 2026 <span className="soon">SOON</span>
               </a>
               <a className="disabled">
-                Saved elections <span className="arrow">→</span>
+                Saved elections <span className="soon">SOON</span>
               </a>
             </div>
           </div>
