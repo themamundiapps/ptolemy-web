@@ -1293,6 +1293,37 @@ body {
   margin: 0 0 12px;
   color: var(--ink);
 }
+.pt-app .data-card h4 .pro-badge {
+  display: inline-block;
+  margin-left: 10px;
+  vertical-align: middle;
+  font-family: var(--font-cinzel), serif;
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  color: var(--bronze-deep);
+  border: 1px solid var(--bronze);
+  padding: 2px 6px;
+  border-radius: 2px;
+}
+.pt-app .recommendation-label {
+  font-family: var(--font-cinzel), serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--bronze-deep);
+  display: block;
+  margin-bottom: 4px;
+}
+.pt-app .recommendation-body {
+  margin: 0 0 14px;
+  font-size: var(--text-body-size);
+  font-weight: var(--text-body-weight);
+  line-height: var(--text-body-line);
+  color: var(--ink-soft);
+}
+.pt-app .recommendation-body:last-child {
+  margin-bottom: 0;
+}
 .pt-app .elect-results-header {
   display: flow-root;
   margin-bottom: 20px;

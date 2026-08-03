@@ -117,6 +117,21 @@ export interface TemperamentResult {
   factors: TemperamentFactor[];
 }
 
+export interface TemperamentExpandedSection {
+  text: string;
+  citation: string;
+}
+
+export interface TemperamentExpandedRecommendations {
+  text: string;
+}
+
+export interface TemperamentExpandedResult {
+  temperament: string;
+  health_tendencies: TemperamentExpandedSection;
+  traditional_recommendations: TemperamentExpandedRecommendations;
+}
+
 export interface ElectionalHit {
   planet: string;
   house: number;

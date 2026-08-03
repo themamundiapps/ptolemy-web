@@ -10,6 +10,7 @@ import type {
   Interpretation,
   SynastryPersonInput,
   SynastryResult,
+  TemperamentExpandedResult,
   TemperamentResult,
   TransitsResponse,
 } from "./types";
@@ -91,6 +92,10 @@ export function fetchTemperament(birth: BirthData): Promise<TemperamentResult> {
     method: "POST",
     body: JSON.stringify(birthPayload(birth)),
   });
+}
+
+export function fetchTemperamentExpanded(temperament: string): Promise<TemperamentExpandedResult> {
+  return request(`/api/v1/temperament/expanded?temperament=${encodeURIComponent(temperament)}`);
 }
 
 export function fetchElectional(
