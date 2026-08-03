@@ -3,9 +3,9 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import AppNav from "@/components/AppNav";
 import { ApiError, fetchTransits } from "@/lib/api";
-import { getGoogleUser } from "@/lib/auth";
 import {
   FREE_MESSAGE_LIMIT,
   getActiveChartId,
@@ -92,19 +92,19 @@ function moonPhaseWord(phaseName: string, phaseAngle: number): string {
 
 export default function HubPage() {
   const router = useRouter();
+  const { data: session } = useSession();
   const [saved, setSaved] = useState<SavedChart | null | undefined>(undefined);
-  const [firstName, setFirstName] = useState("there");
   const [transits, setTransits] = useState<TransitsResponse | null>(null);
   const [transitsLoading, setTransitsLoading] = useState(false);
   const [transitsError, setTransitsError] = useState<string | null>(null);
   const [remaining, setRemaining] = useState(FREE_MESSAGE_LIMIT);
   const [question, setQuestion] = useState("");
 
+  const firstName = session?.user?.name?.split(" ")[0] ?? "there";
+
   useEffect(() => {
     const id = getActiveChartId();
     setSaved(id ? getChart(id) : null);
-    const user = getGoogleUser();
-    setFirstName(user?.name?.split(" ")[0] ?? "there");
     setRemaining(Math.max(FREE_MESSAGE_LIMIT - totalUserMessageCount(), 0));
   }, []);
 

@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import AppNav from "@/components/AppNav";
 import Sidebar from "@/components/Sidebar";
 import ChatDock from "@/components/ChatDock";
@@ -14,7 +15,6 @@ import TransitsTab from "@/components/tabs/TransitsTab";
 import SynastryTab from "@/components/tabs/SynastryTab";
 import AnalysisTab from "@/components/tabs/AnalysisTab";
 import { fetchAiQuota } from "@/lib/api";
-import { getGoogleUser } from "@/lib/auth";
 import { getChart, getOrCreateDeviceId, saveChart } from "@/lib/storage";
 import { DEFAULT_TAB, isTabKey, type TabKey } from "@/lib/tabs";
 import type { AiQuota, ChatDepth, ChatMessage, SavedChart } from "@/lib/types";
@@ -37,6 +37,7 @@ function ReadingPageInner() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { data: session, status: sessionStatus } = useSession();
 
   const [saved, setSaved] = useState<SavedChart | null | undefined>(undefined);
   const [userId, setUserId] = useState("");
@@ -58,7 +59,11 @@ function ReadingPageInner() {
   }, []);
 
   useEffect(() => {
-    setUserId(getGoogleUser()?.id ?? getOrCreateDeviceId());
+    if (sessionStatus === "loading") return;
+    setUserId(session?.user?.id ?? getOrCreateDeviceId());
+  }, [session, sessionStatus]);
+
+  useEffect(() => {
     setSaved(getChart(params.id));
   }, [params.id]);
 

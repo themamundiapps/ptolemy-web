@@ -14,6 +14,7 @@ import type {
   TemperamentResult,
   TransitsResponse,
 } from "./types";
+import { getInternalToken } from "./internalToken";
 
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://ptolemy-production.up.railway.app";
@@ -50,6 +51,15 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   }
 
   return response.json() as Promise<T>;
+}
+
+/** Headers for the rate-limited AI endpoints (Chart Analysis, Chat, Synastry,
+ * AI quota) -- attaches the signed internal JWT when signed in, so the
+ * backend keys the daily limit off the verified Google account id instead
+ * of the client-supplied user_id/device id. Empty for guests. */
+async function authHeaders(): Promise<Record<string, string>> {
+  const token = await getInternalToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
 export function searchCities(query: string): Promise<{ results: CityResult[] }> {
@@ -110,13 +120,14 @@ export function fetchElectional(
   });
 }
 
-export function fetchSynastry(
+export async function fetchSynastry(
   personA: SynastryPersonInput,
   personB: SynastryPersonInput,
   userId?: string,
 ): Promise<SynastryResult> {
   return request("/api/v1/chart/synastry", {
     method: "POST",
+    headers: await authHeaders(),
     body: JSON.stringify({ person_a: personA, person_b: personB, user_id: userId ?? null }),
   });
 }
@@ -149,14 +160,15 @@ export function fetchHouseLordInterpretation(fromHouse: number, toHouse: number)
   return request(`/api/v1/interpretations/house-lord?from_house=${fromHouse}&to_house=${toHouse}`);
 }
 
-export function fetchChartAnalysis(birth: BirthData, userId?: string): Promise<{ analysis: string }> {
+export async function fetchChartAnalysis(birth: BirthData, userId?: string): Promise<{ analysis: string }> {
   return request("/api/v1/chart/analysis", {
     method: "POST",
+    headers: await authHeaders(),
     body: JSON.stringify({ ...birthPayload(birth), user_id: userId ?? null }),
   });
 }
 
-export function chatWithAstrologer(
+export async function chatWithAstrologer(
   birth: BirthData,
   messages: ChatMessage[],
   userId?: string,
@@ -164,6 +176,7 @@ export function chatWithAstrologer(
 ): Promise<{ reply: string }> {
   return request("/api/v1/chat/astrologer", {
     method: "POST",
+    headers: await authHeaders(),
     body: JSON.stringify({ ...birthPayload(birth), messages, user_id: userId ?? null, depth: depth ?? "standard" }),
   });
 }
@@ -171,9 +184,9 @@ export function chatWithAstrologer(
 /** Read-only lookup of the shared daily AI-call budget (Chart Analysis,
  * Synastry, Personal Synthesis, and Chat all draw from the same count) --
  * never consumes a unit itself. */
-export function fetchAiQuota(userId?: string): Promise<AiQuota> {
+export async function fetchAiQuota(userId?: string): Promise<AiQuota> {
   const query = userId ? `?user_id=${encodeURIComponent(userId)}` : "";
-  return request(`/api/v1/user/ai-quota${query}`);
+  return request(`/api/v1/user/ai-quota${query}`, { headers: await authHeaders() });
 }
 
 export { ApiError };

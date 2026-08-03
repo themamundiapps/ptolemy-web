@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Cinzel, Cormorant_Garamond } from "next/font/google";
+import { SessionProvider } from "next-auth/react";
 import { AstroGlyphDefs } from "@/components/AstroGlyphs";
 import "./globals.css";
 
@@ -33,7 +34,7 @@ export default function RootLayout({
     <html lang="en" className={`${cormorant.variable} ${cinzel.variable}`}>
       <body className="antialiased bg-parchment text-ink">
         <AstroGlyphDefs />
-        {children}
+        <SessionProvider>{children}</SessionProvider>
       </body>
     </html>
   );

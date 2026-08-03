@@ -1,48 +1,27 @@
 "use client";
 
-import Script from "next/script";
-import { useEffect, useRef, useState } from "react";
-import { GOOGLE_CLIENT_ID, decodeGoogleCredential, getGoogleUser, setGoogleUser, type GoogleUser } from "@/lib/auth";
+import { signIn, useSession } from "next-auth/react";
 
-export default function GoogleSignInButton({ onSignedIn }: { onSignedIn?: (user: GoogleUser) => void }) {
-  const buttonRef = useRef<HTMLDivElement>(null);
-  const [user, setUser] = useState<GoogleUser | null>(null);
-  const [scriptReady, setScriptReady] = useState(false);
+export default function GoogleSignInButton() {
+  const { data: session, status } = useSession();
 
-  useEffect(() => {
-    setUser(getGoogleUser());
-  }, []);
+  if (status === "loading") return null;
 
-  useEffect(() => {
-    if (!scriptReady || user || !buttonRef.current || !window.google) return;
-    window.google.accounts.id.initialize({
-      client_id: GOOGLE_CLIENT_ID,
-      callback: (response) => {
-        const googleUser = decodeGoogleCredential(response.credential);
-        setGoogleUser(googleUser);
-        setUser(googleUser);
-        onSignedIn?.(googleUser);
-      },
-    });
-    window.google.accounts.id.renderButton(buttonRef.current, {
-      theme: "outline",
-      size: "large",
-      text: "signin_with",
-      shape: "pill",
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [scriptReady, user]);
+  if (session?.user) {
+    return (
+      <p className="font-cormorant text-sm text-ink-2">
+        Signed in as <span className="text-ink">{session.user.email}</span>
+      </p>
+    );
+  }
 
   return (
-    <>
-      <Script src="https://accounts.google.com/gsi/client" async defer onLoad={() => setScriptReady(true)} />
-      {user ? (
-        <p className="font-cormorant text-sm text-ink-2">
-          Signed in as <span className="text-ink">{user.email}</span>
-        </p>
-      ) : (
-        <div ref={buttonRef} />
-      )}
-    </>
+    <button
+      type="button"
+      onClick={() => signIn("google")}
+      className="border border-ink px-5 py-2 font-cinzel text-xs tracking-[0.08em] text-ink transition-colors hover:bg-ink hover:text-parchment"
+    >
+      Sign in with Google
+    </button>
   );
 }

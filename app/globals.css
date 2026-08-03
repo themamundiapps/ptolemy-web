@@ -163,6 +163,9 @@ body {
   color: var(--ink-soft);
   text-decoration: none;
 }
+.pt-app nav.top .account {
+  position: relative;
+}
 .pt-app nav.top .account .av {
   width: 40px;
   height: 40px;
@@ -177,6 +180,59 @@ body {
   letter-spacing: 0.03em;
   border: 1px solid var(--bronze);
   flex-shrink: 0;
+  cursor: pointer;
+  padding: 0;
+}
+.pt-app nav.top .account .av:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+.pt-app nav.top .account-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 220px;
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  padding: 14px 16px;
+  z-index: 20;
+}
+.pt-app nav.top .account-menu .name {
+  font-family: var(--font-cormorant), serif;
+  font-size: 1.05rem;
+  color: var(--ink);
+}
+.pt-app nav.top .account-menu .email {
+  display: block;
+  font-size: var(--text-secondary-size);
+  color: var(--ink-soft);
+  margin-top: 2px;
+  word-break: break-all;
+}
+.pt-app nav.top .account-menu .divider {
+  border-top: 1px solid var(--rule);
+  margin: 12px 0;
+}
+.pt-app nav.top .account-menu a,
+.pt-app nav.top .account-menu button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 6px 0;
+  font-family: var(--font-cinzel), serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  color: var(--ink);
+  text-decoration: none;
+  cursor: pointer;
+}
+.pt-app nav.top .account-menu a:hover,
+.pt-app nav.top .account-menu button:hover {
+  color: var(--terracotta);
 }
 
 /* =========================================================
