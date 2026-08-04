@@ -189,4 +189,32 @@ export async function fetchAiQuota(userId?: string): Promise<AiQuota> {
   return request(`/api/v1/user/ai-quota${query}`, { headers: await authHeaders() });
 }
 
+/** Persists a just-cast chart server-side, signed in or not -- so a chart
+ * cast while signed out isn't lost if this browser/device is, and can be
+ * reattached to an account later via claimGuestCharts. [deviceId] is only
+ * used when signed out; the backend ignores it for an authenticated call. */
+export async function createGuestChart(birth: BirthData, deviceId: string): Promise<{ id: number }> {
+  return request("/api/v1/user/charts", {
+    method: "POST",
+    headers: await authHeaders(),
+    body: JSON.stringify({
+      city_name: birth.place_name ?? "",
+      ...birthPayload(birth),
+      guest_id: deviceId,
+    }),
+  });
+}
+
+/** Reassigns every chart cast anonymously under [deviceId] to the
+ * now-signed-in account. Requires the internal JWT (authHeaders) -- call
+ * only once a session exists. Safe to call more than once; charts already
+ * claimed are simply not matched again. */
+export async function claimGuestCharts(deviceId: string): Promise<{ claimed: number }> {
+  return request("/api/v1/user/charts/claim", {
+    method: "POST",
+    headers: await authHeaders(),
+    body: JSON.stringify({ guest_id: deviceId }),
+  });
+}
+
 export { ApiError };

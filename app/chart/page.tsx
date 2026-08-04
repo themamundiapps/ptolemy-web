@@ -6,8 +6,8 @@ import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import PaywallModal from "@/components/PaywallModal";
 import BirthDataForm from "@/components/BirthDataForm";
-import { ApiError, fetchChartPositions } from "@/lib/api";
-import { saveChart, setActiveChartId } from "@/lib/storage";
+import { ApiError, createGuestChart, fetchChartPositions } from "@/lib/api";
+import { getOrCreateDeviceId, saveChart, setActiveChartId } from "@/lib/storage";
 import type { BirthData } from "@/lib/types";
 
 const EXAMPLE_BIRTH: BirthData = {
@@ -74,6 +74,9 @@ function ChartFormPage() {
         createdAt: new Date().toISOString(),
       });
       setActiveChartId(id);
+      // Best-effort: local storage is still the source of truth, this just
+      // means the chart survives losing this browser/device.
+      createGuestChart(birth, getOrCreateDeviceId()).catch(() => {});
       router.push(`/reading/${id}`);
     } catch (e) {
       setError(e instanceof ApiError ? e.message : "Something went wrong. Please try again.");

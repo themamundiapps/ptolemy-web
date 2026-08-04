@@ -2,8 +2,9 @@ import { SignJWT } from "jose";
 import { auth } from "@/auth";
 
 /** Mints a short-lived HS256 JWT asserting the signed-in user's Google
- * account id, for the browser to attach as `Authorization: Bearer` on
- * requests to the FastAPI backend. Signing has to happen server-side --
+ * account id (plus email/name, used to populate the `users` row on first
+ * guest-chart claim), for the browser to attach as `Authorization: Bearer`
+ * on requests to the FastAPI backend. Signing has to happen server-side --
  * INTERNAL_AUTH_SECRET must never reach client JS, since anyone who read it
  * out of the bundle could mint a token for any account and both bypass and
  * grief the backend's rate limit. NextAuth's session cookie (httpOnly)
@@ -20,7 +21,11 @@ export async function GET() {
     return new Response(null, { status: 204 });
   }
 
-  const token = await new SignJWT({ sub: session.user.id })
+  const token = await new SignJWT({
+    sub: session.user.id,
+    email: session.user.email ?? undefined,
+    name: session.user.name ?? undefined,
+  })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("5m")

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Cinzel, Cormorant_Garamond } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
 import { AstroGlyphDefs } from "@/components/AstroGlyphs";
+import ClaimGuestCharts from "@/components/ClaimGuestCharts";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -34,7 +35,10 @@ export default function RootLayout({
     <html lang="en" className={`${cormorant.variable} ${cinzel.variable}`}>
       <body className="antialiased bg-parchment text-ink">
         <AstroGlyphDefs />
-        <SessionProvider>{children}</SessionProvider>
+        <SessionProvider>
+          <ClaimGuestCharts />
+          {children}
+        </SessionProvider>
       </body>
     </html>
   );
