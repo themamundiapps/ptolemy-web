@@ -77,6 +77,7 @@ export default function ChatDock({
   depth,
   onDepthChange,
   initialInput = "",
+  onUpgrade,
 }: {
   birth: BirthData;
   chart: ChartResponse;
@@ -88,6 +89,7 @@ export default function ChatDock({
   depth: ChatDepth;
   onDepthChange: (depth: ChatDepth) => void;
   initialInput?: string;
+  onUpgrade: () => void;
 }) {
   const [input, setInput] = useState(initialInput);
   const [sending, setSending] = useState(false);
@@ -115,7 +117,9 @@ export default function ChatDock({
       if (quota) onQuotaChange({ ...quota, remaining: Math.max(quota.remaining - 1, 0) });
     } catch (e) {
       if (e instanceof ApiError && e.status === 429) {
-        onQuotaChange(quota ? { ...quota, remaining: 0 } : { remaining: 0, limit: 10, resets_at: "midnight UTC" });
+        onQuotaChange(
+          quota ? { ...quota, remaining: 0 } : { remaining: 0, limit: 5, resets_at: "midnight UTC", is_pro: false },
+        );
       } else {
         setError(e instanceof ApiError ? e.message : "The astrologer could not be reached. Please try again.");
       }
@@ -187,7 +191,17 @@ export default function ChatDock({
 
       {quotaExhausted ? (
         <div className="chat-limit-note">
-          You&apos;ve used all {quota?.limit} consultations for today. Your limit resets at {quota?.resets_at}.
+          <p>
+            You&apos;ve used all {quota?.limit} consultations for today. Your limit resets at {quota?.resets_at}.
+          </p>
+          {!quota?.is_pro && (
+            <>
+              <p>Ptolemy Pro gives you 50 consultations a day, across Chat, Analysis, and Synastry.</p>
+              <button type="button" className="btn-primary" onClick={onUpgrade}>
+                Upgrade to Pro — $5/mo
+              </button>
+            </>
+          )}
         </div>
       ) : (
         <>

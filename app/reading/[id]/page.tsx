@@ -14,6 +14,7 @@ import ElectionalTab from "@/components/tabs/ElectionalTab";
 import TransitsTab from "@/components/tabs/TransitsTab";
 import SynastryTab from "@/components/tabs/SynastryTab";
 import AnalysisTab from "@/components/tabs/AnalysisTab";
+import PaywallModal from "@/components/PaywallModal";
 import { fetchAiQuota } from "@/lib/api";
 import { getChart, getOrCreateDeviceId, saveChart } from "@/lib/storage";
 import { DEFAULT_TAB, isTabKey, type TabKey } from "@/lib/tabs";
@@ -46,6 +47,15 @@ function ReadingPageInner() {
   const [chatDepth, setChatDepth] = useState<ChatDepth>("standard");
   const [initialQuestion, setInitialQuestion] = useState("");
   const [headerCollapsed, setHeaderCollapsed] = useState(false);
+  const [paywallOpen, setPaywallOpen] = useState(false);
+
+  // null while the /user/ai-quota fetch is still in flight -- callers that
+  // need to distinguish "not resolved yet" from "resolved as free" (so a Pro
+  // user never sees a locked flash) use this directly; anything that's fine
+  // treating "unresolved" as "not Pro yet" uses isPro below.
+  const isProResolved = quota?.is_pro ?? null;
+  const isPro = quota?.is_pro ?? false;
+  const openPaywall = () => setPaywallOpen(true);
 
   // The full "A Reading of the Nativity" header runs ~250px tall -- fine at
   // the top of the page, but it pushed every tab's actual content below the
@@ -140,7 +150,7 @@ function ReadingPageInner() {
       <AppNav />
 
       <div className="app-shell">
-        <Sidebar active={tab} onSelect={handleSelectTab} />
+        <Sidebar active={tab} onSelect={handleSelectTab} isPro={isProResolved} />
         <main className="app-main">
           <div className={`read-header${headerCollapsed ? " is-collapsed" : ""}`}>
             <div className="eyebrow">A Reading of the Nativity</div>
@@ -164,13 +174,21 @@ function ReadingPageInner() {
           <div className="tab-body">
             {tab === "chart" && <ChartTab chart={saved.chart} />}
             {tab === "house-lords" && <HouseLordsTab birth={saved.birthData} />}
-            {tab === "temperament" && <TemperamentTab birth={saved.birthData} />}
-            {tab === "electional" && <ElectionalTab birth={saved.birthData} />}
+            {tab === "temperament" && <TemperamentTab birth={saved.birthData} onUpgrade={openPaywall} />}
+            {tab === "electional" && <ElectionalTab birth={saved.birthData} isPro={isPro} onUpgrade={openPaywall} />}
             {tab === "transits" && <TransitsTab birth={saved.birthData} />}
             {tab === "synastry" && (
-              <SynastryTab personA={saved.birthData} userId={userId} currentChartId={saved.id} />
+              <SynastryTab
+                personA={saved.birthData}
+                userId={userId}
+                currentChartId={saved.id}
+                isPro={isPro}
+                onUpgrade={openPaywall}
+              />
             )}
-            {tab === "analysis" && <AnalysisTab saved={saved} userId={userId} onUpdate={setSaved} />}
+            {tab === "analysis" && (
+              <AnalysisTab saved={saved} userId={userId} onUpdate={setSaved} isPro={isProResolved} onUpgrade={openPaywall} />
+            )}
             {tab === "ask" && (
               <ChatDock
                 birth={saved.birthData}
@@ -183,11 +201,14 @@ function ReadingPageInner() {
                 depth={chatDepth}
                 onDepthChange={setChatDepth}
                 initialInput={initialQuestion}
+                onUpgrade={openPaywall}
               />
             )}
           </div>
         </main>
       </div>
+
+      <PaywallModal open={paywallOpen} onClose={() => setPaywallOpen(false)} />
     </div>
   );
 }

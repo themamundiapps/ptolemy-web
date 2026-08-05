@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import BirthDataForm from "@/components/BirthDataForm";
 import { ApiError, fetchSynastry } from "@/lib/api";
 import { AstroGlyph, ASPECT_GLYPH, PLANET_GLYPH } from "@/components/AstroGlyphs";
+import ProLockCard from "@/components/ProLockCard";
 import { listCharts } from "@/lib/storage";
 import type { BirthData, SavedChart, SynastryResult } from "@/lib/types";
 
@@ -11,10 +12,14 @@ export default function SynastryTab({
   personA,
   userId,
   currentChartId,
+  isPro,
+  onUpgrade,
 }: {
   personA: BirthData;
   userId: string;
   currentChartId?: string;
+  isPro: boolean;
+  onUpgrade: () => void;
 }) {
   const [result, setResult] = useState<SynastryResult | null>(null);
   const [loading, setLoading] = useState(false);
@@ -28,6 +33,24 @@ export default function SynastryTab({
   useEffect(() => {
     setOtherCharts(listCharts().filter((c) => c.id !== currentChartId));
   }, [currentChartId]);
+
+  // Synastry is fully Pro-gated (server-side 403 on /chart/synastry for a
+  // free caller) -- shown as a sales pitch rather than skipped straight to
+  // an error once someone actually submits the form.
+  if (!isPro) {
+    return (
+      <ProLockCard
+        title="Synastry"
+        description="Two nativities read against each other by the same traditional method as the rest of Ptolemy — no generic compatibility score."
+        features={[
+          "Inter-aspects between both charts, with orbs",
+          "House overlay — where each person's planets land in the other's houses",
+          "A full written reading, source-grounded like every chart in Ptolemy",
+        ]}
+        onUpgrade={onUpgrade}
+      />
+    );
+  }
 
   const handleSubmit = async (personB: BirthData) => {
     setLoading(true);

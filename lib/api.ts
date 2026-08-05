@@ -53,10 +53,13 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return response.json() as Promise<T>;
 }
 
-/** Headers for the rate-limited AI endpoints (Chart Analysis, Chat, Synastry,
- * AI quota) -- attaches the signed internal JWT when signed in, so the
- * backend keys the daily limit off the verified Google account id instead
- * of the client-supplied user_id/device id. Empty for guests. */
+/** Headers for endpoints that need to resolve the caller's verified identity
+ * -- the rate-limited AI endpoints (Chart Analysis, Chat, Synastry, AI
+ * quota) and the Pro-gated ones (Electional, Temperament expanded) alike.
+ * Attaches the signed internal JWT when signed in, so the backend keys the
+ * daily limit and Pro status off the verified Google account id instead of
+ * the client-supplied user_id/device id. Empty for guests, who are never
+ * Pro and always rate-limited under the free tier. */
 async function authHeaders(): Promise<Record<string, string>> {
   const token = await getInternalToken();
   return token ? { Authorization: `Bearer ${token}` } : {};
@@ -104,11 +107,20 @@ export function fetchTemperament(birth: BirthData): Promise<TemperamentResult> {
   });
 }
 
-export function fetchTemperamentExpanded(temperament: string): Promise<TemperamentExpandedResult> {
-  return request(`/api/v1/temperament/expanded?temperament=${encodeURIComponent(temperament)}`);
+/** Auth headers attached so a signed-in Pro account gets
+ * traditional_recommendations back; a free or guest caller gets it as null
+ * (see TemperamentExpandedResult) rather than the field being withheld only
+ * in the UI. */
+export async function fetchTemperamentExpanded(temperament: string): Promise<TemperamentExpandedResult> {
+  return request(`/api/v1/temperament/expanded?temperament=${encodeURIComponent(temperament)}`, {
+    headers: await authHeaders(),
+  });
 }
 
-export function fetchElectional(
+/** Auth headers attached so the backend can resolve Pro status for the 4
+ * Pro-gated themes -- a free caller requesting one of those gets a 403
+ * (see ELECTIONAL_THEMES / FREE_THEMES), not just a UI-side block. */
+export async function fetchElectional(
   birth: BirthData,
   startDate: string,
   endDate: string,
@@ -116,6 +128,7 @@ export function fetchElectional(
 ): Promise<ElectionalResult> {
   return request("/api/v1/electional", {
     method: "POST",
+    headers: await authHeaders(),
     body: JSON.stringify({ ...birthPayload(birth), start_date: startDate, end_date: endDate, theme }),
   });
 }

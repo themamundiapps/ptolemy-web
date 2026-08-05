@@ -1,11 +1,26 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import AppNav from "@/components/AppNav";
 import { clearInternalToken } from "@/lib/internalToken";
+import { fetchAiQuota } from "@/lib/api";
+import type { AiQuota } from "@/lib/types";
 
 export default function AccountPage() {
   const { data: session, status } = useSession();
+  const [quota, setQuota] = useState<AiQuota | null>(null);
+
+  // Real backend truth for plan status (is_pro), not a hardcoded string --
+  // matters as soon as manual Pro overrides exist (see backend
+  // scripts/grant_pro.py), otherwise a Pro account would see "Free plan"
+  // here while every other tab correctly treats it as Pro.
+  useEffect(() => {
+    if (status !== "authenticated") return;
+    fetchAiQuota()
+      .then(setQuota)
+      .catch(() => {});
+  }, [status]);
 
   return (
     <div className="pt-app min-h-screen">
@@ -53,7 +68,16 @@ export default function AccountPage() {
 
             <div className="data-card">
               <h4>Subscription</h4>
-              <p className="empty">Free plan — Ptolemy Pro is coming soon.</p>
+              {quota === null ? (
+                <p className="empty">Loading…</p>
+              ) : quota.is_pro ? (
+                <p style={{ color: "var(--bronze-deep)" }}>Ptolemy Pro — {quota.limit} consultations/day.</p>
+              ) : (
+                <p className="empty">
+                  Free plan — {quota.limit} consultations/day. Upgrade to Ptolemy Pro for the full traditional
+                  toolkit.
+                </p>
+              )}
             </div>
 
             <button

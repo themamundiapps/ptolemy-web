@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { fetchTemperamentExpanded } from "@/lib/api";
 import { useCanonicalTemperament } from "@/lib/useCanonicalTemperament";
+import ProLockCard from "@/components/ProLockCard";
 import type { BirthData, TemperamentExpandedResult } from "@/lib/types";
 
 /** Renders "**Label:** body" paragraphs (as produced by the backend content
@@ -52,7 +53,13 @@ function QualityBar({ leftLabel, rightLabel, value }: { leftLabel: string; right
   );
 }
 
-export default function TemperamentTab({ birth }: { birth: BirthData }) {
+export default function TemperamentTab({
+  birth,
+  onUpgrade,
+}: {
+  birth: BirthData;
+  onUpgrade: () => void;
+}) {
   const { result, loading, error } = useCanonicalTemperament(birth);
   const [expanded, setExpanded] = useState<TemperamentExpandedResult | null>(null);
 
@@ -137,7 +144,7 @@ export default function TemperamentTab({ birth }: { birth: BirthData }) {
         </div>
       )}
 
-      {expanded && (
+      {expanded && expanded.traditional_recommendations && (
         <div className="data-card">
           <h4>
             Traditional Recommendations
@@ -145,6 +152,14 @@ export default function TemperamentTab({ birth }: { birth: BirthData }) {
           </h4>
           <RecommendationsBody text={expanded.traditional_recommendations.text} />
         </div>
+      )}
+
+      {expanded && !expanded.traditional_recommendations && (
+        <ProLockCard
+          title="Traditional Recommendations"
+          description="Regimen guidance tailored to your humoral complexion — diet, activity, and seasonal adjustments drawn from the traditional medical-astrology sources."
+          onUpgrade={onUpgrade}
+        />
       )}
     </div>
   );

@@ -967,6 +967,12 @@ body {
   line-height: var(--text-secondary-line);
   margin-bottom: 4px;
 }
+.pt-app .chat-limit-note p {
+  margin: 0 0 10px;
+}
+.pt-app .chat-limit-note p:last-of-type {
+  margin-bottom: 14px;
+}
 .pt-app .chat-suggestions {
   display: flex;
   flex-direction: column;
@@ -1196,6 +1202,17 @@ body {
   cursor: pointer;
   text-align: left;
 }
+.pt-app .sidebar .item .sidebar-pro {
+  margin-left: auto;
+  font-family: var(--font-cinzel), serif;
+  font-size: 0.55rem;
+  letter-spacing: 0.08em;
+  color: var(--bronze-deep);
+  border: 1px solid var(--bronze);
+  padding: 2px 6px;
+  border-radius: 2px;
+  text-transform: uppercase;
+}
 .pt-app .sidebar .item .icon {
   flex: none;
   width: 24px;
@@ -1396,6 +1413,65 @@ body {
   font-style: italic;
   font-size: var(--text-secondary-size);
   line-height: var(--text-secondary-line);
+}
+
+/* Pro-lock card -- deliberately the opposite treatment from `.soon`: a
+   confident bronze border and a real CTA, since this gates a feature that
+   exists and is worth paying for, not a stub. Never dimmed, never
+   pointer-events:none -- the whole point is to invite the click. */
+.pt-app .pro-lock-card {
+  position: relative;
+  border-color: var(--bronze);
+  text-align: center;
+  padding: 32px 26px;
+}
+.pt-app .pro-lock-badge {
+  display: inline-block;
+  margin-bottom: 10px;
+  font-family: var(--font-cinzel), serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--bronze-deep);
+  border: 1px solid var(--bronze);
+  padding: 3px 8px;
+  border-radius: 2px;
+}
+.pt-app .pro-lock-card h4 {
+  font-size: 1.3rem;
+}
+.pt-app .pro-lock-desc {
+  color: var(--ink-soft);
+  max-width: 46ch;
+  margin: 0 auto 14px;
+  line-height: 1.6;
+}
+.pt-app .pro-lock-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px;
+  color: var(--ink-soft);
+  font-size: var(--text-secondary-size);
+  line-height: 1.9;
+}
+.pt-app .pro-lock-features li::before {
+  content: "· ";
+  color: var(--bronze-deep);
+}
+
+/* Electional theme tiles gated behind Pro, shown to a free caller --
+   visibly different from a normal selectable tile (bronze wash instead of
+   the default border) but still clickable: clicking opens the paywall
+   rather than proceeding, per "don't hide what's behind the gate". */
+.pt-app .theme-tile.is-locked {
+  border-color: var(--bronze);
+  background: rgba(176, 141, 87, 0.06);
+}
+.pt-app .theme-tile .lock-reason {
+  display: block;
+  font-size: var(--text-secondary-size);
+  color: var(--bronze-deep);
+  margin-top: 6px;
 }
 .pt-app .data-row .d-label {
   font-family: var(--font-cinzel), serif;

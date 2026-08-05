@@ -59,6 +59,7 @@ export interface AiQuota {
   remaining: number;
   limit: number;
   resets_at: string;
+  is_pro: boolean;
 }
 
 export interface Transit {
@@ -129,7 +130,10 @@ export interface TemperamentExpandedRecommendations {
 export interface TemperamentExpandedResult {
   temperament: string;
   health_tendencies: TemperamentExpandedSection;
-  traditional_recommendations: TemperamentExpandedRecommendations;
+  // null for a free-plan caller -- Traditional Recommendations is Pro-only,
+  // withheld server-side rather than just hidden client-side (see backend
+  // app/routers/temperament.py).
+  traditional_recommendations: TemperamentExpandedRecommendations | null;
 }
 
 export interface ElectionalHit {

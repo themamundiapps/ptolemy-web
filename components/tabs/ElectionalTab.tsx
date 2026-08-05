@@ -168,7 +168,15 @@ function DayCard({
   );
 }
 
-export default function ElectionalTab({ birth }: { birth: BirthData }) {
+export default function ElectionalTab({
+  birth,
+  isPro,
+  onUpgrade,
+}: {
+  birth: BirthData;
+  isPro: boolean;
+  onUpgrade: () => void;
+}) {
   const [step, setStep] = useState<Step>("theme");
   const [theme, setTheme] = useState<ElectionalTheme | null>(null);
   const [startDate, setStartDate] = useState(todayIso());
@@ -206,22 +214,30 @@ export default function ElectionalTab({ birth }: { birth: BirthData }) {
       <div className="data-card">
         <h4>Find your best moment</h4>
         <div className="theme-grid">
-          {ELECTIONAL_THEMES.map((t) => (
-            <button
-              key={t.key}
-              type="button"
-              className="theme-tile"
-              onClick={() => {
-                setTheme(t);
-                setResult(null);
-                setStep("range");
-              }}
-            >
-              {t.pro && <span className="pro">PRO</span>}
-              <span className="t-name">{t.label}</span>
-              <span className="t-desc">{t.description}</span>
-            </button>
-          ))}
+          {ELECTIONAL_THEMES.map((t) => {
+            const locked = t.pro && !isPro;
+            return (
+              <button
+                key={t.key}
+                type="button"
+                className={`theme-tile${locked ? " is-locked" : ""}`}
+                onClick={() => {
+                  if (locked) {
+                    onUpgrade();
+                    return;
+                  }
+                  setTheme(t);
+                  setResult(null);
+                  setStep("range");
+                }}
+              >
+                {t.pro && <span className="pro">PRO</span>}
+                <span className="t-name">{t.label}</span>
+                <span className="t-desc">{t.description}</span>
+                {locked && <span className="lock-reason">Upgrade to Ptolemy Pro to unlock this theme</span>}
+              </button>
+            );
+          })}
         </div>
         <div className="go-deeper">
           Each day in your range is checked against a traditional three-tier checklist, not a single averaged score:

@@ -9,10 +9,15 @@ export default function Sidebar({
   active,
   onSelect,
   hrefFor,
+  isPro,
 }: {
   active: TabKey;
   onSelect?: (key: TabKey) => void;
   hrefFor?: (key: TabKey) => string;
+  // Undefined/null while plan status is still resolving -- no badge shown
+  // rather than guessing, since a Pro user briefly seeing "PRO" on their own
+  // already-unlocked tab would read as a bug.
+  isPro?: boolean | null;
 }) {
   return (
     <aside className="sidebar">
@@ -32,6 +37,7 @@ export default function Sidebar({
                   <SidebarIcon tab={item.key} />
                 </span>
                 <span className="label">{item.label}</span>
+                {item.proGated && isPro === false && <span className="sidebar-pro">PRO</span>}
               </>
             );
             return hrefFor ? (

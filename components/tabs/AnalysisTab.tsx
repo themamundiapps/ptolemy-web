@@ -18,6 +18,7 @@ import {
 } from "@/lib/astro";
 import { useCanonicalTemperament } from "@/lib/useCanonicalTemperament";
 import { ASPECT_GLYPH, AstroGlyph, PLANET_GLYPH } from "@/components/AstroGlyphs";
+import ProLockCard from "@/components/ProLockCard";
 import type { SavedChart } from "@/lib/types";
 
 function paragraphsFromAnalysis(analysis?: string): string[] {
@@ -52,16 +53,23 @@ export default function AnalysisTab({
   saved,
   userId,
   onUpdate,
+  isPro,
+  onUpgrade,
 }: {
   saved: SavedChart;
   userId: string;
   onUpdate: (chart: SavedChart) => void;
+  // null = plan status not resolved yet (AI-quota fetch still in flight) --
+  // distinct from false, so a Pro user never sees a locked flash before
+  // their real status loads.
+  isPro: boolean | null;
+  onUpgrade: () => void;
 }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (saved.analysis || loading) return;
+    if (!isPro || saved.analysis || loading) return;
     setLoading(true);
     setError(null);
     fetchChartAnalysis(saved.birthData, userId)
@@ -73,7 +81,7 @@ export default function AnalysisTab({
       .catch((e) => setError(e instanceof ApiError ? e.message : "Could not generate this reading."))
       .finally(() => setLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [saved.id, userId]);
+  }, [saved.id, userId, isPro]);
 
   // The canonical humoral label — same hook, same /temperament call, the
   // Temperament tab reads. The AI reading text is never a valid source for
@@ -119,6 +127,26 @@ export default function AnalysisTab({
   const titleAspect = useMemo(() => leadAspect(aspectsBody, topAspects), [aspectsBody, topAspects]);
 
   const { quote: synthesisQuote, body: synthesisBody } = splitPullQuote(paragraphs[4] ?? "");
+
+  // Full natal Analysis is fully Pro-gated (server-side 403 on
+  // /chart/analysis for a free caller) -- shown as a sales pitch instead of
+  // triggering a fetch that would just come back as an error.
+  if (isPro === null) {
+    return (
+      <div className="data-card">
+        <p className="empty">Loading…</p>
+      </div>
+    );
+  }
+  if (isPro === false) {
+    return (
+      <ProLockCard
+        title="Full Natal Analysis"
+        description="A 4-5 paragraph AI-generated reading in a Ptolemy/Valens/Lilly voice, restructured into six sections: Character, Dominant Planets, Essential Dignities, Key Aspects, Hellenistic Lots, and Synthesis."
+        onUpgrade={onUpgrade}
+      />
+    );
+  }
 
   return (
     <div>
