@@ -10,7 +10,6 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@stripe/stripe-js": "^9.12.0",
     "jose": "^6.2.8",
     "next": "14.2.35",
     "next-auth": "^5.0.0-beta.32",

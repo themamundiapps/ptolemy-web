@@ -29,6 +29,9 @@ export default function Nav({ onSignInClick }: { onSignInClick: () => void }) {
         <Link href="/hub" className="border-b-[1.5px] border-transparent pb-1.5 hover:text-terracotta">
           Dashboard
         </Link>
+        <Link href="/pricing" className="border-b-[1.5px] border-transparent pb-1.5 hover:text-terracotta">
+          Pricing
+        </Link>
       </div>
       <button
         onClick={onSignInClick}

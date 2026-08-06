@@ -52,6 +52,7 @@ export default function AppNav() {
       <div className="links">
         <Link href="/hub">Dashboard</Link>
         <a href="/#process">Guide</a>
+        <Link href="/pricing">Pricing</Link>
       </div>
       <div className="account" ref={menuRef}>
         <button

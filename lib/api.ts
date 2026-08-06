@@ -230,4 +230,25 @@ export async function claimGuestCharts(deviceId: string): Promise<{ claimed: num
   });
 }
 
+/** Creates a hosted Stripe Checkout session for the $5/mo Pro plan and
+ * returns its URL -- the caller just redirects the browser there
+ * (`window.location.href = url`). Requires sign-in (backend 401s a guest);
+ * no card data ever passes through this app. */
+export async function createCheckoutSession(): Promise<{ url: string }> {
+  return request("/api/v1/billing/checkout-session", {
+    method: "POST",
+    headers: await authHeaders(),
+  });
+}
+
+/** Creates a Stripe Billing Portal session -- the hosted page for
+ * cancellation and payment-method management, not something this app
+ * builds itself. Backend 400s if this account has never checked out. */
+export async function createPortalSession(): Promise<{ url: string }> {
+  return request("/api/v1/billing/portal-session", {
+    method: "POST",
+    headers: await authHeaders(),
+  });
+}
+
 export { ApiError };
