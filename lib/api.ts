@@ -19,10 +19,18 @@ import { getInternalToken } from "./internalToken";
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://ptolemy-production.up.railway.app";
 
+/** What kind of failure this was, since "the fetch never got a response" and
+ * "the server responded with an error" need different handling (and different
+ * messaging) -- conflating them into one generic message is what let a masked
+ * CORS-less 500 read as "check your connection" during Stripe billing
+ * testing, costing real diagnosis time. */
+type ApiErrorKind = "network" | "unauthenticated" | "forbidden" | "server" | "client";
+
 class ApiError extends Error {
   constructor(
     message: string,
     public status?: number,
+    public kind: ApiErrorKind = "client",
   ) {
     super(message);
   }
@@ -36,18 +44,38 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
       headers: { "Content-Type": "application/json", ...init?.headers },
     });
   } catch {
-    throw new ApiError("Could not reach the Ptolemy server. Check your connection and try again.");
+    // fetch() itself threw -- no HTTP response at all, so this covers both a
+    // genuinely unreachable server and a browser-blocked (e.g. CORS-less
+    // error) response indistinguishably. The latter should be rare now that
+    // the backend attaches CORS headers to error responses too.
+    throw new ApiError(
+      "Could not reach the Ptolemy server. Check your connection and try again.",
+      undefined,
+      "network",
+    );
   }
 
   if (!response.ok) {
-    let detail = response.statusText;
+    let detail: string | undefined;
     try {
       const body = await response.json();
-      detail = body.detail ?? detail;
+      detail = body.detail;
     } catch {
-      // response had no JSON body -- fall back to statusText
+      // response had no JSON body -- fall back to a status-based message below
     }
-    throw new ApiError(detail, response.status);
+
+    if (response.status === 401) {
+      throw new ApiError(detail ?? "You need to sign in for this.", 401, "unauthenticated");
+    }
+    if (response.status === 403) {
+      throw new ApiError(detail ?? "You don't have permission to do that.", 403, "forbidden");
+    }
+    if (response.status >= 500) {
+      // Deliberately not surfacing `detail` here -- a 500's body is whatever
+      // the server happened to say, not something meant for a user.
+      throw new ApiError("The Ptolemy server ran into a problem. Please try again shortly.", response.status, "server");
+    }
+    throw new ApiError(detail ?? response.statusText, response.status, "client");
   }
 
   return response.json() as Promise<T>;

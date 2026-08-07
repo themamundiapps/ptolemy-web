@@ -1,7 +1,13 @@
+"use client";
+
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import BrandGlyph from "@/components/BrandGlyph";
 
 export default function Nav({ onSignInClick }: { onSignInClick: () => void }) {
+  const { data: session, status } = useSession();
+  const signedIn = status === "authenticated" && !!session?.user;
+
   return (
     <nav className="border-b border-line">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-6 sm:px-10">
@@ -33,12 +39,21 @@ export default function Nav({ onSignInClick }: { onSignInClick: () => void }) {
           Pricing
         </Link>
       </div>
-      <button
-        onClick={onSignInClick}
-        className="border border-ink px-5 py-2 font-cinzel text-xs tracking-[0.08em] text-ink transition-colors hover:bg-ink hover:text-parchment"
-      >
-        Sign in
-      </button>
+      {signedIn ? (
+        <Link
+          href="/account"
+          className="border border-ink px-5 py-2 font-cinzel text-xs tracking-[0.08em] text-ink transition-colors hover:bg-ink hover:text-parchment"
+        >
+          {session.user?.name?.split(" ")[0] ?? "Account"}
+        </Link>
+      ) : (
+        <button
+          onClick={onSignInClick}
+          className="border border-ink px-5 py-2 font-cinzel text-xs tracking-[0.08em] text-ink transition-colors hover:bg-ink hover:text-parchment"
+        >
+          Sign in
+        </button>
+      )}
       </div>
     </nav>
   );

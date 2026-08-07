@@ -27,7 +27,10 @@ function result(temperament: string): TemperamentResult {
 }
 
 function jsonResponse(body: unknown, ok = true) {
-  return { ok, status: ok ? 200 : 500, json: () => Promise.resolve(body) } as Response;
+  // 400, not 500 -- this simulates an ordinary rejected request whose
+  // `detail` is meant for the user, not a server error (lib/api.ts treats
+  // 5xx specially and never surfaces its raw detail text).
+  return { ok, status: ok ? 200 : 400, json: () => Promise.resolve(body) } as Response;
 }
 
 afterEach(() => {
